@@ -1,0 +1,13 @@
+syntax = "proto3";
+package retrochain.retrochain.v1;
+
+import "amino/amino.proto";
+import "gogoproto/gogo.proto";
+
+option go_package = "retrochain/x/retrochain/types";
+
+// Params defines the parameters for the module.
+message Params {
+  option (amino.name) = "retrochain/x/retrochain/Params";
+  option (gogoproto.equal) = true;
+}
