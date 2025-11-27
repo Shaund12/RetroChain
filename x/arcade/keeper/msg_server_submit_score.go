@@ -8,7 +8,7 @@ import (
 	errorsmod "cosmossdk.io/errors"
 )
 
-func (k msgServer) SubmitScore(ctx context.Context, msg *types.MsgSubmitScore) (*types.MsgSubmitScoreResponse, error) {
+func (k *msgServer) SubmitScore(ctx context.Context, msg *types.MsgSubmitScore) (*types.MsgSubmitScoreResponse, error) {
 	if _, err := k.addressCodec.StringToBytes(msg.Creator); err != nil {
 		return nil, errorsmod.Wrap(err, "invalid authority address")
 	}

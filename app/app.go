@@ -179,14 +179,17 @@ func New(
 	}
 
 	// Manually create arcade keeper (not using depinject) - MUST be before app.Build()
+	// Create arcade store service
 	arcadeStoreKey := storetypes.NewKVStoreKey("arcade")
-	arcadeMemKey := storetypes.NewMemoryStoreKey("arcade_mem")
-	arcadeSubspace := paramstypes.Subspace{}
+	arcadeStoreService := runtime.NewKVStoreService(arcadeStoreKey)
+	govModuleAddr := authtypes.NewModuleAddress("gov")
 	app.ArcadeKeeper = arcademodulekeeper.NewKeeper(
+		arcadeStoreService,
 		app.appCodec,
-		arcadeStoreKey,
-		arcadeMemKey,
-		arcadeSubspace,
+		app.AuthKeeper.AddressCodec(),
+		govModuleAddr,
+		app.BankKeeper,
+		app.AuthKeeper,
 	)
 
 	// add to default baseapp options

@@ -9,7 +9,7 @@ import (
 	"retrochain/x/arcade/types"
 )
 
-func (k msgServer) UpdateParams(ctx context.Context, req *types.MsgUpdateParams) (*types.MsgUpdateParamsResponse, error) {
+func (k *msgServer) UpdateParams(ctx context.Context, req *types.MsgUpdateParams) (*types.MsgUpdateParamsResponse, error) {
 	authority, err := k.addressCodec.StringToBytes(req.Authority)
 	if err != nil {
 		return nil, errorsmod.Wrap(err, "invalid authority address")

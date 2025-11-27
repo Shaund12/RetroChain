@@ -8,7 +8,7 @@ import (
 	errorsmod "cosmossdk.io/errors"
 )
 
-func (k msgServer) StartSession(ctx context.Context, msg *types.MsgStartSession) (*types.MsgStartSessionResponse, error) {
+func (k *msgServer) StartSession(ctx context.Context, msg *types.MsgStartSession) (*types.MsgStartSessionResponse, error) {
 	if _, err := k.addressCodec.StringToBytes(msg.Creator); err != nil {
 		return nil, errorsmod.Wrap(err, "invalid authority address")
 	}
