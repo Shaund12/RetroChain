@@ -1,9 +1,9 @@
 package keeper
 
 import (
-	"github.com/cosmos/cosmos-sdk/codec"
-	storetypes "github.com/cosmos/cosmos-sdk/store/types"
-	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
+    "github.com/cosmos/cosmos-sdk/codec"
+    storetypes "cosmossdk.io/store/types"
+    paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 )
 
 // Keeper defines the arcade module keeper.

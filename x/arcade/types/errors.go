@@ -1,13 +1,13 @@
 package types
 
 import (
-	"github.com/cosmos/cosmos-sdk/types/errors"
+	errorsmod "cosmossdk.io/errors"
 )
 
 var (
-	ErrInvalidRequest   = errors.Register(ModuleName, 1, "invalid request")
-	ErrNotFound         = errors.Register(ModuleName, 2, "not found")
-	ErrUnauthorized     = errors.Register(ModuleName, 3, "unauthorized")
-	ErrInsufficientFund = errors.Register(ModuleName, 4, "insufficient funds or credits")
-	ErrLimitExceeded    = errors.Register(ModuleName, 5, "limit exceeded")
+	ErrInvalidRequest   = errorsmod.Register(ModuleName, 1, "invalid request")
+	ErrNotFound         = errorsmod.Register(ModuleName, 2, "not found")
+	ErrUnauthorized     = errorsmod.Register(ModuleName, 3, "unauthorized")
+	ErrInsufficientFund = errorsmod.Register(ModuleName, 4, "insufficient funds or credits")
+	ErrLimitExceeded    = errorsmod.Register(ModuleName, 5, "limit exceeded")
 )

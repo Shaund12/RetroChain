@@ -9,6 +9,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	
+	arcademodule "retrochain/x/arcade/module"
 	icamodule "github.com/cosmos/ibc-go/v10/modules/apps/27-interchain-accounts"
 	icacontroller "github.com/cosmos/ibc-go/v10/modules/apps/27-interchain-accounts/controller"
 	icacontrollerkeeper "github.com/cosmos/ibc-go/v10/modules/apps/27-interchain-accounts/controller/keeper"
@@ -40,6 +42,8 @@ func (app *App) registerIBCModules(appOpts servertypes.AppOptions) error {
 		storetypes.NewKVStoreKey(ibctransfertypes.StoreKey),
 		storetypes.NewKVStoreKey(icahosttypes.StoreKey),
 		storetypes.NewKVStoreKey(icacontrollertypes.StoreKey),
+		storetypes.NewKVStoreKey("arcade"),
+		storetypes.NewMemoryStoreKey("arcade_mem"),
 	); err != nil {
 		return err
 	}
@@ -131,13 +135,15 @@ func (app *App) registerIBCModules(appOpts servertypes.AppOptions) error {
 	soloLightClientModule := solomachine.NewLightClientModule(app.appCodec, storeProvider)
 	clientKeeper.AddRoute(solomachine.ModuleName, &soloLightClientModule)
 
-	// register IBC modules
+	// register IBC modules and arcade module
+	arcadeModule := arcademodule.NewAppModule(app.appCodec, app.ArcadeKeeper)
 	if err := app.RegisterModules(
 		ibc.NewAppModule(app.IBCKeeper),
 		ibctransfer.NewAppModule(app.TransferKeeper),
 		icamodule.NewAppModule(&app.ICAControllerKeeper, &app.ICAHostKeeper),
 		ibctm.NewAppModule(tmLightClientModule),
 		solomachine.NewAppModule(soloLightClientModule),
+		arcadeModule,
 	); err != nil {
 		return err
 	}

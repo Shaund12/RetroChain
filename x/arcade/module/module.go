@@ -1,41 +1,47 @@
 package module
 
 import (
-	"cosmossdk.io/depinject"
+	"context"
+
+	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
-	"github.com/cosmos/cosmos-sdk/runtime"
-	storetypes "github.com/cosmos/cosmos-sdk/store/types"
-	"github.com/cosmos/cosmos-sdk/types/module"
-	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
+	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
+	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 
 	"retrochain/x/arcade/keeper"
 	"retrochain/x/arcade/types"
 )
 
-// ProvideModule is used by depinject to construct the keeper and register store keys.
-type ModuleInputs struct {
-	depinject.In
+// Module is the config object for the arcade module
+type Module struct{}
 
-	Cdc    codec.Codec
-	Config *types.Module
-	Params paramstypes.Subspace
+type AppModule struct {
+	cdc    codec.Codec
+	keeper keeper.Keeper
 }
 
-type ModuleOutputs struct {
-	depinject.Out
-
-	Keeper keeper.Keeper
-	Module module.AppModule
+func NewAppModule(cdc codec.Codec, keeper keeper.Keeper) AppModule {
+	return AppModule{
+		cdc:    cdc,
+		keeper: keeper,
+	}
 }
 
-func ProvideModule(in ModuleInputs) ModuleOutputs {
-	storeKey := storetypes.NewKVStoreKey(types.StoreKey)
-	memKey := storetypes.NewMemoryStoreKey(types.MemStoreKey)
+func (AppModule) Name() string { return types.ModuleName }
 
-	k := keeper.NewKeeper(in.Cdc, storeKey, memKey, in.Params)
-
-	// Register store keys via runtime module; services will be registered when generated code exists.
-	m := runtime.NewAppModule("arcade", nil, nil)
-
-	return ModuleOutputs{Keeper: k, Module: m}
+func (AppModule) RegisterInterfaces(registry codectypes.InterfaceRegistry) {
+	types.RegisterInterfaces(registry)
 }
+
+func (AppModule) RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
+	types.RegisterLegacyAminoCodec(cdc)
+}
+
+func (AppModule) RegisterGRPCGatewayRoutes(clientCtx client.Context, mux *runtime.ServeMux) {
+	ctx := context.Background()
+	_ = types.RegisterQueryHandlerClient(ctx, mux, types.NewQueryClient(clientCtx))
+}
+
+func (am AppModule) IsOnePerModuleType() {}
+
+func (am AppModule) IsAppModule() {}

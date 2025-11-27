@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"fmt"
 	"os"
 
 	"cosmossdk.io/client/v2/autocli"
@@ -39,6 +40,11 @@ func NewRootCmd() *cobra.Command {
 		&moduleBasicManager,
 		&clientCtx,
 	); err != nil {
+		// Print the actual error with full details
+		fmt.Fprintf(os.Stderr, "\n\n========== DEPINJECT ERROR ==========\n")
+		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Detailed: %+v\n", err)
+		fmt.Fprintf(os.Stderr, "=====================================\n\n")
 		panic(err)
 	}
 

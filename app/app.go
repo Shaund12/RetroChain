@@ -46,8 +46,8 @@ import (
 	ibckeeper "github.com/cosmos/ibc-go/v10/modules/core/keeper"
 
 	"retrochain/docs"
+	_ "retrochain/x/arcade/module" // import for side-effects (module registration)
 	arcademodulekeeper "retrochain/x/arcade/keeper"
-	retrochainmodulekeeper "retrochain/x/retrochain/keeper"
 )
 
 const (
@@ -100,9 +100,8 @@ type App struct {
 	TransferKeeper      ibctransferkeeper.Keeper
 
 	// simulation manager
-	sm               *module.SimulationManager
-	RetrochainKeeper retrochainmodulekeeper.Keeper
-	ArcadeKeeper     arcademodulekeeper.Keeper
+	sm           *module.SimulationManager
+	ArcadeKeeper arcademodulekeeper.Keeper
 }
 
 func init() {
@@ -175,11 +174,20 @@ func New(
 		&app.ConsensusParamsKeeper,
 		&app.CircuitBreakerKeeper,
 		&app.ParamsKeeper,
-		&app.RetrochainKeeper,
-		&app.ArcadeKeeper,
 	); err != nil {
 		panic(err)
 	}
+
+	// Manually create arcade keeper (not using depinject) - MUST be before app.Build()
+	arcadeStoreKey := storetypes.NewKVStoreKey("arcade")
+	arcadeMemKey := storetypes.NewMemoryStoreKey("arcade_mem")
+	arcadeSubspace := paramstypes.Subspace{}
+	app.ArcadeKeeper = arcademodulekeeper.NewKeeper(
+		app.appCodec,
+		arcadeStoreKey,
+		arcadeMemKey,
+		arcadeSubspace,
+	)
 
 	// add to default baseapp options
 	// enable optimistic execution
@@ -188,7 +196,7 @@ func New(
 	// build app
 	app.App = appBuilder.Build(db, traceStore, baseAppOptions...)
 
-	// register legacy modules
+	// register legacy modules including arcade
 	if err := app.registerIBCModules(appOpts); err != nil {
 		panic(err)
 	}

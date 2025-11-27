@@ -3,8 +3,6 @@ package app
 import (
 	_ "retrochain/x/arcade/module"
 	arcademoduletypes "retrochain/x/arcade/types"
-	_ "retrochain/x/retrochain/module"
-	retrochainmoduletypes "retrochain/x/retrochain/types"
 	"time"
 
 	runtimev1alpha1 "cosmossdk.io/api/cosmos/app/runtime/v1alpha1"
@@ -127,7 +125,6 @@ var (
 						// ibc modules
 						ibcexported.ModuleName,
 						// chain modules
-						retrochainmoduletypes.ModuleName,
 						arcademoduletypes.ModuleName,
 						// this line is used by starport scaffolding # stargate/app/beginBlockers
 					},
@@ -137,7 +134,6 @@ var (
 						feegrant.ModuleName,
 						group.ModuleName,
 						// chain modules
-						retrochainmoduletypes.ModuleName,
 						arcademoduletypes.ModuleName,
 						// this line is used by starport scaffolding # stargate/app/endBlockers
 					},
@@ -175,7 +171,6 @@ var (
 						ibctransfertypes.ModuleName,
 						icatypes.ModuleName,
 						// chain modules
-						retrochainmoduletypes.ModuleName,
 						arcademoduletypes.ModuleName,
 						// this line is used by starport scaffolding # stargate/app/initGenesis
 					},
@@ -272,14 +267,6 @@ var (
 			{
 				Name:   epochstypes.ModuleName,
 				Config: appconfig.WrapAny(&epochsmodulev1.Module{}),
-			},
-			{
-				Name:   retrochainmoduletypes.ModuleName,
-				Config: appconfig.WrapAny(&retrochainmoduletypes.Module{}),
-			},
-			{
-				Name:   arcademoduletypes.ModuleName,
-				Config: appconfig.WrapAny(&arcademoduletypes.Module{}),
 			},
 			// this line is used by starport scaffolding # stargate/app/moduleConfig
 		},
