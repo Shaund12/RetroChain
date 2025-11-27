@@ -7,7 +7,6 @@ import (
 )
 
 var (
-	amino     = codec.NewLegacyAmino()
 	ModuleCdc = codec.NewProtoCodec(types.NewInterfaceRegistry())
 )
 
@@ -20,4 +19,3 @@ func RegisterCodec(cdc *codec.LegacyAmino) {}
 func RegisterInterfaces(registry types.InterfaceRegistry) {
 	msgservice.RegisterMsgServiceDesc(registry, &_Msg_serviceDesc)
 }
-

@@ -1,20 +1,70 @@
 package keeper
 
 import (
-    "github.com/cosmos/cosmos-sdk/codec"
-    storetypes "cosmossdk.io/store/types"
-    paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
+	"fmt"
+
+	"cosmossdk.io/collections"
+	"cosmossdk.io/core/address"
+	corestore "cosmossdk.io/core/store"
+	"github.com/cosmos/cosmos-sdk/codec"
+
+	"retrochain/x/arcade/types"
 )
 
 // Keeper defines the arcade module keeper.
-// Fill dependencies (bank, auth) as needed when implementing business logic.
 type Keeper struct {
-	cdc         codec.Codec
-	storeKey    storetypes.StoreKey
-	memKey      storetypes.StoreKey
-	paramSpace  paramstypes.Subspace
+	storeService corestore.KVStoreService
+	cdc          codec.Codec
+	addressCodec address.Codec
+	// Address capable of executing a MsgUpdateParams message.
+	// Typically, this should be the x/gov module account.
+	authority []byte
+
+	// Bank keeper for handling token transfers
+	bankKeeper types.BankKeeper
+	// Auth keeper for account management
+	authKeeper types.AuthKeeper
+
+	Schema collections.Schema
+	Params collections.Item[types.Params]
 }
 
-func NewKeeper(cdc codec.Codec, storeKey, memKey storetypes.StoreKey, ps paramstypes.Subspace) Keeper {
-	return Keeper{cdc: cdc, storeKey: storeKey, memKey: memKey, paramSpace: ps}
+// NewKeeper creates a new arcade module Keeper instance
+func NewKeeper(
+	storeService corestore.KVStoreService,
+	cdc codec.Codec,
+	addressCodec address.Codec,
+	authority []byte,
+	bankKeeper types.BankKeeper,
+	authKeeper types.AuthKeeper,
+) Keeper {
+	if _, err := addressCodec.BytesToString(authority); err != nil {
+		panic(fmt.Sprintf("invalid authority address %s: %s", authority, err))
+	}
+
+	sb := collections.NewSchemaBuilder(storeService)
+
+	k := Keeper{
+		storeService: storeService,
+		cdc:          cdc,
+		addressCodec: addressCodec,
+		authority:    authority,
+		bankKeeper:   bankKeeper,
+		authKeeper:   authKeeper,
+
+		Params: collections.NewItem(sb, types.ParamsKey, "params", codec.CollValue[types.Params](cdc)),
+	}
+
+	schema, err := sb.Build()
+	if err != nil {
+		panic(err)
+	}
+	k.Schema = schema
+
+	return k
+}
+
+// GetAuthority returns the module's authority.
+func (k Keeper) GetAuthority() []byte {
+	return k.authority
 }

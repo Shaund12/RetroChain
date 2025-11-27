@@ -1,8 +1,6 @@
 package types
 
 import (
-	"fmt"
-
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 )
 
@@ -17,28 +15,15 @@ func (p *Params) ParamSetPairs() paramstypes.ParamSetPairs {
 }
 
 // DefaultParams returns default module parameters.
+// Note: The Params struct is generated from protobuf. The proto file defines the fields
+// but they need to be regenerated with `make proto-gen` to be reflected in params.pb.go.
 func DefaultParams() Params {
-	return Params{
-		BaseCreditsCost:             1000000,
-		TokensPerThousandPoints:     1,
-		MaxActiveSessions:           3,
-		ContinueCostMultiplier:      150,
-		HighScoreReward:             100,
-		TournamentRegistrationFee:   10000000,
-		MinDifficulty:               1,
-		MaxDifficulty:               10,
-		AchievementRewardMultiplier: 2,
-		PowerUpCost:                 500,
-	}
+	return Params{}
 }
 
 // Validate performs basic validation of module parameters.
+// Currently returns nil as the generated Params struct is empty.
+// This should be updated after proto regeneration.
 func (p Params) Validate() error {
-	if p.MinDifficulty == 0 || p.MaxDifficulty < p.MinDifficulty {
-		return fmt.Errorf("invalid difficulty range")
-	}
-	if p.BaseCreditsCost == 0 {
-		return fmt.Errorf("base credits cost must be > 0")
-	}
 	return nil
 }

@@ -1,32 +1,17 @@
 package keeper
 
 import (
-	"context"
+	"retrochain/x/arcade/types"
 )
 
-// MsgServer implements arcade Msg RPCs. Fill logic per proto-generated interface.
-type MsgServer struct {
+type msgServer struct {
 	Keeper
 }
 
-func NewMsgServerImpl(k Keeper) MsgServer { return MsgServer{Keeper: k} }
-
-// TODO: implement handlers for:
-// - InsertCoin
-// - StartSession
-// - UpdateGameScore
-// - ActivateCombo
-// - UsePowerUp
-// - ContinueGame
-// - SubmitScore
-// - SetHighScoreInitials
-// - RegisterGame
-// - CreateTournament
-// - JoinTournament
-// - SubmitTournamentScore
-// - ClaimAchievement
-
-// Example stub (replace with generated signatures):
-func (s MsgServer) InsertCoin(ctx context.Context, req interface{}) (interface{}, error) {
-	return nil, nil
+// NewMsgServerImpl returns an implementation of the MsgServer interface
+// for the provided Keeper.
+func NewMsgServerImpl(keeper Keeper) types.MsgServer {
+	return &msgServer{Keeper: keeper}
 }
+
+var _ types.MsgServer = msgServer{}

@@ -136,7 +136,7 @@ func (app *App) registerIBCModules(appOpts servertypes.AppOptions) error {
 	clientKeeper.AddRoute(solomachine.ModuleName, &soloLightClientModule)
 
 	// register IBC modules and arcade module
-	arcadeModule := arcademodule.NewAppModule(app.appCodec, app.ArcadeKeeper)
+	arcadeModule := arcademodule.NewAppModule(app.appCodec, app.ArcadeKeeper, app.AuthKeeper, app.BankKeeper)
 	if err := app.RegisterModules(
 		ibc.NewAppModule(app.IBCKeeper),
 		ibctransfer.NewAppModule(app.TransferKeeper),
