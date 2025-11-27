@@ -1,27 +1,161 @@
 version: 1
-validation: sovereign
-default_denom: stake
-accounts: 
-- name: alice
+
+# ---------------------------------------------------------
+# RetroChain: Arcade-Style Application Chain
+# ---------------------------------------------------------
+
+# Build config: how Ignite builds your binary
+build:
+  # Main Go package for your daemon
+  main: cmd/retrochaind
+  # Name of the built binary (what Ignite is already using)
+  binary: retrochaind
+  proto:
+    path: proto
+
+# ---------------------------------------------------------
+# Genesis Accounts & Tokenomics
+# ---------------------------------------------------------
+# We use:
+#   - base denom: uretro
+#   - display denom: RETRO
+#   - 6 decimal places
+#
+# Total initial supply:
+#   - alice: 10,000,000 RETRO
+#   - bob:   5,000,000 RETRO
+#   - dev:   6,000,000 RETRO
+#   --------------------------------
+#   = 21,000,000 RETRO (low-ish cap)
+#
+# In micro units (uretro):
+#   1 RETRO = 1,000,000 uretro
+
+accounts:
+  - name: alice
+    # 10,000,000 RETRO
+    coins:
+      - "10000000000000uretro"
+  - name: bob
+    # 5,000,000 RETRO
+    coins:
+      - "5000000000000uretro"
+  - name: dev
+    # 6,000,000 RETRO
+    coins:
+      - "6000000000000uretro"
+
+# ---------------------------------------------------------
+# Validator
+# ---------------------------------------------------------
+# Use alice as the dev validator with 1,000,000 RETRO bonded
+
+validators:
+  - name: alice
+    # 1,000,000 RETRO in uretro
+    bonded: "1000000000000uretro"
+
+# ---------------------------------------------------------
+# Faucet
+# ---------------------------------------------------------
+# Dev faucet so you can spray RETRO to your test accounts
+# via the faucet endpoint (0.0.0.0:4500 by default)
+
+faucet:
+  name: alice       # must match an account above
+  # How much per drip (here: 10 RETRO per request)
   coins:
-  - 20000token
-  - 200000000stake
-- name: bob
-  coins:
-  - 10000token
-  - 100000000stake
+    - "10000000uretro"
+  # Max per address (here: 1,000 RETRO total)
+  coins_max:
+    - "1000000000uretro"
+  port: 4500
+  rate_limit_window: "1h"  # seconds
+
+# ---------------------------------------------------------
+# Genesis overrides
+# ---------------------------------------------------------
+# Make sure every module uses uretro as the primary denom,
+# and set up nice metadata for wallets / UIs.
+
+genesis:
+  chain_id: "retrochain-arcade-1"
+
+  app_state:
+    staking:
+      params:
+        # Staking / validator bond denomination
+        bond_denom: "uretro"
+
+    mint:
+      params:
+        mint_denom: "uretro"
+
+    crisis:
+      constant_fee:
+        denom: "uretro"
+        amount: "1000000"  # 1 RETRO
+
+    gov:
+      deposit_params:
+        min_deposit:
+          - denom: "uretro"
+            # 100 RETRO min deposit
+            amount: "100000000"
+
+    bank:
+      # Token metadata so wallets know RETRO has 6 decimals
+      denom_metadata:
+        - description: "RetroChain native token for arcade-style gaming and rewards"
+          denom_units:
+            - denom: "uretro"
+              exponent: 0
+              aliases: ["microretro"]
+            - denom: "RETRO"
+              exponent: 6
+          base: "uretro"
+          display: "RETRO"
+          name: "Retro Token"
+          symbol: "RETRO"
+
+# ---------------------------------------------------------
+# Validation mode
+# ---------------------------------------------------------
+# Standard sovereign chain (default, but we make it explicit)
+
+validation: "sovereign"
+
+# ---------------------------------------------------------
+# Client code generation / frontend
+# ---------------------------------------------------------
+# This tells Ignite where to put Vue composables, TS client, etc.
+# It also lines up with things like "@/composables/useClient"
+# that your Vue app is already trying to import.
+
 client:
   openapi:
-    path: docs/static/openapi.json
-faucet:
-  name: bob
-  coins:
-  - 5token
-  - 100000stake
-validators:
-- name: alice
-  bonded: 100000000stake
-- name: validator1
-  bonded: 200000000stake
-- name: validator2
-  bonded: 100000000stake
+    path: "docs/static/openapi.json"
+  typescript:
+    path: "ts-client"
+  composables:
+    path: "vue/src/composables"
+  # If you later scaffold a React client:
+  # hooks:
+  #   path: "react/src/hooks"
+
+# ---------------------------------------------------------
+# Serve / API layer
+# ---------------------------------------------------------
+# These mostly match what `ignite chain serve` is already doing,
+# but explicitly documented so it's easy to tweak later.
+
+serve:
+  api:
+    enabled: true
+    address: "0.0.0.0:1317"
+  grpc:
+    enabled: true
+    address: "0.0.0.0:9090"
+  grpc_web:
+    enabled: true
+    address: "0.0.0.0:9091"

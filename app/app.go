@@ -46,6 +46,7 @@ import (
 	ibckeeper "github.com/cosmos/ibc-go/v10/modules/core/keeper"
 
 	"retrochain/docs"
+	arcademodulekeeper "retrochain/x/arcade/keeper"
 	retrochainmodulekeeper "retrochain/x/retrochain/keeper"
 )
 
@@ -101,6 +102,7 @@ type App struct {
 	// simulation manager
 	sm               *module.SimulationManager
 	RetrochainKeeper retrochainmodulekeeper.Keeper
+	ArcadeKeeper     arcademodulekeeper.Keeper
 }
 
 func init() {
@@ -174,6 +176,7 @@ func New(
 		&app.CircuitBreakerKeeper,
 		&app.ParamsKeeper,
 		&app.RetrochainKeeper,
+		&app.ArcadeKeeper,
 	); err != nil {
 		panic(err)
 	}
