@@ -15,15 +15,16 @@ func (p *Params) ParamSetPairs() paramstypes.ParamSetPairs {
 }
 
 // DefaultParams returns default module parameters.
-// Note: The Params struct is generated from protobuf. The proto file defines the fields
-// but they need to be regenerated with `make proto-gen` to be reflected in params.pb.go.
+// TODO: The Params struct is currently empty because the protobuf files need regeneration.
+// Run `ignite generate proto-go` or `buf generate` to populate the Params struct with
+// the fields defined in proto/retrochain/arcade/v1/params.proto.
+// After regeneration, update this function to return proper default values.
 func DefaultParams() Params {
 	return Params{}
 }
 
 // Validate performs basic validation of module parameters.
-// Currently returns nil as the generated Params struct is empty.
-// This should be updated after proto regeneration.
+// TODO: After protobuf regeneration, implement proper validation for all parameter fields.
 func (p Params) Validate() error {
 	return nil
 }

@@ -38,9 +38,11 @@ func NewKeeper(
 	bankKeeper types.BankKeeper,
 	authKeeper types.AuthKeeper,
 ) Keeper {
-	if _, err := addressCodec.BytesToString(authority); err != nil {
-		panic(fmt.Sprintf("invalid authority address %s: %s", authority, err))
+	authorityStr, err := addressCodec.BytesToString(authority)
+	if err != nil {
+		panic(fmt.Sprintf("invalid authority address %x: %s", authority, err))
 	}
+	_ = authorityStr // validate conversion succeeded
 
 	sb := collections.NewSchemaBuilder(storeService)
 
