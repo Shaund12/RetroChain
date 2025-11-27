@@ -4,6 +4,7 @@ package retrochain.arcade.v1;
 import "amino/amino.proto";
 import "gogoproto/gogo.proto";
 import "retrochain/arcade/v1/params.proto";
+import "google/protobuf/timestamp.proto";
 
 option go_package = "retrochain/x/arcade/types";
 
@@ -14,4 +15,144 @@ message GenesisState {
     (gogoproto.nullable) = false,
     (amino.dont_omitempty) = true
   ];
+  
+  // Arcade games registry
+  repeated ArcadeGame games = 2 [(gogoproto.nullable) = false];
+  
+  // Active game sessions
+  repeated GameSession sessions = 3 [(gogoproto.nullable) = false];
+  
+  // High scores for all games
+  repeated HighScore high_scores = 4 [(gogoproto.nullable) = false];
+  
+  // Global leaderboard entries
+  repeated LeaderboardEntry leaderboard = 5 [(gogoproto.nullable) = false];
+  
+  // Player achievements
+  repeated PlayerAchievement achievements = 6 [(gogoproto.nullable) = false];
+  
+  // Active tournaments
+  repeated Tournament tournaments = 7 [(gogoproto.nullable) = false];
+  
+  // Next session ID counter
+  uint64 next_session_id = 8;
+}
+
+// ArcadeGame represents a registered arcade game
+message ArcadeGame {
+  string game_id = 1;
+  string name = 2;
+  string description = 3;
+  GameGenre genre = 4;
+  uint64 credits_per_play = 5;
+  uint64 max_players = 6;
+  bool multiplayer_enabled = 7;
+  string developer = 8;
+  google.protobuf.Timestamp release_date = 9 [(gogoproto.stdtime) = true];
+  bool active = 10;
+  repeated string power_ups = 11;
+  uint64 base_difficulty = 12;
+}
+
+// GameGenre represents different arcade game genres
+enum GameGenre {
+  GENRE_UNSPECIFIED = 0;
+  GENRE_SHOOTER = 1;
+  GENRE_PLATFORMER = 2;
+  GENRE_PUZZLE = 3;
+  GENRE_FIGHTING = 4;
+  GENRE_RACING = 5;
+  GENRE_BEAT_EM_UP = 6;
+  GENRE_MAZE = 7;
+  GENRE_PINBALL = 8;
+}
+
+// GameSession represents an active gaming session
+message GameSession {
+  uint64 session_id = 1;
+  string game_id = 2;
+  string player = 3;
+  uint64 credits_used = 4;
+  uint64 current_score = 5;
+  uint64 level = 6;
+  uint64 lives = 7;
+  SessionStatus status = 8;
+  google.protobuf.Timestamp start_time = 9 [(gogoproto.stdtime) = true];
+  google.protobuf.Timestamp end_time = 10 [(gogoproto.stdtime) = true];
+  uint64 combo_multiplier = 11;
+  repeated string power_ups_collected = 12;
+  uint64 continues_used = 13;
+}
+
+// SessionStatus represents the current status of a game session
+enum SessionStatus {
+  STATUS_UNSPECIFIED = 0;
+  STATUS_ACTIVE = 1;
+  STATUS_PAUSED = 2;
+  STATUS_COMPLETED = 3;
+  STATUS_GAME_OVER = 4;
+}
+
+// HighScore represents a high score record
+message HighScore {
+  string game_id = 1;
+  string player = 2;
+  uint64 score = 3;
+  uint64 level_reached = 4;
+  google.protobuf.Timestamp timestamp = 5 [(gogoproto.stdtime) = true];
+  string initials = 6;
+  bool verified = 7;
+  uint64 rank = 8;
+}
+
+// LeaderboardEntry represents a global leaderboard entry
+message LeaderboardEntry {
+  string player = 1;
+  uint64 total_score = 2;
+  uint64 games_played = 3;
+  uint64 achievements_unlocked = 4;
+  uint64 tournaments_won = 5;
+  uint64 arcade_tokens = 6;
+  uint64 rank = 7;
+  string title = 8;
+}
+
+// PlayerAchievement represents an unlocked achievement
+message PlayerAchievement {
+  string player = 1;
+  string achievement_id = 2;
+  string game_id = 3;
+  google.protobuf.Timestamp unlocked_at = 4 [(gogoproto.stdtime) = true];
+  uint64 reward_tokens = 5;
+}
+
+// Tournament represents an arcade tournament
+message Tournament {
+  string tournament_id = 1;
+  string name = 2;
+  string game_id = 3;
+  google.protobuf.Timestamp start_time = 4 [(gogoproto.stdtime) = true];
+  google.protobuf.Timestamp end_time = 5 [(gogoproto.stdtime) = true];
+  uint64 entry_fee = 6;
+  uint64 prize_pool = 7;
+  repeated TournamentParticipant participants = 8;
+  TournamentStatus status = 9;
+  string winner = 10;
+}
+
+// TournamentParticipant represents a tournament participant
+message TournamentParticipant {
+  string player = 1;
+  uint64 best_score = 2;
+  uint64 rank = 3;
+  bool qualified = 4;
+}
+
+// TournamentStatus represents tournament state
+enum TournamentStatus {
+  TOURNAMENT_UNSPECIFIED = 0;
+  TOURNAMENT_REGISTRATION = 1;
+  TOURNAMENT_ACTIVE = 2;
+  TOURNAMENT_COMPLETED = 3;
+  TOURNAMENT_CANCELLED = 4;
 }

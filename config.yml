@@ -1,8 +1,10 @@
 version: 1
 
 # ---------------------------------------------------------
-# RetroChain: Arcade-Style Application Chain
+# ??? RetroChain: The Ultimate Cosmos ARCADE Blockchain! ???
 # ---------------------------------------------------------
+# Built with Ignite CLI, Cosmos SDK, and Tendermint
+# "Insert Coin to Continue..."
 
 # Build config: how Ignite builds your binary
 build:
@@ -14,148 +16,318 @@ build:
     path: proto
 
 # ---------------------------------------------------------
-# Genesis Accounts & Tokenomics
+# ?? ARCADE GENESIS ACCOUNTS ??
 # ---------------------------------------------------------
-# We use:
-#   - base denom: uretro
+# Genesis players start with RETRO tokens for the ultimate
+# arcade experience!
+#
+# Token Info:
+#   - base denom: uretro (micro-retro)
 #   - display denom: RETRO
-#   - 6 decimal places
+#   - 6 decimal places (1 RETRO = 1,000,000 uretro)
 #
-# Total initial supply:
-#   - alice: 10,000,000 RETRO
-#   - bob:   5,000,000 RETRO
-#   - dev:   6,000,000 RETRO
-#   --------------------------------
-#   = 21,000,000 RETRO (low-ish cap)
-#
-# In micro units (uretro):
-#   1 RETRO = 1,000,000 uretro
+# Total Genesis Supply: 21,000,000 RETRO
+# (A nostalgic nod to Bitcoin's 21M cap, but we're all about fun!)
 
 accounts:
   - name: alice
-    # 10,000,000 RETRO
+    # ?? ALICE - THE ARCADE QUEEN
+    # 10,000,000 RETRO (10M RETRO)
+    # Role: Validator & Top Player
     coins:
       - "10000000000000uretro"
+      
   - name: bob
-    # 5,000,000 RETRO
+    # ?? BOB - THE CHALLENGER
+    # 5,000,000 RETRO (5M RETRO)
+    # Role: Competitive Player
     coins:
       - "5000000000000uretro"
+      
   - name: dev
-    # 6,000,000 RETRO
+    # ??? DEV - THE GAME MASTER
+    # 6,000,000 RETRO (6M RETRO)
+    # Role: Game Developer & Tournament Organizer
     coins:
       - "6000000000000uretro"
 
 # ---------------------------------------------------------
-# Validator
+# ? VALIDATOR SETUP ?
 # ---------------------------------------------------------
-# Use alice as the dev validator with 1,000,000 RETRO bonded
+# Alice is our genesis validator with serious skin in the game
 
 validators:
   - name: alice
-    # 1,000,000 RETRO in uretro
+    # 1,000,000 RETRO bonded (1M RETRO staked)
     bonded: "1000000000000uretro"
 
 # ---------------------------------------------------------
-# Faucet
+# ?? DEV FAUCET - GET YOUR FREE RETRO! ??
 # ---------------------------------------------------------
-# Dev faucet so you can spray RETRO to your test accounts
-# via the faucet endpoint (0.0.0.0:4500 by default)
+# Test the arcade without spending real tokens!
+# Perfect for newcomers to get started
 
 faucet:
-  name: alice       # must match an account above
-  # How much per drip (here: 10 RETRO per request)
+  name: alice       # Alice generously funds the faucet
+  # Drip amount: 10 RETRO per request
   coins:
     - "10000000uretro"
-  # Max per address (here: 1,000 RETRO total)
+  # Maximum per address: 1,000 RETRO lifetime
   coins_max:
     - "1000000000uretro"
   port: 4500
-  rate_limit_window: "1h"  # seconds
+  # Rate limit: Once per hour
+  rate_limit_window: "1h"
 
 # ---------------------------------------------------------
-# Genesis overrides
+# ?? GENESIS CONFIGURATION ??
 # ---------------------------------------------------------
-# Make sure every module uses uretro as the primary denom,
-# and set up nice metadata for wallets / UIs.
+# Chain identity and core module parameters
 
 genesis:
   chain_id: "retrochain-arcade-1"
 
   app_state:
+    # ?? Staking Module - Secure the arcade!
     staking:
       params:
-        # Staking / validator bond denomination
         bond_denom: "uretro"
+        unbonding_time: "1814400s"  # 21 days
+        max_validators: 100
+        max_entries: 7
+        historical_entries: 10000
 
+    # ?? Mint Module - Token generation
     mint:
       params:
         mint_denom: "uretro"
+        inflation_rate_change: "0.130000000000000000"
+        inflation_max: "0.200000000000000000"
+        inflation_min: "0.070000000000000000"
+        goal_bonded: "0.670000000000000000"
+        blocks_per_year: "6311520"
 
+    # ?? Crisis Module - Emergency brake
     crisis:
       constant_fee:
         denom: "uretro"
-        amount: "1000000"  # 1 RETRO
+        amount: "1000000"  # 1 RETRO to trigger crisis
 
+    # ??? Governance Module - Community decides!
     gov:
-      deposit_params:
+      params:
         min_deposit:
           - denom: "uretro"
-            # 100 RETRO min deposit
-            amount: "100000000"
+            amount: "100000000"  # 100 RETRO to submit proposal
+        max_deposit_period: "172800s"  # 2 days
+        voting_period: "172800s"  # 2 days
+        quorum: "0.334000000000000000"  # 33.4%
+        threshold: "0.500000000000000000"  # 50%
+        veto_threshold: "0.334000000000000000"  # 33.4%
 
+    # ?? Bank Module - Token metadata & transfers
     bank:
-      # Token metadata so wallets know RETRO has 6 decimals
+      # ?? RETRO Token Configuration
       denom_metadata:
-        - description: "RetroChain native token for arcade-style gaming and rewards"
+        - description: "RetroChain - The native token of the ultimate Cosmos arcade blockchain! Earn RETRO by playing games, winning tournaments, and achieving high scores. Use RETRO to buy credits, power-ups, and tournament entries. Join the arcade revolution!"
           denom_units:
             - denom: "uretro"
               exponent: 0
-              aliases: ["microretro"]
+              aliases: 
+                - "microretro"
+                - "µretro"
+            - denom: "mretro"
+              exponent: 3
+              aliases: ["milliretro"]
             - denom: "RETRO"
               exponent: 6
+              aliases: 
+                - "retro"
+                - "arcade"
           base: "uretro"
           display: "RETRO"
           name: "Retro Token"
           symbol: "RETRO"
+          uri: "https://retrochain.arcade"
+          uri_hash: ""
+
+    # ??? ARCADE MODULE - THE HEART OF RETROCHAIN! ???
+    arcade:
+      params:
+        # ?? Credit Pricing
+        # 1 credit costs 1 RETRO (1,000,000 uretro)
+        # Like putting a quarter in the machine!
+        base_credits_cost: "1000000"
+        
+        # ?? Scoring & Rewards
+        # Earn 1 arcade token per 1,000 points scored
+        tokens_per_thousand_points: 1
+        
+        # ?? Session Management
+        # Maximum concurrent game sessions per player
+        max_active_sessions: 3
+        
+        # ?? Continue System
+        # Each continue costs 50% more (150% of previous cost)
+        continue_cost_multiplier: 150
+        
+        # ?? High Score Rewards
+        # Bonus tokens for achieving a high score
+        high_score_reward: 100
+        
+        # ?? Tournament Settings
+        # Registration fee for tournaments (10 RETRO)
+        tournament_registration_fee: "10000000"
+        
+        # ?? Difficulty Settings
+        # Games can be played from difficulty 1 (easy) to 10 (insane)
+        min_difficulty: 1
+        max_difficulty: 10
+        
+        # ??? Achievement Rewards
+        # Achievement rewards are multiplied by this factor
+        achievement_reward_multiplier: 2
+        
+        # ?? Power-Up Pricing
+        # Cost in arcade tokens to use a power-up
+        power_up_cost: 5
+        
+      # ?? Genesis Arcade Games Library
+      games:
+        # ?? Space Raiders - Classic Shooter
+        - game_id: "space-raiders"
+          name: "Space Raiders"
+          description: "Defend Earth from waves of alien invaders in this classic space shooter!"
+          genre: 1  # GENRE_SHOOTER
+          credits_per_play: 1
+          max_players: 1
+          multiplayer_enabled: false
+          developer: "RetroChain Studios"
+          active: true
+          power_ups:
+            - "rapid-fire"
+            - "shield"
+            - "score-2x"
+          base_difficulty: 5
+          
+        # ?? Platform Hero - Classic Platformer
+        - game_id: "platform-hero"
+          name: "Platform Hero"
+          description: "Jump, run, and collect coins in this classic platformer adventure!"
+          genre: 2  # GENRE_PLATFORMER
+          credits_per_play: 1
+          max_players: 1
+          multiplayer_enabled: false
+          developer: "RetroChain Studios"
+          active: true
+          power_ups:
+            - "extra-life"
+            - "speed-boost"
+            - "invincibility"
+          base_difficulty: 4
+          
+        # ?? Puzzle Panic - Fast-Paced Puzzle
+        - game_id: "puzzle-panic"
+          name: "Puzzle Panic"
+          description: "Match colors and clear the board in this frantic puzzle game!"
+          genre: 3  # GENRE_PUZZLE
+          credits_per_play: 1
+          max_players: 1
+          multiplayer_enabled: false
+          developer: "RetroChain Studios"
+          active: true
+          power_ups:
+            - "time-freeze"
+            - "color-bomb"
+            - "shuffle"
+          base_difficulty: 3
+          
+        # ?? Street Brawler - Fighting Game
+        - game_id: "street-brawler"
+          name: "Street Brawler"
+          description: "Choose your fighter and battle for supremacy in intense combat!"
+          genre: 4  # GENRE_FIGHTING
+          credits_per_play: 2
+          max_players: 2
+          multiplayer_enabled: true
+          developer: "RetroChain Studios"
+          active: true
+          power_ups:
+            - "health-restore"
+            - "power-strike"
+            - "defense-boost"
+          base_difficulty: 6
+          
+        # ??? Turbo Racer - Racing Game
+        - game_id: "turbo-racer"
+          name: "Turbo Racer"
+          description: "High-speed racing action! Drift around corners and cross first!"
+          genre: 5  # GENRE_RACING
+          credits_per_play: 2
+          max_players: 4
+          multiplayer_enabled: true
+          developer: "RetroChain Studios"
+          active: true
+          power_ups:
+            - "turbo-boost"
+            - "shield"
+            - "time-slow"
+          base_difficulty: 5
 
 # ---------------------------------------------------------
-# Validation mode
+# ?? API & SERVICE CONFIGURATION ??
 # ---------------------------------------------------------
-# Standard sovereign chain (default, but we make it explicit)
+# Endpoints for interacting with RetroChain
 
-validation: "sovereign"
+serve:
+  # ?? REST API
+  api:
+    enabled: true
+    address: "0.0.0.0:1317"
+    
+  # ?? gRPC
+  grpc:
+    enabled: true
+    address: "0.0.0.0:9090"
+    
+  # ?? gRPC-Web (for browser clients)
+  grpc_web:
+    enabled: true
+    address: "0.0.0.0:9091"
 
 # ---------------------------------------------------------
-# Client code generation / frontend
+# ?? CLIENT CODE GENERATION ??
 # ---------------------------------------------------------
-# This tells Ignite where to put Vue composables, TS client, etc.
-# It also lines up with things like "@/composables/useClient"
-# that your Vue app is already trying to import.
+# Generate TypeScript, Vue, and React clients
 
 client:
+  # ?? OpenAPI / Swagger
   openapi:
     path: "docs/static/openapi.json"
+    
+  # ?? TypeScript Client
   typescript:
     path: "ts-client"
+    
+  # ? Vue 3 Composables
   composables:
     path: "vue/src/composables"
-  # If you later scaffold a React client:
+    
+  # ?? React Hooks (uncomment when needed)
   # hooks:
   #   path: "react/src/hooks"
 
 # ---------------------------------------------------------
-# Serve / API layer
+# ?? VALIDATION MODE ??
 # ---------------------------------------------------------
-# These mostly match what `ignite chain serve` is already doing,
-# but explicitly documented so it's easy to tweak later.
+# Standard sovereign Cosmos chain
 
-serve:
-  api:
-    enabled: true
-    address: "0.0.0.0:1317"
-  grpc:
-    enabled: true
-    address: "0.0.0.0:9090"
-  grpc_web:
-    enabled: true
-    address: "0.0.0.0:9091"
+validation: "sovereign"
+
+# ---------------------------------------------------------
+# ?? WELCOME TO THE ARCADE! ??
+# ---------------------------------------------------------
+# Start your RetroChain node with: ignite chain serve
+# Insert your first coin: retrochaind tx arcade insert-coin 1 space-raiders --from alice
+# May your combos be infinite and your high scores legendary!
+# ---------------------------------------------------------

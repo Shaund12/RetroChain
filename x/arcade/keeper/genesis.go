@@ -1,25 +1,22 @@
 package keeper
 
 import (
-	"context"
-
+	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/cosmos/cosmos-sdk/types/module"
 	"retrochain/x/arcade/types"
 )
 
-// InitGenesis initializes the module's state from a provided genesis state.
-func (k Keeper) InitGenesis(ctx context.Context, genState types.GenesisState) error {
-	return k.Params.Set(ctx, genState.Params)
+// InitGenesis sets default params and imports genesis state.
+func (k Keeper) InitGenesis(ctx module.Context, cdc codec.JSONCodec, data json.RawMessage) {
+	// TODO: unmarshal genesis and populate KV stores for games, tournaments, etc.
+	// Set default params
+	p := types.DefaultParams()
+	_ = p.Validate()
+	// when param subspace is fully wired, set params here
 }
 
-// ExportGenesis returns the module's exported genesis.
-func (k Keeper) ExportGenesis(ctx context.Context) (*types.GenesisState, error) {
-	var err error
-
-	genesis := types.DefaultGenesis()
-	genesis.Params, err = k.Params.Get(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	return genesis, nil
+// ExportGenesis exports current module state.
+func (k Keeper) ExportGenesis(ctx module.Context, cdc codec.JSONCodec) json.RawMessage {
+	// TODO: marshal current state (params, games, tournaments, achievements, leaderboard)
+	return nil
 }

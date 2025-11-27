@@ -10,4 +10,40 @@ option go_package = "retrochain/x/arcade/types";
 message Params {
   option (amino.name) = "retrochain/x/arcade/Params";
   option (gogoproto.equal) = true;
+  
+  // Base credits cost per game (in uretro)
+  string base_credits_cost = 1 [
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false
+  ];
+  
+  // Tokens earned per 1000 points scored
+  uint64 tokens_per_thousand_points = 2;
+  
+  // Maximum active sessions per player
+  uint64 max_active_sessions = 3;
+  
+  // Continue cost multiplier (percentage)
+  uint64 continue_cost_multiplier = 4;
+  
+  // High score reward in arcade tokens
+  uint64 high_score_reward = 5;
+  
+  // Tournament registration fee (in uretro)
+  string tournament_registration_fee = 6 [
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false
+  ];
+  
+  // Minimum game difficulty (1-10)
+  uint64 min_difficulty = 7;
+  
+  // Maximum game difficulty (1-10)
+  uint64 max_difficulty = 8;
+  
+  // Achievement reward multiplier
+  uint64 achievement_reward_multiplier = 9;
+  
+  // Power-up cost in arcade tokens
+  uint64 power_up_cost = 10;
 }

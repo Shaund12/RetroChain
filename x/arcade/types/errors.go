@@ -1,12 +1,13 @@
 package types
 
-// DONTCOVER
-
 import (
-	"cosmossdk.io/errors"
+	"github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-// x/arcade module sentinel errors
 var (
-	ErrInvalidSigner = errors.Register(ModuleName, 1100, "expected gov account as only signer for proposal message")
+	ErrInvalidRequest   = errors.Register(ModuleName, 1, "invalid request")
+	ErrNotFound         = errors.Register(ModuleName, 2, "not found")
+	ErrUnauthorized     = errors.Register(ModuleName, 3, "unauthorized")
+	ErrInsufficientFund = errors.Register(ModuleName, 4, "insufficient funds or credits")
+	ErrLimitExceeded    = errors.Register(ModuleName, 5, "limit exceeded")
 )

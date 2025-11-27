@@ -7,6 +7,7 @@ import "cosmos/msg/v1/msg.proto";
 import "cosmos_proto/cosmos.proto";
 import "gogoproto/gogo.proto";
 import "retrochain/arcade/v1/params.proto";
+import "retrochain/arcade/v1/genesis.proto";
 
 option go_package = "retrochain/x/arcade/types";
 
@@ -18,14 +19,47 @@ service Msg {
   // parameters. The authority defaults to the x/gov module account.
   rpc UpdateParams(MsgUpdateParams) returns (MsgUpdateParamsResponse);
 
-  // InsertCoin defines the InsertCoin RPC.
+  // InsertCoin defines the InsertCoin RPC - buy credits to play
   rpc InsertCoin(MsgInsertCoin) returns (MsgInsertCoinResponse);
 
-  // SubmitScore defines the SubmitScore RPC.
-  rpc SubmitScore(MsgSubmitScore) returns (MsgSubmitScoreResponse);
-
-  // StartSession defines the StartSession RPC.
+  // StartSession defines the StartSession RPC - start a new game
   rpc StartSession(MsgStartSession) returns (MsgStartSessionResponse);
+  
+  // SubmitScore defines the SubmitScore RPC - submit game score
+  rpc SubmitScore(MsgSubmitScore) returns (MsgSubmitScoreResponse);
+  
+  // EndSession defines the EndSession RPC - end a game session
+  rpc EndSession(MsgEndSession) returns (MsgEndSessionResponse);
+  
+  // RegisterGame defines the RegisterGame RPC - add new arcade game
+  rpc RegisterGame(MsgRegisterGame) returns (MsgRegisterGameResponse);
+  
+  // UpdateGameScore defines the UpdateGameScore RPC - update score during play
+  rpc UpdateGameScore(MsgUpdateGameScore) returns (MsgUpdateGameScoreResponse);
+  
+  // ActivateCombo defines the ActivateCombo RPC - trigger combo multiplier
+  rpc ActivateCombo(MsgActivateCombo) returns (MsgActivateComboResponse);
+  
+  // UsePowerUp defines the UsePowerUp RPC - use a power-up during game
+  rpc UsePowerUp(MsgUsePowerUp) returns (MsgUsePowerUpResponse);
+  
+  // ContinueGame defines the ContinueGame RPC - continue after game over
+  rpc ContinueGame(MsgContinueGame) returns (MsgContinueGameResponse);
+  
+  // ClaimAchievement defines the ClaimAchievement RPC - claim achievement reward
+  rpc ClaimAchievement(MsgClaimAchievement) returns (MsgClaimAchievementResponse);
+  
+  // CreateTournament defines the CreateTournament RPC - create new tournament
+  rpc CreateTournament(MsgCreateTournament) returns (MsgCreateTournamentResponse);
+  
+  // JoinTournament defines the JoinTournament RPC - join a tournament
+  rpc JoinTournament(MsgJoinTournament) returns (MsgJoinTournamentResponse);
+  
+  // SubmitTournamentScore defines the SubmitTournamentScore RPC
+  rpc SubmitTournamentScore(MsgSubmitTournamentScore) returns (MsgSubmitTournamentScoreResponse);
+  
+  // SetHighScoreInitials defines the SetHighScoreInitials RPC
+  rpc SetHighScoreInitials(MsgSetHighScoreInitials) returns (MsgSetHighScoreInitialsResponse);
 }
 
 // MsgUpdateParams is the Msg/UpdateParams request type.
@@ -58,7 +92,25 @@ message MsgInsertCoin {
 }
 
 // MsgInsertCoinResponse defines the MsgInsertCoinResponse message.
-message MsgInsertCoinResponse {}
+message MsgInsertCoinResponse {
+  uint64 total_credits = 1;
+  string tokens_spent = 2;
+}
+
+// MsgStartSession defines the MsgStartSession message.
+message MsgStartSession {
+  option (cosmos.msg.v1.signer) = "creator";
+  string creator = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string game_id = 2;
+  uint64 difficulty = 3;
+}
+
+// MsgStartSessionResponse defines the MsgStartSessionResponse message.
+message MsgStartSessionResponse {
+  uint64 session_id = 1;
+  uint64 starting_lives = 2;
+  uint64 starting_level = 3;
+}
 
 // MsgSubmitScore defines the MsgSubmitScore message.
 message MsgSubmitScore {
@@ -66,17 +118,164 @@ message MsgSubmitScore {
   string creator = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
   uint64 session_id = 2;
   uint64 score = 3;
+  uint64 level = 4;
+  bool game_over = 5;
 }
 
 // MsgSubmitScoreResponse defines the MsgSubmitScoreResponse message.
-message MsgSubmitScoreResponse {}
+message MsgSubmitScoreResponse {
+  bool is_high_score = 1;
+  uint64 rank = 2;
+  uint64 tokens_earned = 3;
+  repeated string achievements_unlocked = 4;
+}
 
-// MsgStartSession defines the MsgStartSession message.
-message MsgStartSession {
+// MsgEndSession defines the MsgEndSession message.
+message MsgEndSession {
+  option (cosmos.msg.v1.signer) = "creator";
+  string creator = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  uint64 session_id = 2;
+  uint64 final_score = 3;
+  uint64 final_level = 4;
+}
+
+// MsgEndSessionResponse defines the MsgEndSessionResponse message.
+message MsgEndSessionResponse {
+  bool session_ended = 1;
+  string summary = 2;
+}
+
+// MsgRegisterGame defines the MsgRegisterGame message.
+message MsgRegisterGame {
+  option (cosmos.msg.v1.signer) = "creator";
+  string creator = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  ArcadeGame game = 2 [(gogoproto.nullable) = false];
+}
+
+// MsgRegisterGameResponse defines the MsgRegisterGameResponse message.
+message MsgRegisterGameResponse {
+  string game_id = 1;
+}
+
+// MsgUpdateGameScore defines the MsgUpdateGameScore message.
+message MsgUpdateGameScore {
+  option (cosmos.msg.v1.signer) = "creator";
+  string creator = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  uint64 session_id = 2;
+  uint64 score_delta = 3;
+  uint64 current_level = 4;
+  uint64 current_lives = 5;
+}
+
+// MsgUpdateGameScoreResponse defines the MsgUpdateGameScoreResponse message.
+message MsgUpdateGameScoreResponse {
+  uint64 total_score = 1;
+}
+
+// MsgActivateCombo defines the MsgActivateCombo message.
+message MsgActivateCombo {
+  option (cosmos.msg.v1.signer) = "creator";
+  string creator = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  uint64 session_id = 2;
+  uint64 combo_hits = 3;
+}
+
+// MsgActivateComboResponse defines the MsgActivateComboResponse message.
+message MsgActivateComboResponse {
+  uint64 multiplier = 1;
+  uint64 bonus_score = 2;
+}
+
+// MsgUsePowerUp defines the MsgUsePowerUp message.
+message MsgUsePowerUp {
+  option (cosmos.msg.v1.signer) = "creator";
+  string creator = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  uint64 session_id = 2;
+  string power_up_id = 3;
+}
+
+// MsgUsePowerUpResponse defines the MsgUsePowerUpResponse message.
+message MsgUsePowerUpResponse {
+  bool activated = 1;
+  string effect = 2;
+}
+
+// MsgContinueGame defines the MsgContinueGame message.
+message MsgContinueGame {
+  option (cosmos.msg.v1.signer) = "creator";
+  string creator = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  uint64 session_id = 2;
+}
+
+// MsgContinueGameResponse defines the MsgContinueGameResponse message.
+message MsgContinueGameResponse {
+  uint64 continues_remaining = 1;
+  uint64 lives_granted = 2;
+  string cost = 3;
+}
+
+// MsgClaimAchievement defines the MsgClaimAchievement message.
+message MsgClaimAchievement {
+  option (cosmos.msg.v1.signer) = "creator";
+  string creator = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string achievement_id = 2;
+  string game_id = 3;
+}
+
+// MsgClaimAchievementResponse defines the MsgClaimAchievementResponse message.
+message MsgClaimAchievementResponse {
+  uint64 tokens_awarded = 1;
+  string achievement_name = 2;
+}
+
+// MsgCreateTournament defines the MsgCreateTournament message.
+message MsgCreateTournament {
+  option (cosmos.msg.v1.signer) = "creator";
+  string creator = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  Tournament tournament = 2 [(gogoproto.nullable) = false];
+}
+
+// MsgCreateTournamentResponse defines the MsgCreateTournamentResponse message.
+message MsgCreateTournamentResponse {
+  string tournament_id = 1;
+}
+
+// MsgJoinTournament defines the MsgJoinTournament message.
+message MsgJoinTournament {
+  option (cosmos.msg.v1.signer) = "creator";
+  string creator = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string tournament_id = 2;
+}
+
+// MsgJoinTournamentResponse defines the MsgJoinTournamentResponse message.
+message MsgJoinTournamentResponse {
+  bool joined = 1;
+  uint64 participant_count = 2;
+}
+
+// MsgSubmitTournamentScore defines the MsgSubmitTournamentScore message.
+message MsgSubmitTournamentScore {
+  option (cosmos.msg.v1.signer) = "creator";
+  string creator = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string tournament_id = 2;
+  uint64 score = 3;
+}
+
+// MsgSubmitTournamentScoreResponse defines the MsgSubmitTournamentScoreResponse message.
+message MsgSubmitTournamentScoreResponse {
+  uint64 current_rank = 1;
+  bool qualified = 2;
+}
+
+// MsgSetHighScoreInitials defines the MsgSetHighScoreInitials message.
+message MsgSetHighScoreInitials {
   option (cosmos.msg.v1.signer) = "creator";
   string creator = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
   string game_id = 2;
+  string initials = 3;
 }
 
-// MsgStartSessionResponse defines the MsgStartSessionResponse message.
-message MsgStartSessionResponse {}
+// MsgSetHighScoreInitialsResponse defines the MsgSetHighScoreInitialsResponse message.
+message MsgSetHighScoreInitialsResponse {
+  bool updated = 1;
+}
