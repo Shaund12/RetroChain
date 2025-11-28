@@ -11,6 +11,9 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
+// TokensPerCredit defines how many uretro tokens are needed to purchase one credit.
+const TokensPerCredit = 1000000
+
 // InsertCoin handles the InsertCoin message.
 // It transfers tokens from the player to the module and grants them credits.
 func (k *msgServer) InsertCoin(ctx context.Context, msg *types.MsgInsertCoin) (*types.MsgInsertCoinResponse, error) {
@@ -29,8 +32,8 @@ func (k *msgServer) InsertCoin(ctx context.Context, msg *types.MsgInsertCoin) (*
 		return nil, errorsmod.Wrap(types.ErrInvalidRequest, "game_id is required")
 	}
 
-	// Calculate token cost (1000000 utoken per credit as per documentation)
-	tokenCost := msg.Credits * 1000000
+	// Calculate token cost
+	tokenCost := msg.Credits * TokensPerCredit
 	coins := sdk.NewCoins(sdk.NewCoin("uretro", math.NewIntFromUint64(tokenCost)))
 
 	// Check if player has sufficient spendable coins

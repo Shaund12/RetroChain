@@ -32,7 +32,12 @@ type Keeper struct {
 	Params         collections.Item[types.Params]
 	PlayerCredits  collections.Map[string, uint64]
 	SessionCounter collections.Sequence
-	GameSessions   collections.Map[uint64, []byte] // Store as JSON bytes
+	// GameSessions stores game sessions as JSON bytes.
+	// Note: We use JSON encoding because GameSession is not a protobuf message
+	// and we're implementing this without modifying the proto files.
+	// For production, consider defining GameSession in proto files and using
+	// codec.CollValue for better type safety and performance.
+	GameSessions collections.Map[uint64, []byte]
 }
 
 // NewKeeper creates a new arcade module Keeper instance
@@ -98,6 +103,7 @@ func (k Keeper) SetPlayerCredits(ctx context.Context, player string, credits uin
 }
 
 // GetSession returns a game session by ID.
+// The session data is stored as JSON bytes and unmarshaled here.
 func (k Keeper) GetSession(ctx context.Context, sessionID uint64) (types.GameSession, error) {
 	data, err := k.GameSessions.Get(ctx, sessionID)
 	if err != nil {
@@ -111,6 +117,7 @@ func (k Keeper) GetSession(ctx context.Context, sessionID uint64) (types.GameSes
 }
 
 // SetSession stores a game session.
+// The session data is marshaled to JSON bytes for storage.
 func (k Keeper) SetSession(ctx context.Context, session types.GameSession) error {
 	data, err := json.Marshal(session)
 	if err != nil {

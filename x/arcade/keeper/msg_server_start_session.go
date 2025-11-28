@@ -3,7 +3,6 @@ package keeper
 import (
 	"context"
 	"strconv"
-	"time"
 
 	"retrochain/x/arcade/types"
 
@@ -46,12 +45,9 @@ func (k *msgServer) StartSession(ctx context.Context, msg *types.MsgStartSession
 		return nil, errorsmod.Wrap(err, "failed to generate session ID")
 	}
 
-	// Get current block time
+	// Get current block time (deterministic across all nodes)
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	startTime := sdkCtx.BlockTime().Unix()
-	if startTime == 0 {
-		startTime = time.Now().Unix()
-	}
 
 	// Create new game session
 	session := types.GameSession{
