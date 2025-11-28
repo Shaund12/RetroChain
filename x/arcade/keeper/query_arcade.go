@@ -3,6 +3,7 @@ package keeper
 import (
 	"context"
 	"errors"
+	"sort"
 
 	"cosmossdk.io/collections"
 
@@ -101,14 +102,10 @@ func (k Keeper) GetHighScores(ctx context.Context, gameID string, limit int) ([]
 		return nil, err
 	}
 
-	// Sort by score (descending) - simple bubble sort for now
-	for i := 0; i < len(sessions)-1; i++ {
-		for j := 0; j < len(sessions)-i-1; j++ {
-			if sessions[j].CurrentScore < sessions[j+1].CurrentScore {
-				sessions[j], sessions[j+1] = sessions[j+1], sessions[j]
-			}
-		}
-	}
+	// Sort by score (descending) using sort.Slice for O(n log n) complexity
+	sort.Slice(sessions, func(i, j int) bool {
+		return sessions[i].CurrentScore > sessions[j].CurrentScore
+	})
 
 	// Limit results
 	if limit > 0 && len(sessions) > limit {

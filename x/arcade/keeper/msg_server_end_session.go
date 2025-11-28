@@ -75,10 +75,10 @@ func (k *msgServer) EndSession(ctx context.Context, sessionID uint64, player str
 			} else {
 				sdkCtx.EventManager().EmitEvent(
 					sdk.NewEvent(
-						"arcade.reward_distributed",
+						types.EventRewardDistributed,
 						sdk.NewAttribute(types.AttrSessionID, strconv.FormatUint(sessionID, 10)),
 						sdk.NewAttribute(types.AttrPlayer, player),
-						sdk.NewAttribute("reward_amount", strconv.FormatUint(rewardAmount, 10)),
+						sdk.NewAttribute(types.AttrRewardAmount, strconv.FormatUint(rewardAmount, 10)),
 					),
 				)
 			}
@@ -88,7 +88,7 @@ func (k *msgServer) EndSession(ctx context.Context, sessionID uint64, player str
 	// Emit session ended event
 	sdkCtx.EventManager().EmitEvent(
 		sdk.NewEvent(
-			"arcade.session_ended",
+			types.EventSessionEnded,
 			sdk.NewAttribute(types.AttrSessionID, strconv.FormatUint(sessionID, 10)),
 			sdk.NewAttribute(types.AttrGameID, session.GameID),
 			sdk.NewAttribute(types.AttrPlayer, player),
@@ -155,7 +155,7 @@ func (k *msgServer) GameOver(ctx context.Context, sessionID uint64, player strin
 	// Emit game over event
 	sdkCtx.EventManager().EmitEvent(
 		sdk.NewEvent(
-			"arcade.game_over",
+			types.EventGameOver,
 			sdk.NewAttribute(types.AttrSessionID, strconv.FormatUint(sessionID, 10)),
 			sdk.NewAttribute(types.AttrGameID, session.GameID),
 			sdk.NewAttribute(types.AttrPlayer, player),
