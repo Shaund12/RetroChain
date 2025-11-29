@@ -21,8 +21,17 @@ const (
 	GovModuleName = "gov"
 )
 
-// ParamsKey is the prefix to retrieve all Params
-var ParamsKey = collections.NewPrefix("p_arcade")
+// Storage prefixes
+var (
+	// ParamsKey is the prefix to retrieve all Params
+	ParamsKey = collections.NewPrefix("p_arcade")
+	// PlayerCreditsKeyPrefix is the prefix for player credits storage
+	PlayerCreditsKeyPrefix = collections.NewPrefix("pc_arcade")
+	// GameSessionKeyPrefix is the prefix for game sessions storage
+	GameSessionKeyPrefix = collections.NewPrefix("gs_arcade")
+	// SessionCounterKey is the key for the session counter
+	SessionCounterKey = collections.NewPrefix("sc_arcade")
+)
 
 // KeyPrefix returns a key prefix from a string
 func KeyPrefix(p string) []byte { return []byte(p) }

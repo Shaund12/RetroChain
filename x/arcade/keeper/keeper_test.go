@@ -18,10 +18,48 @@ import (
 	"retrochain/x/arcade/types"
 )
 
+// MockBankKeeper is a mock implementation of the BankKeeper interface
+type MockBankKeeper struct {
+	Balances map[string]sdk.Coins
+}
+
+func NewMockBankKeeper() *MockBankKeeper {
+	return &MockBankKeeper{
+		Balances: make(map[string]sdk.Coins),
+	}
+}
+
+func (m *MockBankKeeper) SpendableCoins(_ context.Context, addr sdk.AccAddress) sdk.Coins {
+	return m.Balances[addr.String()]
+}
+
+func (m *MockBankKeeper) SendCoinsFromAccountToModule(_ context.Context, senderAddr sdk.AccAddress, recipientModule string, amt sdk.Coins) error {
+	balance := m.Balances[senderAddr.String()]
+	if !balance.IsAllGTE(amt) {
+		return types.ErrInsufficientFund
+	}
+	m.Balances[senderAddr.String()] = balance.Sub(amt...)
+	moduleBalance := m.Balances[recipientModule]
+	m.Balances[recipientModule] = moduleBalance.Add(amt...)
+	return nil
+}
+
+func (m *MockBankKeeper) SendCoinsFromModuleToAccount(_ context.Context, senderModule string, recipientAddr sdk.AccAddress, amt sdk.Coins) error {
+	balance := m.Balances[senderModule]
+	if !balance.IsAllGTE(amt) {
+		return types.ErrInsufficientFund
+	}
+	m.Balances[senderModule] = balance.Sub(amt...)
+	userBalance := m.Balances[recipientAddr.String()]
+	m.Balances[recipientAddr.String()] = userBalance.Add(amt...)
+	return nil
+}
+
 type fixture struct {
 	ctx          context.Context
 	keeper       keeper.Keeper
 	addressCodec address.Codec
+	bankKeeper   *MockBankKeeper
 }
 
 func initFixture(t *testing.T) *fixture {
@@ -35,13 +73,14 @@ func initFixture(t *testing.T) *fixture {
 	ctx := testutil.DefaultContextWithDB(t, storeKey, storetypes.NewTransientStoreKey("transient_test")).Ctx
 
 	authority := authtypes.NewModuleAddress(types.GovModuleName)
+	bankKeeper := NewMockBankKeeper()
 
 	k := keeper.NewKeeper(
 		storeService,
 		encCfg.Codec,
 		addressCodec,
 		authority,
-		nil,
+		bankKeeper,
 		nil,
 	)
 
@@ -54,5 +93,6 @@ func initFixture(t *testing.T) *fixture {
 		ctx:          ctx,
 		keeper:       k,
 		addressCodec: addressCodec,
+		bankKeeper:   bankKeeper,
 	}
 }
