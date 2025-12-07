@@ -268,6 +268,9 @@ var (
 				Name:   epochstypes.ModuleName,
 				Config: appconfig.WrapAny(&epochsmodulev1.Module{}),
 			},
+			{
+				Name: arcademoduletypes.ModuleName,
+			},
 			// this line is used by starport scaffolding # stargate/app/moduleConfig
 		},
 	})
