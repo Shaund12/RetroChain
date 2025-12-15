@@ -1,0 +1,11 @@
+syntax = "proto3";
+package retrochain.burn.module.v1;
+
+import "cosmos/app/v1alpha1/module.proto";
+
+option go_package = "retrochain/x/burn/types";
+
+// Module is the config object for the burn module.
+message Module {
+  option (cosmos.app.v1alpha1.module) = {go_import: "retrochain/x/burn/module"};
+}

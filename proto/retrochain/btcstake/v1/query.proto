@@ -1,0 +1,68 @@
+syntax = "proto3";
+
+package retrochain.btcstake.v1;
+
+import "cosmos_proto/cosmos.proto";
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+import "retrochain/btcstake/v1/params.proto";
+
+option go_package = "retrochain/x/btcstake/types";
+
+service Query {
+  rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
+    option (google.api.http) = {
+      get: "/retrochain/btcstake/v1/params"
+      additional_bindings { get: "/btcstake/v1/params" }
+    };
+  }
+
+  rpc Stake(QueryStakeRequest) returns (QueryStakeResponse) {
+    option (google.api.http) = {
+      get: "/retrochain/btcstake/v1/stake/{address}"
+      additional_bindings { get: "/btcstake/v1/stake/{address}" }
+    };
+  }
+
+  rpc PendingRewards(QueryPendingRewardsRequest) returns (QueryPendingRewardsResponse) {
+    option (google.api.http) = {
+      get: "/retrochain/btcstake/v1/pending_rewards/{address}"
+      additional_bindings { get: "/btcstake/v1/pending_rewards/{address}" }
+    };
+  }
+
+  rpc Pool(QueryPoolRequest) returns (QueryPoolResponse) {
+    option (google.api.http) = {
+      get: "/retrochain/btcstake/v1/pool"
+      additional_bindings { get: "/btcstake/v1/pool" }
+    };
+  }
+}
+
+message QueryParamsRequest {}
+message QueryParamsResponse {
+  Params params = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryStakeRequest {
+  string address = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+}
+message QueryStakeResponse {
+  string staked_amount = 1;
+}
+
+message QueryPendingRewardsRequest {
+  string address = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+}
+message QueryPendingRewardsResponse {
+  string pending_uretro = 1;
+}
+
+message QueryPoolRequest {}
+message QueryPoolResponse {
+  string allowed_denom = 1;
+  string total_staked_amount = 2;
+  string reward_balance_uretro = 3;
+  string undistributed_uretro = 4;
+  string reward_index = 5;
+}

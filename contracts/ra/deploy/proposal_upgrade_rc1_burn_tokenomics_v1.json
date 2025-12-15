@@ -1,0 +1,18 @@
+{
+  "messages": [
+    {
+      "@type": "/cosmos.upgrade.v1beta1.MsgSoftwareUpgrade",
+      "authority": "cosmos10d07y265gmmuvt4z0w9aw880jnsr700j6zn9kn",
+      "plan": {
+        "name": "rc1-burn-tokenomics-v1",
+        "height": "REPLACE_WITH_FUTURE_HEIGHT",
+        "info": "Reorder BeginBlock to run burn before distribution, and set burn fee rate to 0.8"
+      }
+    }
+  ],
+  "metadata": "",
+  "deposit": "50000000uretro",
+  "title": "RC1: Burn tokenomics fix (EDIT HEIGHT)",
+  "summary": "Moves burn ahead of distribution so fees are burnable, and bumps burn fee rate to 80% to tame inflation. NOTE: Edit the upgrade height before submitting.",
+  "expedited": true
+}

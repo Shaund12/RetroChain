@@ -1,0 +1,18 @@
+{
+  "messages": [
+    {
+      "@type": "/cosmos.upgrade.v1beta1.MsgSoftwareUpgrade",
+      "authority": "cosmos10d07y265gmmuvt4z0w9aw880jnsr700j6zn9kn",
+      "plan": {
+        "name": "rc1-combined-v1",
+        "height": "52000",
+        "info": "Enable x/wasm + x/burn + x/btcstake and apply burn-tokenomics params"
+      }
+    }
+  ],
+  "metadata": "",
+  "deposit": "50000000uretro",
+  "title": "RC1: Combined upgrade",
+  "summary": "Schedules a single upgrade (rc1-combined-v1) that adds the wasm/burn/btcstake store keys and applies the burn-tokenomics params in one coordinated height.",
+  "expedited": true
+}

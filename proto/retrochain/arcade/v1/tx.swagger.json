@@ -1,0 +1,1190 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "retrochain/arcade/v1/tx.proto",
+    "version": "version not set"
+  },
+  "tags": [
+    {
+      "name": "Msg"
+    }
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/retrochain.arcade.v1.Msg/ActivateCombo": {
+      "post": {
+        "summary": "ActivateCombo defines the ActivateCombo RPC - trigger combo multiplier",
+        "operationId": "Msg_ActivateCombo",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/retrochain.arcade.v1.MsgActivateComboResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": "MsgActivateCombo defines the MsgActivateCombo message.",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/retrochain.arcade.v1.MsgActivateCombo"
+            }
+          }
+        ],
+        "tags": [
+          "Msg"
+        ]
+      }
+    },
+    "/retrochain.arcade.v1.Msg/ClaimAchievement": {
+      "post": {
+        "summary": "ClaimAchievement defines the ClaimAchievement RPC - claim achievement reward",
+        "operationId": "Msg_ClaimAchievement",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/retrochain.arcade.v1.MsgClaimAchievementResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": "MsgClaimAchievement defines the MsgClaimAchievement message.",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/retrochain.arcade.v1.MsgClaimAchievement"
+            }
+          }
+        ],
+        "tags": [
+          "Msg"
+        ]
+      }
+    },
+    "/retrochain.arcade.v1.Msg/ContinueGame": {
+      "post": {
+        "summary": "ContinueGame defines the ContinueGame RPC - continue after game over",
+        "operationId": "Msg_ContinueGame",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/retrochain.arcade.v1.MsgContinueGameResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": "MsgContinueGame defines the MsgContinueGame message.",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/retrochain.arcade.v1.MsgContinueGame"
+            }
+          }
+        ],
+        "tags": [
+          "Msg"
+        ]
+      }
+    },
+    "/retrochain.arcade.v1.Msg/CreateTournament": {
+      "post": {
+        "summary": "CreateTournament defines the CreateTournament RPC - create new tournament",
+        "operationId": "Msg_CreateTournament",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/retrochain.arcade.v1.MsgCreateTournamentResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": "MsgCreateTournament defines the MsgCreateTournament message.",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/retrochain.arcade.v1.MsgCreateTournament"
+            }
+          }
+        ],
+        "tags": [
+          "Msg"
+        ]
+      }
+    },
+    "/retrochain.arcade.v1.Msg/EndSession": {
+      "post": {
+        "summary": "EndSession defines the EndSession RPC - end a game session",
+        "operationId": "Msg_EndSession",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/retrochain.arcade.v1.MsgEndSessionResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": "MsgEndSession defines the MsgEndSession message.",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/retrochain.arcade.v1.MsgEndSession"
+            }
+          }
+        ],
+        "tags": [
+          "Msg"
+        ]
+      }
+    },
+    "/retrochain.arcade.v1.Msg/InsertCoin": {
+      "post": {
+        "summary": "InsertCoin defines the InsertCoin RPC - buy credits to play",
+        "operationId": "Msg_InsertCoin",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/retrochain.arcade.v1.MsgInsertCoinResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": "MsgInsertCoin defines the MsgInsertCoin message.",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/retrochain.arcade.v1.MsgInsertCoin"
+            }
+          }
+        ],
+        "tags": [
+          "Msg"
+        ]
+      }
+    },
+    "/retrochain.arcade.v1.Msg/JoinTournament": {
+      "post": {
+        "summary": "JoinTournament defines the JoinTournament RPC - join a tournament",
+        "operationId": "Msg_JoinTournament",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/retrochain.arcade.v1.MsgJoinTournamentResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": "MsgJoinTournament defines the MsgJoinTournament message.",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/retrochain.arcade.v1.MsgJoinTournament"
+            }
+          }
+        ],
+        "tags": [
+          "Msg"
+        ]
+      }
+    },
+    "/retrochain.arcade.v1.Msg/RegisterGame": {
+      "post": {
+        "summary": "RegisterGame defines the RegisterGame RPC - add new arcade game",
+        "operationId": "Msg_RegisterGame",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/retrochain.arcade.v1.MsgRegisterGameResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": "MsgRegisterGame defines the MsgRegisterGame message.",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/retrochain.arcade.v1.MsgRegisterGame"
+            }
+          }
+        ],
+        "tags": [
+          "Msg"
+        ]
+      }
+    },
+    "/retrochain.arcade.v1.Msg/SetHighScoreInitials": {
+      "post": {
+        "summary": "SetHighScoreInitials defines the SetHighScoreInitials RPC",
+        "operationId": "Msg_SetHighScoreInitials",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/retrochain.arcade.v1.MsgSetHighScoreInitialsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": "MsgSetHighScoreInitials defines the MsgSetHighScoreInitials message.",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/retrochain.arcade.v1.MsgSetHighScoreInitials"
+            }
+          }
+        ],
+        "tags": [
+          "Msg"
+        ]
+      }
+    },
+    "/retrochain.arcade.v1.Msg/StartSession": {
+      "post": {
+        "summary": "StartSession defines the StartSession RPC - start a new game",
+        "operationId": "Msg_StartSession",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/retrochain.arcade.v1.MsgStartSessionResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": "MsgStartSession defines the MsgStartSession message.",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/retrochain.arcade.v1.MsgStartSession"
+            }
+          }
+        ],
+        "tags": [
+          "Msg"
+        ]
+      }
+    },
+    "/retrochain.arcade.v1.Msg/SubmitScore": {
+      "post": {
+        "summary": "SubmitScore defines the SubmitScore RPC - submit game score",
+        "operationId": "Msg_SubmitScore",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/retrochain.arcade.v1.MsgSubmitScoreResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": "MsgSubmitScore defines the MsgSubmitScore message.",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/retrochain.arcade.v1.MsgSubmitScore"
+            }
+          }
+        ],
+        "tags": [
+          "Msg"
+        ]
+      }
+    },
+    "/retrochain.arcade.v1.Msg/SubmitTournamentScore": {
+      "post": {
+        "summary": "SubmitTournamentScore defines the SubmitTournamentScore RPC",
+        "operationId": "Msg_SubmitTournamentScore",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/retrochain.arcade.v1.MsgSubmitTournamentScoreResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": "MsgSubmitTournamentScore defines the MsgSubmitTournamentScore message.",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/retrochain.arcade.v1.MsgSubmitTournamentScore"
+            }
+          }
+        ],
+        "tags": [
+          "Msg"
+        ]
+      }
+    },
+    "/retrochain.arcade.v1.Msg/UpdateGameScore": {
+      "post": {
+        "summary": "UpdateGameScore defines the UpdateGameScore RPC - update score during play",
+        "operationId": "Msg_UpdateGameScore",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/retrochain.arcade.v1.MsgUpdateGameScoreResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": "MsgUpdateGameScore defines the MsgUpdateGameScore message.",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/retrochain.arcade.v1.MsgUpdateGameScore"
+            }
+          }
+        ],
+        "tags": [
+          "Msg"
+        ]
+      }
+    },
+    "/retrochain.arcade.v1.Msg/UpdateParams": {
+      "post": {
+        "summary": "UpdateParams defines a (governance) operation for updating the module\nparameters. The authority defaults to the x/gov module account.",
+        "operationId": "Msg_UpdateParams",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/retrochain.arcade.v1.MsgUpdateParamsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": "MsgUpdateParams is the Msg/UpdateParams request type.",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/retrochain.arcade.v1.MsgUpdateParams"
+            }
+          }
+        ],
+        "tags": [
+          "Msg"
+        ]
+      }
+    },
+    "/retrochain.arcade.v1.Msg/UsePowerUp": {
+      "post": {
+        "summary": "UsePowerUp defines the UsePowerUp RPC - use a power-up during game",
+        "operationId": "Msg_UsePowerUp",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/retrochain.arcade.v1.MsgUsePowerUpResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": "MsgUsePowerUp defines the MsgUsePowerUp message.",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/retrochain.arcade.v1.MsgUsePowerUp"
+            }
+          }
+        ],
+        "tags": [
+          "Msg"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "google.protobuf.Any": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "google.rpc.Status": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/google.protobuf.Any"
+          }
+        }
+      }
+    },
+    "retrochain.arcade.v1.ArcadeGame": {
+      "type": "object",
+      "properties": {
+        "game_id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "genre": {
+          "$ref": "#/definitions/retrochain.arcade.v1.GameGenre"
+        },
+        "credits_per_play": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "max_players": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "multiplayer_enabled": {
+          "type": "boolean"
+        },
+        "developer": {
+          "type": "string"
+        },
+        "release_date": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "active": {
+          "type": "boolean"
+        },
+        "power_ups": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "base_difficulty": {
+          "type": "string",
+          "format": "uint64"
+        }
+      },
+      "title": "ArcadeGame represents a registered arcade game"
+    },
+    "retrochain.arcade.v1.GameGenre": {
+      "type": "string",
+      "enum": [
+        "GENRE_UNSPECIFIED",
+        "GENRE_SHOOTER",
+        "GENRE_PLATFORMER",
+        "GENRE_PUZZLE",
+        "GENRE_FIGHTING",
+        "GENRE_RACING",
+        "GENRE_BEAT_EM_UP",
+        "GENRE_MAZE",
+        "GENRE_PINBALL"
+      ],
+      "default": "GENRE_UNSPECIFIED",
+      "title": "GameGenre represents different arcade game genres"
+    },
+    "retrochain.arcade.v1.MsgActivateCombo": {
+      "type": "object",
+      "properties": {
+        "creator": {
+          "type": "string"
+        },
+        "session_id": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "combo_hits": {
+          "type": "string",
+          "format": "uint64"
+        }
+      },
+      "description": "MsgActivateCombo defines the MsgActivateCombo message."
+    },
+    "retrochain.arcade.v1.MsgActivateComboResponse": {
+      "type": "object",
+      "properties": {
+        "multiplier": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "bonus_score": {
+          "type": "string",
+          "format": "uint64"
+        }
+      },
+      "description": "MsgActivateComboResponse defines the MsgActivateComboResponse message."
+    },
+    "retrochain.arcade.v1.MsgClaimAchievement": {
+      "type": "object",
+      "properties": {
+        "creator": {
+          "type": "string"
+        },
+        "achievement_id": {
+          "type": "string"
+        },
+        "game_id": {
+          "type": "string"
+        }
+      },
+      "description": "MsgClaimAchievement defines the MsgClaimAchievement message."
+    },
+    "retrochain.arcade.v1.MsgClaimAchievementResponse": {
+      "type": "object",
+      "properties": {
+        "tokens_awarded": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "achievement_name": {
+          "type": "string"
+        }
+      },
+      "description": "MsgClaimAchievementResponse defines the MsgClaimAchievementResponse message."
+    },
+    "retrochain.arcade.v1.MsgContinueGame": {
+      "type": "object",
+      "properties": {
+        "creator": {
+          "type": "string"
+        },
+        "session_id": {
+          "type": "string",
+          "format": "uint64"
+        }
+      },
+      "description": "MsgContinueGame defines the MsgContinueGame message."
+    },
+    "retrochain.arcade.v1.MsgContinueGameResponse": {
+      "type": "object",
+      "properties": {
+        "continues_remaining": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "lives_granted": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "cost": {
+          "type": "string"
+        }
+      },
+      "description": "MsgContinueGameResponse defines the MsgContinueGameResponse message."
+    },
+    "retrochain.arcade.v1.MsgCreateTournament": {
+      "type": "object",
+      "properties": {
+        "creator": {
+          "type": "string"
+        },
+        "tournament": {
+          "$ref": "#/definitions/retrochain.arcade.v1.Tournament"
+        }
+      },
+      "description": "MsgCreateTournament defines the MsgCreateTournament message."
+    },
+    "retrochain.arcade.v1.MsgCreateTournamentResponse": {
+      "type": "object",
+      "properties": {
+        "tournament_id": {
+          "type": "string"
+        }
+      },
+      "description": "MsgCreateTournamentResponse defines the MsgCreateTournamentResponse message."
+    },
+    "retrochain.arcade.v1.MsgEndSession": {
+      "type": "object",
+      "properties": {
+        "creator": {
+          "type": "string"
+        },
+        "session_id": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "final_score": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "final_level": {
+          "type": "string",
+          "format": "uint64"
+        }
+      },
+      "description": "MsgEndSession defines the MsgEndSession message."
+    },
+    "retrochain.arcade.v1.MsgEndSessionResponse": {
+      "type": "object",
+      "properties": {
+        "session_ended": {
+          "type": "boolean"
+        },
+        "summary": {
+          "type": "string"
+        }
+      },
+      "description": "MsgEndSessionResponse defines the MsgEndSessionResponse message."
+    },
+    "retrochain.arcade.v1.MsgInsertCoin": {
+      "type": "object",
+      "properties": {
+        "creator": {
+          "type": "string"
+        },
+        "credits": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "game_id": {
+          "type": "string"
+        }
+      },
+      "description": "MsgInsertCoin defines the MsgInsertCoin message."
+    },
+    "retrochain.arcade.v1.MsgInsertCoinResponse": {
+      "type": "object",
+      "properties": {
+        "total_credits": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "tokens_spent": {
+          "type": "string"
+        }
+      },
+      "description": "MsgInsertCoinResponse defines the MsgInsertCoinResponse message."
+    },
+    "retrochain.arcade.v1.MsgJoinTournament": {
+      "type": "object",
+      "properties": {
+        "creator": {
+          "type": "string"
+        },
+        "tournament_id": {
+          "type": "string"
+        }
+      },
+      "description": "MsgJoinTournament defines the MsgJoinTournament message."
+    },
+    "retrochain.arcade.v1.MsgJoinTournamentResponse": {
+      "type": "object",
+      "properties": {
+        "joined": {
+          "type": "boolean"
+        },
+        "participant_count": {
+          "type": "string",
+          "format": "uint64"
+        }
+      },
+      "description": "MsgJoinTournamentResponse defines the MsgJoinTournamentResponse message."
+    },
+    "retrochain.arcade.v1.MsgRegisterGame": {
+      "type": "object",
+      "properties": {
+        "creator": {
+          "type": "string"
+        },
+        "game": {
+          "$ref": "#/definitions/retrochain.arcade.v1.ArcadeGame"
+        }
+      },
+      "description": "MsgRegisterGame defines the MsgRegisterGame message."
+    },
+    "retrochain.arcade.v1.MsgRegisterGameResponse": {
+      "type": "object",
+      "properties": {
+        "game_id": {
+          "type": "string"
+        }
+      },
+      "description": "MsgRegisterGameResponse defines the MsgRegisterGameResponse message."
+    },
+    "retrochain.arcade.v1.MsgSetHighScoreInitials": {
+      "type": "object",
+      "properties": {
+        "creator": {
+          "type": "string"
+        },
+        "game_id": {
+          "type": "string"
+        },
+        "initials": {
+          "type": "string"
+        }
+      },
+      "description": "MsgSetHighScoreInitials defines the MsgSetHighScoreInitials message."
+    },
+    "retrochain.arcade.v1.MsgSetHighScoreInitialsResponse": {
+      "type": "object",
+      "properties": {
+        "updated": {
+          "type": "boolean"
+        }
+      },
+      "description": "MsgSetHighScoreInitialsResponse defines the MsgSetHighScoreInitialsResponse message."
+    },
+    "retrochain.arcade.v1.MsgStartSession": {
+      "type": "object",
+      "properties": {
+        "creator": {
+          "type": "string"
+        },
+        "game_id": {
+          "type": "string"
+        },
+        "difficulty": {
+          "type": "string",
+          "format": "uint64"
+        }
+      },
+      "description": "MsgStartSession defines the MsgStartSession message."
+    },
+    "retrochain.arcade.v1.MsgStartSessionResponse": {
+      "type": "object",
+      "properties": {
+        "session_id": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "starting_lives": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "starting_level": {
+          "type": "string",
+          "format": "uint64"
+        }
+      },
+      "description": "MsgStartSessionResponse defines the MsgStartSessionResponse message."
+    },
+    "retrochain.arcade.v1.MsgSubmitScore": {
+      "type": "object",
+      "properties": {
+        "creator": {
+          "type": "string"
+        },
+        "session_id": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "score": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "level": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "game_over": {
+          "type": "boolean"
+        }
+      },
+      "description": "MsgSubmitScore defines the MsgSubmitScore message."
+    },
+    "retrochain.arcade.v1.MsgSubmitScoreResponse": {
+      "type": "object",
+      "properties": {
+        "is_high_score": {
+          "type": "boolean"
+        },
+        "rank": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "tokens_earned": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "achievements_unlocked": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "MsgSubmitScoreResponse defines the MsgSubmitScoreResponse message."
+    },
+    "retrochain.arcade.v1.MsgSubmitTournamentScore": {
+      "type": "object",
+      "properties": {
+        "creator": {
+          "type": "string"
+        },
+        "tournament_id": {
+          "type": "string"
+        },
+        "score": {
+          "type": "string",
+          "format": "uint64"
+        }
+      },
+      "description": "MsgSubmitTournamentScore defines the MsgSubmitTournamentScore message."
+    },
+    "retrochain.arcade.v1.MsgSubmitTournamentScoreResponse": {
+      "type": "object",
+      "properties": {
+        "current_rank": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "qualified": {
+          "type": "boolean"
+        }
+      },
+      "description": "MsgSubmitTournamentScoreResponse defines the MsgSubmitTournamentScoreResponse message."
+    },
+    "retrochain.arcade.v1.MsgUpdateGameScore": {
+      "type": "object",
+      "properties": {
+        "creator": {
+          "type": "string"
+        },
+        "session_id": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "score_delta": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "current_level": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "current_lives": {
+          "type": "string",
+          "format": "uint64"
+        }
+      },
+      "description": "MsgUpdateGameScore defines the MsgUpdateGameScore message."
+    },
+    "retrochain.arcade.v1.MsgUpdateGameScoreResponse": {
+      "type": "object",
+      "properties": {
+        "total_score": {
+          "type": "string",
+          "format": "uint64"
+        }
+      },
+      "description": "MsgUpdateGameScoreResponse defines the MsgUpdateGameScoreResponse message."
+    },
+    "retrochain.arcade.v1.MsgUpdateParams": {
+      "type": "object",
+      "properties": {
+        "authority": {
+          "type": "string",
+          "description": "authority is the address that controls the module (defaults to x/gov unless overwritten)."
+        },
+        "params": {
+          "$ref": "#/definitions/retrochain.arcade.v1.Params",
+          "description": "NOTE: All parameters must be supplied."
+        }
+      },
+      "description": "MsgUpdateParams is the Msg/UpdateParams request type."
+    },
+    "retrochain.arcade.v1.MsgUpdateParamsResponse": {
+      "type": "object",
+      "description": "MsgUpdateParamsResponse defines the response structure for executing a\nMsgUpdateParams message."
+    },
+    "retrochain.arcade.v1.MsgUsePowerUp": {
+      "type": "object",
+      "properties": {
+        "creator": {
+          "type": "string"
+        },
+        "session_id": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "power_up_id": {
+          "type": "string"
+        }
+      },
+      "description": "MsgUsePowerUp defines the MsgUsePowerUp message."
+    },
+    "retrochain.arcade.v1.MsgUsePowerUpResponse": {
+      "type": "object",
+      "properties": {
+        "activated": {
+          "type": "boolean"
+        },
+        "effect": {
+          "type": "string"
+        }
+      },
+      "description": "MsgUsePowerUpResponse defines the MsgUsePowerUpResponse message."
+    },
+    "retrochain.arcade.v1.Params": {
+      "type": "object",
+      "properties": {
+        "base_credits_cost": {
+          "type": "string",
+          "format": "uint64",
+          "title": "Base credits cost per game (in uretro)"
+        },
+        "tokens_per_thousand_points": {
+          "type": "integer",
+          "format": "int64",
+          "title": "Tokens earned per 1000 points scored"
+        },
+        "max_active_sessions": {
+          "type": "integer",
+          "format": "int64",
+          "title": "Maximum active sessions per player"
+        },
+        "continue_cost_multiplier": {
+          "type": "integer",
+          "format": "int64",
+          "title": "Continue cost multiplier (percentage)"
+        },
+        "high_score_reward": {
+          "type": "integer",
+          "format": "int64",
+          "title": "High score reward in arcade tokens"
+        },
+        "tournament_registration_fee": {
+          "type": "string",
+          "format": "uint64",
+          "title": "Tournament registration fee (in uretro)"
+        },
+        "min_difficulty": {
+          "type": "integer",
+          "format": "int64",
+          "title": "Minimum game difficulty (1-10)"
+        },
+        "max_difficulty": {
+          "type": "integer",
+          "format": "int64",
+          "title": "Maximum game difficulty (1-10)"
+        },
+        "achievement_reward_multiplier": {
+          "type": "integer",
+          "format": "int64",
+          "title": "Achievement reward multiplier"
+        },
+        "power_up_cost": {
+          "type": "integer",
+          "format": "int64",
+          "title": "Power-up cost in arcade tokens"
+        }
+      },
+      "description": "Params defines the parameters for the module."
+    },
+    "retrochain.arcade.v1.Tournament": {
+      "type": "object",
+      "properties": {
+        "tournament_id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "game_id": {
+          "type": "string"
+        },
+        "start_time": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "end_time": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "entry_fee": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "prize_pool": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "participants": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/retrochain.arcade.v1.TournamentParticipant"
+          }
+        },
+        "status": {
+          "$ref": "#/definitions/retrochain.arcade.v1.TournamentStatus"
+        },
+        "winner": {
+          "type": "string"
+        }
+      },
+      "title": "Tournament represents an arcade tournament"
+    },
+    "retrochain.arcade.v1.TournamentParticipant": {
+      "type": "object",
+      "properties": {
+        "player": {
+          "type": "string"
+        },
+        "best_score": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "rank": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "qualified": {
+          "type": "boolean"
+        }
+      },
+      "title": "TournamentParticipant represents a tournament participant"
+    },
+    "retrochain.arcade.v1.TournamentStatus": {
+      "type": "string",
+      "enum": [
+        "TOURNAMENT_UNSPECIFIED",
+        "TOURNAMENT_REGISTRATION",
+        "TOURNAMENT_ACTIVE",
+        "TOURNAMENT_COMPLETED",
+        "TOURNAMENT_CANCELLED"
+      ],
+      "default": "TOURNAMENT_UNSPECIFIED",
+      "title": "TournamentStatus represents tournament state"
+    }
+  }
+}

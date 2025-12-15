@@ -117,7 +117,7 @@ Sign a transaction offline:
 ```bash
 retrochaind tx sign [unsigned-tx.json] \
   --from alice \
-  --chain-id retrochain-arcade-1 \
+  --chain-id retrochain-mainnet \
   --account-number 0 \
   --sequence 10
 ```
@@ -136,13 +136,13 @@ retrochaind tx bank send alice bob 1000000uretro \
 retrochaind tx sign unsigned.json \
   --from alice \
   --multisig=cosmos1multisig... \
-  --chain-id retrochain-arcade-1 > alice-sig.json
+  --chain-id retrochain-mainnet > alice-sig.json
 
 # Sign by second signer
 retrochaind tx sign unsigned.json \
   --from bob \
   --multisig=cosmos1multisig... \
-  --chain-id retrochain-arcade-1 > bob-sig.json
+  --chain-id retrochain-mainnet > bob-sig.json
 
 # Combine signatures
 retrochaind tx multisign unsigned.json cosmos1multisig... \
@@ -517,7 +517,7 @@ retrochaind tx staking create-validator \
   --amount=1000000000000uretro \
   --pubkey=$(retrochaind tendermint show-validator) \
   --moniker="My Validator" \
-  --chain-id=retrochain-arcade-1 \
+  --chain-id=retrochain-mainnet \
   --commission-rate="0.10" \
   --commission-max-rate="0.20" \
   --commission-max-change-rate="0.01" \
@@ -553,7 +553,7 @@ retrochaind tx gov submit-proposal \
   --title="Add New Arcade Game" \
   --description="Proposal to add Galaga clone to RetroChain" \
   --type="Text" \
-  --deposit="100000000uretro" \
+  --deposit="10000000uretro" \
   --from=dev
 
 # Parameter change proposal
@@ -564,7 +564,7 @@ retrochaind tx gov submit-proposal software-upgrade v2.0.0 \
   --title="Upgrade to v2.0.0" \
   --description="Major upgrade" \
   --upgrade-height=100000 \
-  --deposit="100000000uretro" \
+  --deposit="10000000uretro" \
   --from=dev
 ```
 
@@ -580,7 +580,7 @@ retrochaind tx gov submit-proposal software-upgrade v2.0.0 \
       "value": "5"
     }
   ],
-  "deposit": "100000000uretro"
+  "deposit": "10000000uretro"
 }
 ```
 
@@ -594,7 +594,7 @@ retrochaind tx gov deposit [proposal-id] [amount] --from [depositor]
 
 **Example:**
 ```bash
-retrochaind tx gov deposit 1 50000000uretro --from alice
+retrochaind tx gov deposit 1 10000000uretro --from alice
 ```
 
 ### Vote on Proposal
@@ -868,7 +868,7 @@ retrochaind query block 12345
   "block": {
     "header": {
       "version": {...},
-      "chain_id": "retrochain-arcade-1",
+      "chain_id": "retrochain-mainnet",
       "height": "12345",
       "time": "2024-01-15T12:00:00Z",
       "last_block_id": {...},
@@ -928,7 +928,7 @@ retrochaind status
     },
     "id": "...",
     "listen_addr": "tcp://0.0.0.0:26656",
-    "network": "retrochain-arcade-1",
+    "network": "retrochain-mainnet",
     "version": "0.38.0",
     "channels": "...",
     "moniker": "my-node",
@@ -1127,7 +1127,7 @@ ws.send(JSON.stringify({
 ```bash
 retrochaind tx arcade insert-coin 5 space-raiders \
   --from alice \
-  --chain-id retrochain-arcade-1 \
+  --chain-id retrochain-mainnet \
   --node tcp://localhost:26657 \
   --gas auto \
   --gas-adjustment 1.3 \

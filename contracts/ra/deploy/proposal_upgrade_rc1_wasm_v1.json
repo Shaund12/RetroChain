@@ -1,0 +1,18 @@
+{
+  "messages": [
+    {
+      "@type": "/cosmos.upgrade.v1beta1.MsgSoftwareUpgrade",
+      "authority": "cosmos10d07y265gmmuvt4z0w9aw880jnsr700j6zn9kn",
+      "plan": {
+        "name": "rc1-wasm-v1",
+        "height": "47832",
+        "info": "Add CosmWasm store key (enable x/wasm state)"
+      }
+    }
+  ],
+  "metadata": "",
+  "deposit": "50000000uretro",
+  "title": "RC1: Enable CosmWasm store",
+  "summary": "Adds the x/wasm store key via the rc1-wasm-v1 upgrade so CosmWasm contracts can be deployed.",
+  "expedited": true
+}

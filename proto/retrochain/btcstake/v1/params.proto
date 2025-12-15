@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package retrochain.btcstake.v1;
+
+import "gogoproto/gogo.proto";
+
+option go_package = "retrochain/x/btcstake/types";
+
+// Params defines module parameters.
+message Params {
+  // allowed_denom is the IBC denom (e.g. ibc/...) that can be staked.
+  string allowed_denom = 1;
+}

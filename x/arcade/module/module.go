@@ -130,8 +130,9 @@ func (am AppModule) ExportGenesis(ctx sdk.Context, _ codec.JSONCodec) json.RawMe
 func (AppModule) ConsensusVersion() uint64 { return 1 }
 
 // BeginBlock contains the logic that is automatically triggered at the beginning of each block.
-func (am AppModule) BeginBlock(_ context.Context) error {
-	return nil
+func (am AppModule) BeginBlock(ctx context.Context) error {
+	// Progress tournaments based on block time.
+	return am.keeper.ProcessTournaments(ctx)
 }
 
 // EndBlock contains the logic that is automatically triggered at the end of each block.

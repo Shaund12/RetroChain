@@ -1,0 +1,18 @@
+{
+  "messages": [
+    {
+      "@type": "/cosmos.upgrade.v1beta1.MsgSoftwareUpgrade",
+      "authority": "cosmos10d07y265gmmuvt4z0w9aw880jnsr700j6zn9kn",
+      "plan": {
+        "name": "rc1-btcstake-v1",
+        "height": "42000",
+        "info": "Add x/btcstake store key (IBC WBTC staking + uretro rewards)"
+      }
+    }
+  ],
+  "metadata": "",
+  "deposit": "50000000uretro",
+  "title": "RC1: Enable BTC staking",
+  "summary": "Adds the x/btcstake store key via the rc1-btcstake-v1 upgrade so users can stake the configured IBC WBTC denom and earn uretro rewards.",
+  "expedited": true
+}

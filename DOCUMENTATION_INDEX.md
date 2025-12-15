@@ -124,9 +124,25 @@ Complete index of all RetroChain documentation files.
   - High score display
   - Live block feed
 
+**[HERMES_ATOM_RETRO_ROUTE.md](HERMES_ATOM_RETRO_ROUTE.md)** - Hermes IBC Route (ATOM  RETRO)
+- Configure Hermes for Cosmos Hub  RetroChain
+- Create clients/connection/channel for ICS-20 transfers
+- Start relaying and test transfers
+
 ---
 
 ## 📋 Technical Documentation
+
+**[TOKENOMICS.md](TOKENOMICS.md)** - RetroChain Tokenomics (RETRO)
+- Denoms, genesis supply, inflation params
+- Staking, governance, fees
+- Burn module defaults and RA converter flow
+
+**[EXPLORER_TOKENOMICS_PAGE_SPEC.md](EXPLORER_TOKENOMICS_PAGE_SPEC.md)** - Explorer Tokenomics Page Spec
+- Build spec for adding a Tokenomics page (sections, endpoints, formatting)
+
+**[GENESIS_NFT_AIRDROP.md](GENESIS_NFT_AIRDROP.md)** - Genesis NFT Airdrop Plan
+- How to pre-mint native `x/nft` NFTs at genesis (plus generator script)
 
 **[ARCADE_ENHANCEMENTS.md](ARCADE_ENHANCEMENTS.md)** - Enhancement Summary (500+ lines)
 - All files created/modified

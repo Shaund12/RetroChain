@@ -31,6 +31,24 @@ var (
 	GameSessionKeyPrefix = collections.NewPrefix("gs_arcade")
 	// SessionCounterKey is the key for the session counter
 	SessionCounterKey = collections.NewPrefix("sc_arcade")
+	// ArcadeGameKeyPrefix is the prefix for registered games
+	ArcadeGameKeyPrefix = collections.NewPrefix("ag_arcade")
+	// HighScoreKeyPrefix is the prefix for high score records
+	HighScoreKeyPrefix = collections.NewPrefix("hs_arcade")
+	// HighScoreCounterKey tracks high score ids
+	HighScoreCounterKey = collections.NewPrefix("hsc_arcade")
+	// LeaderboardKeyPrefix stores per-player leaderboard entries
+	LeaderboardKeyPrefix = collections.NewPrefix("lb_arcade")
+	// AchievementKeyPrefix stores player achievements keyed by player/achievement id
+	AchievementKeyPrefix = collections.NewPrefix("ach_arcade")
+	// TournamentKeyPrefix stores tournaments keyed by tournament id
+	TournamentKeyPrefix = collections.NewPrefix("t_arcade")
+	// PlayerCoinsInsertedKeyPrefix stores total coins inserted (credits purchased) per player
+	PlayerCoinsInsertedKeyPrefix = collections.NewPrefix("pci_arcade")
+	// PlayerLastCoinInsertTimeKeyPrefix stores last coin insert unix time per player
+	PlayerLastCoinInsertTimeKeyPrefix = collections.NewPrefix("plcit_arcade")
+	// PlayerQuickStartAchievedKeyPrefix stores whether player has achieved quick-start condition
+	PlayerQuickStartAchievedKeyPrefix = collections.NewPrefix("pqsa_arcade")
 )
 
 // KeyPrefix returns a key prefix from a string

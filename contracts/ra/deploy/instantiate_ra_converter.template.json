@@ -1,0 +1,6 @@
+{
+  "ra_cw20_addr": "<RA_CW20_CONTRACT_ADDR>",
+  "native_denom": "uretro",
+  "fee_collector_addr": "cosmos17xpfvakm2amg962yls6f84z3kell8c5lserqta",
+  "operator": "cosmos1fscvf7rphx477z6vd4sxsusm2u8a70kewvc8wy"
+}

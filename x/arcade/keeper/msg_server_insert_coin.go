@@ -32,8 +32,17 @@ func (k *msgServer) InsertCoin(ctx context.Context, msg *types.MsgInsertCoin) (*
 		return nil, errorsmod.Wrap(types.ErrInvalidRequest, "game_id is required")
 	}
 
+	params, err := k.getParams(ctx)
+	if err != nil {
+		return nil, errorsmod.Wrap(err, "failed to load params")
+	}
+	costPerCredit := params.BaseCreditsCost
+	if costPerCredit == 0 {
+		costPerCredit = TokensPerCredit
+	}
+
 	// Calculate token cost
-	tokenCost := msg.Credits * TokensPerCredit
+	tokenCost := msg.Credits * costPerCredit
 	coins := sdk.NewCoins(sdk.NewCoin("uretro", math.NewIntFromUint64(tokenCost)))
 
 	// Check if player has sufficient spendable coins
@@ -61,6 +70,8 @@ func (k *msgServer) InsertCoin(ctx context.Context, msg *types.MsgInsertCoin) (*
 
 	// Emit event for credits insertion
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
+	// Record achievement-related stats
+	_ = k.recordCoinInsert(ctx, msg.Creator, msg.Credits)
 	sdkCtx.EventManager().EmitEvent(
 		sdk.NewEvent(
 			"arcade.credits_inserted",
@@ -71,5 +82,8 @@ func (k *msgServer) InsertCoin(ctx context.Context, msg *types.MsgInsertCoin) (*
 		),
 	)
 
-	return &types.MsgInsertCoinResponse{}, nil
+	return &types.MsgInsertCoinResponse{
+		TotalCredits: newCredits,
+		TokensSpent:  strconv.FormatUint(tokenCost, 10),
+	}, nil
 }

@@ -1,0 +1,312 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "retrochain/btcstake/v1/tx.proto",
+    "version": "version not set"
+  },
+  "tags": [
+    {
+      "name": "Msg"
+    }
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/retrochain.btcstake.v1.Msg/ClaimRewards": {
+      "post": {
+        "summary": "ClaimRewards sends accrued uretro rewards to the user.",
+        "operationId": "Msg_ClaimRewards",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/retrochain.btcstake.v1.MsgClaimRewardsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/retrochain.btcstake.v1.MsgClaimRewards"
+            }
+          }
+        ],
+        "tags": [
+          "Msg"
+        ]
+      }
+    },
+    "/retrochain.btcstake.v1.Msg/FundRewards": {
+      "post": {
+        "summary": "FundRewards moves uretro from funder to the module reward pool.",
+        "operationId": "Msg_FundRewards",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/retrochain.btcstake.v1.MsgFundRewardsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/retrochain.btcstake.v1.MsgFundRewards"
+            }
+          }
+        ],
+        "tags": [
+          "Msg"
+        ]
+      }
+    },
+    "/retrochain.btcstake.v1.Msg/Stake": {
+      "post": {
+        "summary": "Stake locks allowed_denom in the module account.",
+        "operationId": "Msg_Stake",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/retrochain.btcstake.v1.MsgStakeResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/retrochain.btcstake.v1.MsgStake"
+            }
+          }
+        ],
+        "tags": [
+          "Msg"
+        ]
+      }
+    },
+    "/retrochain.btcstake.v1.Msg/Unstake": {
+      "post": {
+        "summary": "Unstake unlocks allowed_denom back to the user (instant).",
+        "operationId": "Msg_Unstake",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/retrochain.btcstake.v1.MsgUnstakeResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/retrochain.btcstake.v1.MsgUnstake"
+            }
+          }
+        ],
+        "tags": [
+          "Msg"
+        ]
+      }
+    },
+    "/retrochain.btcstake.v1.Msg/UpdateParams": {
+      "post": {
+        "summary": "UpdateParams updates module parameters (authority gated).",
+        "operationId": "Msg_UpdateParams",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/retrochain.btcstake.v1.MsgUpdateParamsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/retrochain.btcstake.v1.MsgUpdateParams"
+            }
+          }
+        ],
+        "tags": [
+          "Msg"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "google.protobuf.Any": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "google.rpc.Status": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/google.protobuf.Any"
+          }
+        }
+      }
+    },
+    "retrochain.btcstake.v1.MsgClaimRewards": {
+      "type": "object",
+      "properties": {
+        "creator": {
+          "type": "string"
+        }
+      }
+    },
+    "retrochain.btcstake.v1.MsgClaimRewardsResponse": {
+      "type": "object",
+      "properties": {
+        "claimed_uretro": {
+          "type": "string"
+        }
+      }
+    },
+    "retrochain.btcstake.v1.MsgFundRewards": {
+      "type": "object",
+      "properties": {
+        "funder": {
+          "type": "string"
+        },
+        "amount": {
+          "type": "string",
+          "description": "amount is the integer uretro amount to fund."
+        }
+      }
+    },
+    "retrochain.btcstake.v1.MsgFundRewardsResponse": {
+      "type": "object"
+    },
+    "retrochain.btcstake.v1.MsgStake": {
+      "type": "object",
+      "properties": {
+        "creator": {
+          "type": "string"
+        },
+        "amount": {
+          "type": "string",
+          "description": "amount is the integer amount (base units) to stake of params.allowed_denom."
+        }
+      }
+    },
+    "retrochain.btcstake.v1.MsgStakeResponse": {
+      "type": "object",
+      "properties": {
+        "staked_amount": {
+          "type": "string"
+        }
+      }
+    },
+    "retrochain.btcstake.v1.MsgUnstake": {
+      "type": "object",
+      "properties": {
+        "creator": {
+          "type": "string"
+        },
+        "amount": {
+          "type": "string",
+          "description": "amount is the integer amount (base units) to unstake."
+        }
+      }
+    },
+    "retrochain.btcstake.v1.MsgUnstakeResponse": {
+      "type": "object",
+      "properties": {
+        "remaining_stake": {
+          "type": "string"
+        }
+      }
+    },
+    "retrochain.btcstake.v1.MsgUpdateParams": {
+      "type": "object",
+      "properties": {
+        "authority": {
+          "type": "string",
+          "description": "authority is the address that controls the module (defaults to x/gov module account)."
+        },
+        "params": {
+          "$ref": "#/definitions/retrochain.btcstake.v1.Params",
+          "description": "NOTE: All parameters must be supplied."
+        }
+      }
+    },
+    "retrochain.btcstake.v1.MsgUpdateParamsResponse": {
+      "type": "object"
+    },
+    "retrochain.btcstake.v1.Params": {
+      "type": "object",
+      "properties": {
+        "allowed_denom": {
+          "type": "string",
+          "description": "allowed_denom is the IBC denom (e.g. ibc/...) that can be staked."
+        }
+      },
+      "description": "Params defines module parameters."
+    }
+  }
+}

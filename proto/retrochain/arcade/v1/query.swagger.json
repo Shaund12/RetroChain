@@ -1,0 +1,1814 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "retrochain/arcade/v1/query.proto",
+    "version": "version not set"
+  },
+  "tags": [
+    {
+      "name": "Query"
+    }
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/arcade/v1/achievements/{player}": {
+      "get": {
+        "summary": "ListAchievements queries all achievements for a player",
+        "operationId": "Query_ListAchievements2",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/retrochain.arcade.v1.QueryListAchievementsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "player",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "pagination.key",
+            "description": "key is a value returned in PageResponse.next_key to begin\nquerying the next page most efficiently. Only one of offset or key\nshould be set.",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "byte"
+          },
+          {
+            "name": "pagination.offset",
+            "description": "offset is a numeric offset that can be used when key is unavailable.\nIt is less efficient than using key. Only one of offset or key should\nbe set.",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "uint64"
+          },
+          {
+            "name": "pagination.limit",
+            "description": "limit is the total number of results to be returned in the result page.\nIf left empty it will default to a value to be set by each app.",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "uint64"
+          },
+          {
+            "name": "pagination.count_total",
+            "description": "count_total is set to true  to indicate that the result set should include\na count of the total number of items available for pagination in UIs.\ncount_total is only respected when offset is used. It is ignored when key\nis set.",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "pagination.reverse",
+            "description": "reverse is set to true if results are to be returned in the descending order.",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          }
+        ],
+        "tags": [
+          "Query"
+        ]
+      }
+    },
+    "/arcade/v1/credits/{player}": {
+      "get": {
+        "summary": "GetPlayerCredits queries player's available credits",
+        "operationId": "Query_GetPlayerCredits2",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/retrochain.arcade.v1.QueryGetPlayerCreditsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "player",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "Query"
+        ]
+      }
+    },
+    "/arcade/v1/games": {
+      "get": {
+        "summary": "ListGames queries all registered arcade games",
+        "operationId": "Query_ListGames2",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/retrochain.arcade.v1.QueryListGamesResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "pagination.key",
+            "description": "key is a value returned in PageResponse.next_key to begin\nquerying the next page most efficiently. Only one of offset or key\nshould be set.",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "byte"
+          },
+          {
+            "name": "pagination.offset",
+            "description": "offset is a numeric offset that can be used when key is unavailable.\nIt is less efficient than using key. Only one of offset or key should\nbe set.",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "uint64"
+          },
+          {
+            "name": "pagination.limit",
+            "description": "limit is the total number of results to be returned in the result page.\nIf left empty it will default to a value to be set by each app.",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "uint64"
+          },
+          {
+            "name": "pagination.count_total",
+            "description": "count_total is set to true  to indicate that the result set should include\na count of the total number of items available for pagination in UIs.\ncount_total is only respected when offset is used. It is ignored when key\nis set.",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "pagination.reverse",
+            "description": "reverse is set to true if results are to be returned in the descending order.",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "genre",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "GENRE_UNSPECIFIED",
+              "GENRE_SHOOTER",
+              "GENRE_PLATFORMER",
+              "GENRE_PUZZLE",
+              "GENRE_FIGHTING",
+              "GENRE_RACING",
+              "GENRE_BEAT_EM_UP",
+              "GENRE_MAZE",
+              "GENRE_PINBALL"
+            ],
+            "default": "GENRE_UNSPECIFIED"
+          },
+          {
+            "name": "active_only",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          }
+        ],
+        "tags": [
+          "Query"
+        ]
+      }
+    },
+    "/arcade/v1/games/{game_id}": {
+      "get": {
+        "summary": "GetGame queries a specific arcade game",
+        "operationId": "Query_GetGame2",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/retrochain.arcade.v1.QueryGetGameResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "game_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "Query"
+        ]
+      }
+    },
+    "/arcade/v1/highscores/{game_id}": {
+      "get": {
+        "summary": "GetHighScores queries high scores for a game",
+        "operationId": "Query_GetHighScores2",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/retrochain.arcade.v1.QueryGetHighScoresResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "game_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "uint64"
+          }
+        ],
+        "tags": [
+          "Query"
+        ]
+      }
+    },
+    "/arcade/v1/leaderboard": {
+      "get": {
+        "summary": "GetLeaderboard queries the global leaderboard",
+        "operationId": "Query_GetLeaderboard2",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/retrochain.arcade.v1.QueryGetLeaderboardResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "pagination.key",
+            "description": "key is a value returned in PageResponse.next_key to begin\nquerying the next page most efficiently. Only one of offset or key\nshould be set.",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "byte"
+          },
+          {
+            "name": "pagination.offset",
+            "description": "offset is a numeric offset that can be used when key is unavailable.\nIt is less efficient than using key. Only one of offset or key should\nbe set.",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "uint64"
+          },
+          {
+            "name": "pagination.limit",
+            "description": "limit is the total number of results to be returned in the result page.\nIf left empty it will default to a value to be set by each app.",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "uint64"
+          },
+          {
+            "name": "pagination.count_total",
+            "description": "count_total is set to true  to indicate that the result set should include\na count of the total number of items available for pagination in UIs.\ncount_total is only respected when offset is used. It is ignored when key\nis set.",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "pagination.reverse",
+            "description": "reverse is set to true if results are to be returned in the descending order.",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          }
+        ],
+        "tags": [
+          "Query"
+        ]
+      }
+    },
+    "/arcade/v1/params": {
+      "get": {
+        "summary": "Parameters queries the parameters of the module.",
+        "operationId": "Query_Params2",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/retrochain.arcade.v1.QueryParamsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "tags": [
+          "Query"
+        ]
+      }
+    },
+    "/arcade/v1/sessions/player/{player}": {
+      "get": {
+        "summary": "ListPlayerSessions queries all sessions for a player",
+        "operationId": "Query_ListPlayerSessions2",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/retrochain.arcade.v1.QueryListPlayerSessionsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "player",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "pagination.key",
+            "description": "key is a value returned in PageResponse.next_key to begin\nquerying the next page most efficiently. Only one of offset or key\nshould be set.",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "byte"
+          },
+          {
+            "name": "pagination.offset",
+            "description": "offset is a numeric offset that can be used when key is unavailable.\nIt is less efficient than using key. Only one of offset or key should\nbe set.",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "uint64"
+          },
+          {
+            "name": "pagination.limit",
+            "description": "limit is the total number of results to be returned in the result page.\nIf left empty it will default to a value to be set by each app.",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "uint64"
+          },
+          {
+            "name": "pagination.count_total",
+            "description": "count_total is set to true  to indicate that the result set should include\na count of the total number of items available for pagination in UIs.\ncount_total is only respected when offset is used. It is ignored when key\nis set.",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "pagination.reverse",
+            "description": "reverse is set to true if results are to be returned in the descending order.",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "STATUS_UNSPECIFIED",
+              "STATUS_ACTIVE",
+              "STATUS_PAUSED",
+              "STATUS_COMPLETED",
+              "STATUS_GAME_OVER"
+            ],
+            "default": "STATUS_UNSPECIFIED"
+          }
+        ],
+        "tags": [
+          "Query"
+        ]
+      }
+    },
+    "/arcade/v1/sessions/{session_id}": {
+      "get": {
+        "summary": "GetSession queries a specific game session",
+        "operationId": "Query_GetSession2",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/retrochain.arcade.v1.QueryGetSessionResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "session_id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "uint64"
+          }
+        ],
+        "tags": [
+          "Query"
+        ]
+      }
+    },
+    "/arcade/v1/stats/{player}": {
+      "get": {
+        "summary": "GetPlayerStats queries player statistics",
+        "operationId": "Query_GetPlayerStats2",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/retrochain.arcade.v1.QueryGetPlayerStatsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "player",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "Query"
+        ]
+      }
+    },
+    "/arcade/v1/tournaments": {
+      "get": {
+        "summary": "ListTournaments queries all tournaments",
+        "operationId": "Query_ListTournaments2",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/retrochain.arcade.v1.QueryListTournamentsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "pagination.key",
+            "description": "key is a value returned in PageResponse.next_key to begin\nquerying the next page most efficiently. Only one of offset or key\nshould be set.",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "byte"
+          },
+          {
+            "name": "pagination.offset",
+            "description": "offset is a numeric offset that can be used when key is unavailable.\nIt is less efficient than using key. Only one of offset or key should\nbe set.",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "uint64"
+          },
+          {
+            "name": "pagination.limit",
+            "description": "limit is the total number of results to be returned in the result page.\nIf left empty it will default to a value to be set by each app.",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "uint64"
+          },
+          {
+            "name": "pagination.count_total",
+            "description": "count_total is set to true  to indicate that the result set should include\na count of the total number of items available for pagination in UIs.\ncount_total is only respected when offset is used. It is ignored when key\nis set.",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "pagination.reverse",
+            "description": "reverse is set to true if results are to be returned in the descending order.",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "TOURNAMENT_UNSPECIFIED",
+              "TOURNAMENT_REGISTRATION",
+              "TOURNAMENT_ACTIVE",
+              "TOURNAMENT_COMPLETED",
+              "TOURNAMENT_CANCELLED"
+            ],
+            "default": "TOURNAMENT_UNSPECIFIED"
+          }
+        ],
+        "tags": [
+          "Query"
+        ]
+      }
+    },
+    "/arcade/v1/tournaments/{tournament_id}": {
+      "get": {
+        "summary": "GetTournament queries a specific tournament",
+        "operationId": "Query_GetTournament2",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/retrochain.arcade.v1.QueryGetTournamentResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "tournament_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "Query"
+        ]
+      }
+    },
+    "/retrochain/arcade/v1/achievements/{player}": {
+      "get": {
+        "summary": "ListAchievements queries all achievements for a player",
+        "operationId": "Query_ListAchievements",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/retrochain.arcade.v1.QueryListAchievementsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "player",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "pagination.key",
+            "description": "key is a value returned in PageResponse.next_key to begin\nquerying the next page most efficiently. Only one of offset or key\nshould be set.",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "byte"
+          },
+          {
+            "name": "pagination.offset",
+            "description": "offset is a numeric offset that can be used when key is unavailable.\nIt is less efficient than using key. Only one of offset or key should\nbe set.",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "uint64"
+          },
+          {
+            "name": "pagination.limit",
+            "description": "limit is the total number of results to be returned in the result page.\nIf left empty it will default to a value to be set by each app.",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "uint64"
+          },
+          {
+            "name": "pagination.count_total",
+            "description": "count_total is set to true  to indicate that the result set should include\na count of the total number of items available for pagination in UIs.\ncount_total is only respected when offset is used. It is ignored when key\nis set.",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "pagination.reverse",
+            "description": "reverse is set to true if results are to be returned in the descending order.",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          }
+        ],
+        "tags": [
+          "Query"
+        ]
+      }
+    },
+    "/retrochain/arcade/v1/credits/{player}": {
+      "get": {
+        "summary": "GetPlayerCredits queries player's available credits",
+        "operationId": "Query_GetPlayerCredits",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/retrochain.arcade.v1.QueryGetPlayerCreditsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "player",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "Query"
+        ]
+      }
+    },
+    "/retrochain/arcade/v1/games": {
+      "get": {
+        "summary": "ListGames queries all registered arcade games",
+        "operationId": "Query_ListGames",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/retrochain.arcade.v1.QueryListGamesResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "pagination.key",
+            "description": "key is a value returned in PageResponse.next_key to begin\nquerying the next page most efficiently. Only one of offset or key\nshould be set.",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "byte"
+          },
+          {
+            "name": "pagination.offset",
+            "description": "offset is a numeric offset that can be used when key is unavailable.\nIt is less efficient than using key. Only one of offset or key should\nbe set.",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "uint64"
+          },
+          {
+            "name": "pagination.limit",
+            "description": "limit is the total number of results to be returned in the result page.\nIf left empty it will default to a value to be set by each app.",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "uint64"
+          },
+          {
+            "name": "pagination.count_total",
+            "description": "count_total is set to true  to indicate that the result set should include\na count of the total number of items available for pagination in UIs.\ncount_total is only respected when offset is used. It is ignored when key\nis set.",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "pagination.reverse",
+            "description": "reverse is set to true if results are to be returned in the descending order.",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "genre",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "GENRE_UNSPECIFIED",
+              "GENRE_SHOOTER",
+              "GENRE_PLATFORMER",
+              "GENRE_PUZZLE",
+              "GENRE_FIGHTING",
+              "GENRE_RACING",
+              "GENRE_BEAT_EM_UP",
+              "GENRE_MAZE",
+              "GENRE_PINBALL"
+            ],
+            "default": "GENRE_UNSPECIFIED"
+          },
+          {
+            "name": "active_only",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          }
+        ],
+        "tags": [
+          "Query"
+        ]
+      }
+    },
+    "/retrochain/arcade/v1/games/{game_id}": {
+      "get": {
+        "summary": "GetGame queries a specific arcade game",
+        "operationId": "Query_GetGame",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/retrochain.arcade.v1.QueryGetGameResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "game_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "Query"
+        ]
+      }
+    },
+    "/retrochain/arcade/v1/highscores/{game_id}": {
+      "get": {
+        "summary": "GetHighScores queries high scores for a game",
+        "operationId": "Query_GetHighScores",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/retrochain.arcade.v1.QueryGetHighScoresResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "game_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "uint64"
+          }
+        ],
+        "tags": [
+          "Query"
+        ]
+      }
+    },
+    "/retrochain/arcade/v1/leaderboard": {
+      "get": {
+        "summary": "GetLeaderboard queries the global leaderboard",
+        "operationId": "Query_GetLeaderboard",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/retrochain.arcade.v1.QueryGetLeaderboardResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "pagination.key",
+            "description": "key is a value returned in PageResponse.next_key to begin\nquerying the next page most efficiently. Only one of offset or key\nshould be set.",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "byte"
+          },
+          {
+            "name": "pagination.offset",
+            "description": "offset is a numeric offset that can be used when key is unavailable.\nIt is less efficient than using key. Only one of offset or key should\nbe set.",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "uint64"
+          },
+          {
+            "name": "pagination.limit",
+            "description": "limit is the total number of results to be returned in the result page.\nIf left empty it will default to a value to be set by each app.",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "uint64"
+          },
+          {
+            "name": "pagination.count_total",
+            "description": "count_total is set to true  to indicate that the result set should include\na count of the total number of items available for pagination in UIs.\ncount_total is only respected when offset is used. It is ignored when key\nis set.",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "pagination.reverse",
+            "description": "reverse is set to true if results are to be returned in the descending order.",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          }
+        ],
+        "tags": [
+          "Query"
+        ]
+      }
+    },
+    "/retrochain/arcade/v1/params": {
+      "get": {
+        "summary": "Parameters queries the parameters of the module.",
+        "operationId": "Query_Params",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/retrochain.arcade.v1.QueryParamsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "tags": [
+          "Query"
+        ]
+      }
+    },
+    "/retrochain/arcade/v1/sessions/player/{player}": {
+      "get": {
+        "summary": "ListPlayerSessions queries all sessions for a player",
+        "operationId": "Query_ListPlayerSessions",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/retrochain.arcade.v1.QueryListPlayerSessionsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "player",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "pagination.key",
+            "description": "key is a value returned in PageResponse.next_key to begin\nquerying the next page most efficiently. Only one of offset or key\nshould be set.",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "byte"
+          },
+          {
+            "name": "pagination.offset",
+            "description": "offset is a numeric offset that can be used when key is unavailable.\nIt is less efficient than using key. Only one of offset or key should\nbe set.",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "uint64"
+          },
+          {
+            "name": "pagination.limit",
+            "description": "limit is the total number of results to be returned in the result page.\nIf left empty it will default to a value to be set by each app.",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "uint64"
+          },
+          {
+            "name": "pagination.count_total",
+            "description": "count_total is set to true  to indicate that the result set should include\na count of the total number of items available for pagination in UIs.\ncount_total is only respected when offset is used. It is ignored when key\nis set.",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "pagination.reverse",
+            "description": "reverse is set to true if results are to be returned in the descending order.",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "STATUS_UNSPECIFIED",
+              "STATUS_ACTIVE",
+              "STATUS_PAUSED",
+              "STATUS_COMPLETED",
+              "STATUS_GAME_OVER"
+            ],
+            "default": "STATUS_UNSPECIFIED"
+          }
+        ],
+        "tags": [
+          "Query"
+        ]
+      }
+    },
+    "/retrochain/arcade/v1/sessions/{session_id}": {
+      "get": {
+        "summary": "GetSession queries a specific game session",
+        "operationId": "Query_GetSession",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/retrochain.arcade.v1.QueryGetSessionResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "session_id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "uint64"
+          }
+        ],
+        "tags": [
+          "Query"
+        ]
+      }
+    },
+    "/retrochain/arcade/v1/stats/{player}": {
+      "get": {
+        "summary": "GetPlayerStats queries player statistics",
+        "operationId": "Query_GetPlayerStats",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/retrochain.arcade.v1.QueryGetPlayerStatsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "player",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "Query"
+        ]
+      }
+    },
+    "/retrochain/arcade/v1/tournaments": {
+      "get": {
+        "summary": "ListTournaments queries all tournaments",
+        "operationId": "Query_ListTournaments",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/retrochain.arcade.v1.QueryListTournamentsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "pagination.key",
+            "description": "key is a value returned in PageResponse.next_key to begin\nquerying the next page most efficiently. Only one of offset or key\nshould be set.",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "byte"
+          },
+          {
+            "name": "pagination.offset",
+            "description": "offset is a numeric offset that can be used when key is unavailable.\nIt is less efficient than using key. Only one of offset or key should\nbe set.",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "uint64"
+          },
+          {
+            "name": "pagination.limit",
+            "description": "limit is the total number of results to be returned in the result page.\nIf left empty it will default to a value to be set by each app.",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "uint64"
+          },
+          {
+            "name": "pagination.count_total",
+            "description": "count_total is set to true  to indicate that the result set should include\na count of the total number of items available for pagination in UIs.\ncount_total is only respected when offset is used. It is ignored when key\nis set.",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "pagination.reverse",
+            "description": "reverse is set to true if results are to be returned in the descending order.",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "TOURNAMENT_UNSPECIFIED",
+              "TOURNAMENT_REGISTRATION",
+              "TOURNAMENT_ACTIVE",
+              "TOURNAMENT_COMPLETED",
+              "TOURNAMENT_CANCELLED"
+            ],
+            "default": "TOURNAMENT_UNSPECIFIED"
+          }
+        ],
+        "tags": [
+          "Query"
+        ]
+      }
+    },
+    "/retrochain/arcade/v1/tournaments/{tournament_id}": {
+      "get": {
+        "summary": "GetTournament queries a specific tournament",
+        "operationId": "Query_GetTournament",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/retrochain.arcade.v1.QueryGetTournamentResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "tournament_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "Query"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "cosmos.base.query.v1beta1.PageRequest": {
+      "type": "object",
+      "properties": {
+        "key": {
+          "type": "string",
+          "format": "byte",
+          "description": "key is a value returned in PageResponse.next_key to begin\nquerying the next page most efficiently. Only one of offset or key\nshould be set."
+        },
+        "offset": {
+          "type": "string",
+          "format": "uint64",
+          "description": "offset is a numeric offset that can be used when key is unavailable.\nIt is less efficient than using key. Only one of offset or key should\nbe set."
+        },
+        "limit": {
+          "type": "string",
+          "format": "uint64",
+          "description": "limit is the total number of results to be returned in the result page.\nIf left empty it will default to a value to be set by each app."
+        },
+        "count_total": {
+          "type": "boolean",
+          "description": "count_total is set to true  to indicate that the result set should include\na count of the total number of items available for pagination in UIs.\ncount_total is only respected when offset is used. It is ignored when key\nis set."
+        },
+        "reverse": {
+          "type": "boolean",
+          "description": "reverse is set to true if results are to be returned in the descending order."
+        }
+      },
+      "description": "message SomeRequest {\n         Foo some_parameter = 1;\n         PageRequest pagination = 2;\n }",
+      "title": "PageRequest is to be embedded in gRPC request messages for efficient\npagination. Ex:"
+    },
+    "cosmos.base.query.v1beta1.PageResponse": {
+      "type": "object",
+      "properties": {
+        "next_key": {
+          "type": "string",
+          "format": "byte",
+          "description": "next_key is the key to be passed to PageRequest.key to\nquery the next page most efficiently. It will be empty if\nthere are no more results."
+        },
+        "total": {
+          "type": "string",
+          "format": "uint64",
+          "title": "total is total number of results available if PageRequest.count_total\nwas set, its value is undefined otherwise"
+        }
+      },
+      "description": "PageResponse is to be embedded in gRPC response messages where the\ncorresponding request message has used PageRequest.\n\n message SomeResponse {\n         repeated Bar results = 1;\n         PageResponse page = 2;\n }"
+    },
+    "google.protobuf.Any": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "google.rpc.Status": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/google.protobuf.Any"
+          }
+        }
+      }
+    },
+    "retrochain.arcade.v1.ArcadeGame": {
+      "type": "object",
+      "properties": {
+        "game_id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "genre": {
+          "$ref": "#/definitions/retrochain.arcade.v1.GameGenre"
+        },
+        "credits_per_play": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "max_players": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "multiplayer_enabled": {
+          "type": "boolean"
+        },
+        "developer": {
+          "type": "string"
+        },
+        "release_date": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "active": {
+          "type": "boolean"
+        },
+        "power_ups": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "base_difficulty": {
+          "type": "string",
+          "format": "uint64"
+        }
+      },
+      "title": "ArcadeGame represents a registered arcade game"
+    },
+    "retrochain.arcade.v1.GameGenre": {
+      "type": "string",
+      "enum": [
+        "GENRE_UNSPECIFIED",
+        "GENRE_SHOOTER",
+        "GENRE_PLATFORMER",
+        "GENRE_PUZZLE",
+        "GENRE_FIGHTING",
+        "GENRE_RACING",
+        "GENRE_BEAT_EM_UP",
+        "GENRE_MAZE",
+        "GENRE_PINBALL"
+      ],
+      "default": "GENRE_UNSPECIFIED",
+      "title": "GameGenre represents different arcade game genres"
+    },
+    "retrochain.arcade.v1.GameSession": {
+      "type": "object",
+      "properties": {
+        "session_id": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "game_id": {
+          "type": "string"
+        },
+        "player": {
+          "type": "string"
+        },
+        "credits_used": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "current_score": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "level": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "lives": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "status": {
+          "$ref": "#/definitions/retrochain.arcade.v1.SessionStatus"
+        },
+        "start_time": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "end_time": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "combo_multiplier": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "power_ups_collected": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "continues_used": {
+          "type": "string",
+          "format": "uint64"
+        }
+      },
+      "title": "GameSession represents an active gaming session"
+    },
+    "retrochain.arcade.v1.HighScore": {
+      "type": "object",
+      "properties": {
+        "game_id": {
+          "type": "string"
+        },
+        "player": {
+          "type": "string"
+        },
+        "score": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "level_reached": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "initials": {
+          "type": "string"
+        },
+        "verified": {
+          "type": "boolean"
+        },
+        "rank": {
+          "type": "string",
+          "format": "uint64"
+        }
+      },
+      "title": "HighScore represents a high score record"
+    },
+    "retrochain.arcade.v1.LeaderboardEntry": {
+      "type": "object",
+      "properties": {
+        "player": {
+          "type": "string"
+        },
+        "total_score": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "games_played": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "achievements_unlocked": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "tournaments_won": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "arcade_tokens": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "rank": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "title": {
+          "type": "string"
+        }
+      },
+      "title": "LeaderboardEntry represents a global leaderboard entry"
+    },
+    "retrochain.arcade.v1.Params": {
+      "type": "object",
+      "properties": {
+        "base_credits_cost": {
+          "type": "string",
+          "format": "uint64",
+          "title": "Base credits cost per game (in uretro)"
+        },
+        "tokens_per_thousand_points": {
+          "type": "integer",
+          "format": "int64",
+          "title": "Tokens earned per 1000 points scored"
+        },
+        "max_active_sessions": {
+          "type": "integer",
+          "format": "int64",
+          "title": "Maximum active sessions per player"
+        },
+        "continue_cost_multiplier": {
+          "type": "integer",
+          "format": "int64",
+          "title": "Continue cost multiplier (percentage)"
+        },
+        "high_score_reward": {
+          "type": "integer",
+          "format": "int64",
+          "title": "High score reward in arcade tokens"
+        },
+        "tournament_registration_fee": {
+          "type": "string",
+          "format": "uint64",
+          "title": "Tournament registration fee (in uretro)"
+        },
+        "min_difficulty": {
+          "type": "integer",
+          "format": "int64",
+          "title": "Minimum game difficulty (1-10)"
+        },
+        "max_difficulty": {
+          "type": "integer",
+          "format": "int64",
+          "title": "Maximum game difficulty (1-10)"
+        },
+        "achievement_reward_multiplier": {
+          "type": "integer",
+          "format": "int64",
+          "title": "Achievement reward multiplier"
+        },
+        "power_up_cost": {
+          "type": "integer",
+          "format": "int64",
+          "title": "Power-up cost in arcade tokens"
+        }
+      },
+      "description": "Params defines the parameters for the module."
+    },
+    "retrochain.arcade.v1.PlayerAchievement": {
+      "type": "object",
+      "properties": {
+        "player": {
+          "type": "string"
+        },
+        "achievement_id": {
+          "type": "string"
+        },
+        "game_id": {
+          "type": "string"
+        },
+        "unlocked_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "reward_tokens": {
+          "type": "string",
+          "format": "uint64"
+        }
+      },
+      "title": "PlayerAchievement represents an unlocked achievement"
+    },
+    "retrochain.arcade.v1.QueryGetGameResponse": {
+      "type": "object",
+      "properties": {
+        "game": {
+          "$ref": "#/definitions/retrochain.arcade.v1.ArcadeGame"
+        }
+      },
+      "description": "QueryGetGameResponse is response type for the Query/GetGame RPC method."
+    },
+    "retrochain.arcade.v1.QueryGetHighScoresResponse": {
+      "type": "object",
+      "properties": {
+        "scores": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/retrochain.arcade.v1.HighScore"
+          }
+        }
+      },
+      "description": "QueryGetHighScoresResponse is response type for the Query/GetHighScores RPC method."
+    },
+    "retrochain.arcade.v1.QueryGetLeaderboardResponse": {
+      "type": "object",
+      "properties": {
+        "entries": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/retrochain.arcade.v1.LeaderboardEntry"
+          }
+        },
+        "pagination": {
+          "$ref": "#/definitions/cosmos.base.query.v1beta1.PageResponse"
+        }
+      },
+      "description": "QueryGetLeaderboardResponse is response type for the Query/GetLeaderboard RPC method."
+    },
+    "retrochain.arcade.v1.QueryGetPlayerCreditsResponse": {
+      "type": "object",
+      "properties": {
+        "credits": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "arcade_tokens": {
+          "type": "string",
+          "format": "uint64"
+        }
+      },
+      "description": "QueryGetPlayerCreditsResponse is response type for the Query/GetPlayerCredits RPC method."
+    },
+    "retrochain.arcade.v1.QueryGetPlayerStatsResponse": {
+      "type": "object",
+      "properties": {
+        "stats": {
+          "$ref": "#/definitions/retrochain.arcade.v1.LeaderboardEntry"
+        },
+        "total_credits_spent": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "active_sessions": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "favorite_games": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "QueryGetPlayerStatsResponse is response type for the Query/GetPlayerStats RPC method."
+    },
+    "retrochain.arcade.v1.QueryGetSessionResponse": {
+      "type": "object",
+      "properties": {
+        "session": {
+          "$ref": "#/definitions/retrochain.arcade.v1.GameSession"
+        }
+      },
+      "description": "QueryGetSessionResponse is response type for the Query/GetSession RPC method."
+    },
+    "retrochain.arcade.v1.QueryGetTournamentResponse": {
+      "type": "object",
+      "properties": {
+        "tournament": {
+          "$ref": "#/definitions/retrochain.arcade.v1.Tournament"
+        }
+      },
+      "description": "QueryGetTournamentResponse is response type for the Query/GetTournament RPC method."
+    },
+    "retrochain.arcade.v1.QueryListAchievementsResponse": {
+      "type": "object",
+      "properties": {
+        "achievements": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/retrochain.arcade.v1.PlayerAchievement"
+          }
+        },
+        "pagination": {
+          "$ref": "#/definitions/cosmos.base.query.v1beta1.PageResponse"
+        }
+      },
+      "description": "QueryListAchievementsResponse is response type for the Query/ListAchievements RPC method."
+    },
+    "retrochain.arcade.v1.QueryListGamesResponse": {
+      "type": "object",
+      "properties": {
+        "games": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/retrochain.arcade.v1.ArcadeGame"
+          }
+        },
+        "pagination": {
+          "$ref": "#/definitions/cosmos.base.query.v1beta1.PageResponse"
+        }
+      },
+      "description": "QueryListGamesResponse is response type for the Query/ListGames RPC method."
+    },
+    "retrochain.arcade.v1.QueryListPlayerSessionsResponse": {
+      "type": "object",
+      "properties": {
+        "sessions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/retrochain.arcade.v1.GameSession"
+          }
+        },
+        "pagination": {
+          "$ref": "#/definitions/cosmos.base.query.v1beta1.PageResponse"
+        }
+      },
+      "description": "QueryListPlayerSessionsResponse is response type for the Query/ListPlayerSessions RPC method."
+    },
+    "retrochain.arcade.v1.QueryListTournamentsResponse": {
+      "type": "object",
+      "properties": {
+        "tournaments": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/retrochain.arcade.v1.Tournament"
+          }
+        },
+        "pagination": {
+          "$ref": "#/definitions/cosmos.base.query.v1beta1.PageResponse"
+        }
+      },
+      "description": "QueryListTournamentsResponse is response type for the Query/ListTournaments RPC method."
+    },
+    "retrochain.arcade.v1.QueryParamsResponse": {
+      "type": "object",
+      "properties": {
+        "params": {
+          "$ref": "#/definitions/retrochain.arcade.v1.Params",
+          "description": "params holds all the parameters of this module."
+        }
+      },
+      "description": "QueryParamsResponse is response type for the Query/Params RPC method."
+    },
+    "retrochain.arcade.v1.SessionStatus": {
+      "type": "string",
+      "enum": [
+        "STATUS_UNSPECIFIED",
+        "STATUS_ACTIVE",
+        "STATUS_PAUSED",
+        "STATUS_COMPLETED",
+        "STATUS_GAME_OVER"
+      ],
+      "default": "STATUS_UNSPECIFIED",
+      "title": "SessionStatus represents the current status of a game session"
+    },
+    "retrochain.arcade.v1.Tournament": {
+      "type": "object",
+      "properties": {
+        "tournament_id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "game_id": {
+          "type": "string"
+        },
+        "start_time": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "end_time": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "entry_fee": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "prize_pool": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "participants": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/retrochain.arcade.v1.TournamentParticipant"
+          }
+        },
+        "status": {
+          "$ref": "#/definitions/retrochain.arcade.v1.TournamentStatus"
+        },
+        "winner": {
+          "type": "string"
+        }
+      },
+      "title": "Tournament represents an arcade tournament"
+    },
+    "retrochain.arcade.v1.TournamentParticipant": {
+      "type": "object",
+      "properties": {
+        "player": {
+          "type": "string"
+        },
+        "best_score": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "rank": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "qualified": {
+          "type": "boolean"
+        }
+      },
+      "title": "TournamentParticipant represents a tournament participant"
+    },
+    "retrochain.arcade.v1.TournamentStatus": {
+      "type": "string",
+      "enum": [
+        "TOURNAMENT_UNSPECIFIED",
+        "TOURNAMENT_REGISTRATION",
+        "TOURNAMENT_ACTIVE",
+        "TOURNAMENT_COMPLETED",
+        "TOURNAMENT_CANCELLED"
+      ],
+      "default": "TOURNAMENT_UNSPECIFIED",
+      "title": "TournamentStatus represents tournament state"
+    }
+  }
+}

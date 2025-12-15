@@ -14,62 +14,98 @@ option go_package = "retrochain/x/arcade/types";
 service Query {
   // Parameters queries the parameters of the module.
   rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
-    option (google.api.http).get = "/retrochain/arcade/v1/params";
+    option (google.api.http) = {
+      get: "/retrochain/arcade/v1/params"
+      additional_bindings { get: "/arcade/v1/params" }
+    };
   }
   
   // ListGames queries all registered arcade games
   rpc ListGames(QueryListGamesRequest) returns (QueryListGamesResponse) {
-    option (google.api.http).get = "/retrochain/arcade/v1/games";
+    option (google.api.http) = {
+      get: "/retrochain/arcade/v1/games"
+      additional_bindings { get: "/arcade/v1/games" }
+    };
   }
   
   // GetGame queries a specific arcade game
   rpc GetGame(QueryGetGameRequest) returns (QueryGetGameResponse) {
-    option (google.api.http).get = "/retrochain/arcade/v1/games/{game_id}";
+    option (google.api.http) = {
+      get: "/retrochain/arcade/v1/games/{game_id}"
+      additional_bindings { get: "/arcade/v1/games/{game_id}" }
+    };
   }
   
   // GetSession queries a specific game session
   rpc GetSession(QueryGetSessionRequest) returns (QueryGetSessionResponse) {
-    option (google.api.http).get = "/retrochain/arcade/v1/sessions/{session_id}";
+    option (google.api.http) = {
+      get: "/retrochain/arcade/v1/sessions/{session_id}"
+      additional_bindings { get: "/arcade/v1/sessions/{session_id}" }
+    };
   }
   
   // ListPlayerSessions queries all sessions for a player
   rpc ListPlayerSessions(QueryListPlayerSessionsRequest) returns (QueryListPlayerSessionsResponse) {
-    option (google.api.http).get = "/retrochain/arcade/v1/sessions/player/{player}";
+    option (google.api.http) = {
+      get: "/retrochain/arcade/v1/sessions/player/{player}"
+      additional_bindings { get: "/arcade/v1/sessions/player/{player}" }
+    };
   }
   
   // GetHighScores queries high scores for a game
   rpc GetHighScores(QueryGetHighScoresRequest) returns (QueryGetHighScoresResponse) {
-    option (google.api.http).get = "/retrochain/arcade/v1/highscores/{game_id}";
+    option (google.api.http) = {
+      get: "/retrochain/arcade/v1/highscores/{game_id}"
+      additional_bindings { get: "/arcade/v1/highscores/{game_id}" }
+    };
   }
   
   // GetLeaderboard queries the global leaderboard
   rpc GetLeaderboard(QueryGetLeaderboardRequest) returns (QueryGetLeaderboardResponse) {
-    option (google.api.http).get = "/retrochain/arcade/v1/leaderboard";
+    option (google.api.http) = {
+      get: "/retrochain/arcade/v1/leaderboard"
+      additional_bindings { get: "/arcade/v1/leaderboard" }
+    };
   }
   
   // GetPlayerStats queries player statistics
   rpc GetPlayerStats(QueryGetPlayerStatsRequest) returns (QueryGetPlayerStatsResponse) {
-    option (google.api.http).get = "/retrochain/arcade/v1/stats/{player}";
+    option (google.api.http) = {
+      get: "/retrochain/arcade/v1/stats/{player}"
+      additional_bindings { get: "/arcade/v1/stats/{player}" }
+    };
   }
   
   // ListAchievements queries all achievements for a player
   rpc ListAchievements(QueryListAchievementsRequest) returns (QueryListAchievementsResponse) {
-    option (google.api.http).get = "/retrochain/arcade/v1/achievements/{player}";
+    option (google.api.http) = {
+      get: "/retrochain/arcade/v1/achievements/{player}"
+      additional_bindings { get: "/arcade/v1/achievements/{player}" }
+    };
   }
   
   // ListTournaments queries all tournaments
   rpc ListTournaments(QueryListTournamentsRequest) returns (QueryListTournamentsResponse) {
-    option (google.api.http).get = "/retrochain/arcade/v1/tournaments";
+    option (google.api.http) = {
+      get: "/retrochain/arcade/v1/tournaments"
+      additional_bindings { get: "/arcade/v1/tournaments" }
+    };
   }
   
   // GetTournament queries a specific tournament
   rpc GetTournament(QueryGetTournamentRequest) returns (QueryGetTournamentResponse) {
-    option (google.api.http).get = "/retrochain/arcade/v1/tournaments/{tournament_id}";
+    option (google.api.http) = {
+      get: "/retrochain/arcade/v1/tournaments/{tournament_id}"
+      additional_bindings { get: "/arcade/v1/tournaments/{tournament_id}" }
+    };
   }
   
   // GetPlayerCredits queries player's available credits
   rpc GetPlayerCredits(QueryGetPlayerCreditsRequest) returns (QueryGetPlayerCreditsResponse) {
-    option (google.api.http).get = "/retrochain/arcade/v1/credits/{player}";
+    option (google.api.http) = {
+      get: "/retrochain/arcade/v1/credits/{player}"
+      additional_bindings { get: "/arcade/v1/credits/{player}" }
+    };
   }
 }
 

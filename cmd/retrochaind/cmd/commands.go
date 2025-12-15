@@ -47,11 +47,17 @@ func initRootCmd(
 	})
 
 	// add keybase, auxiliary RPC, query, genesis, and tx child commands
+	queryCmd := queryCommand()
+	txCmd := txCommand()
+	// Add legacy module CLI commands (for modules that don't provide autocli).
+	basicManager.AddQueryCommands(queryCmd)
+	basicManager.AddTxCommands(txCmd)
+
 	rootCmd.AddCommand(
 		server.StatusCommand(),
 		genutilcli.Commands(txConfig, basicManager, app.DefaultNodeHome),
-		queryCommand(),
-		txCommand(),
+		queryCmd,
+		txCmd,
 		keys.Commands(),
 	)
 }

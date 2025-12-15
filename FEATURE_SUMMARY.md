@@ -201,7 +201,8 @@
 - ? Symbol: RETRO
 - ? Base: uretro
 - ? Decimals: 6
-- ? Genesis supply: 21,000,000 RETRO
+- ? Dev template genesis supply (`config.yml`): 21,000,000 RETRO
+- ? Running network genesis supply: 100,000,000 RETRO (see `TOKENOMICS.md`)
 - ? Inflation enabled
 - ? Staking rewards
 - ? Governance voting power
@@ -216,10 +217,9 @@
 - ? Transaction fees
 
 #### Distribution
-- ? Alice: 10M RETRO (Validator)
-- ? Bob: 5M RETRO (Player)
-- ? Dev: 6M RETRO (Developer)
-- ? Faucet for testing
+- ? Dev template (`config.yml`) accounts: Alice 10M, Bob 5M, Dev 6M (local dev)
+- ? Faucet for testing (dev/test networks)
+- ? Running network (`retrochain-mainnet`) genesis/treasury differs (see `TOKENOMICS.md`)
 - ? Inflation for rewards
 
 ---
@@ -258,7 +258,7 @@
 - ? Arcade module parameters
 - ? Staking parameters
 - ? Governance parameters
-- ? Faucet configuration
+- ? Faucet configuration (dev/test networks)
 
 #### Module Parameters (All Configurable)
 - ? Credit pricing
@@ -317,7 +317,7 @@
 #### Testing Ready
 - ? Genesis configuration
 - ? Test accounts
-- ? Faucet setup
+- ? Faucet setup (dev/test networks)
 - ? Example games
 - ? Parameter defaults
 
@@ -344,7 +344,7 @@
 2. Set up validators
 3. Configure monitoring
 4. Set up block explorer
-5. Deploy faucet
+5. Deploy faucet (dev/test networks)
 6. Create documentation site
 
 ---

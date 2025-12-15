@@ -3,14 +3,20 @@ package app
 import (
 	"cosmossdk.io/core/appmodule"
 	storetypes "cosmossdk.io/store/types"
+	"path/filepath"
+
+	wasm "github.com/CosmWasm/wasmd/x/wasm"
+	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
+	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
+	clientflags "github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/runtime"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	distrkeeper "github.com/cosmos/cosmos-sdk/x/distribution/keeper"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
-	
-	arcademodule "retrochain/x/arcade/module"
+
 	icamodule "github.com/cosmos/ibc-go/v10/modules/apps/27-interchain-accounts"
 	icacontroller "github.com/cosmos/ibc-go/v10/modules/apps/27-interchain-accounts/controller"
 	icacontrollerkeeper "github.com/cosmos/ibc-go/v10/modules/apps/27-interchain-accounts/controller/keeper"
@@ -32,22 +38,23 @@ import (
 	ibckeeper "github.com/cosmos/ibc-go/v10/modules/core/keeper"
 	solomachine "github.com/cosmos/ibc-go/v10/modules/light-clients/06-solomachine"
 	ibctm "github.com/cosmos/ibc-go/v10/modules/light-clients/07-tendermint"
+	"github.com/spf13/cast"
 )
 
 // registerIBCModules register IBC keepers and non dependency inject modules.
 func (app *App) registerIBCModules(appOpts servertypes.AppOptions) error {
+	homePath := cast.ToString(appOpts.Get(clientflags.FlagHome))
+
 	// set up non depinject support modules store keys
 	if err := app.RegisterStores(
 		storetypes.NewKVStoreKey(ibcexported.StoreKey),
 		storetypes.NewKVStoreKey(ibctransfertypes.StoreKey),
 		storetypes.NewKVStoreKey(icahosttypes.StoreKey),
 		storetypes.NewKVStoreKey(icacontrollertypes.StoreKey),
-		storetypes.NewKVStoreKey("arcade"),
-		storetypes.NewMemoryStoreKey("arcade_mem"),
+		storetypes.NewKVStoreKey(wasmtypes.StoreKey),
 	); err != nil {
 		return err
 	}
-
 	// register the key tables for legacy param subspaces
 	keyTable := ibcclienttypes.ParamKeyTable()
 	keyTable.RegisterParamSet(&ibcconnectiontypes.Params{})
@@ -103,23 +110,52 @@ func (app *App) registerIBCModules(appOpts servertypes.AppOptions) error {
 		govModuleAddr,
 	)
 
+	wasmDir := filepath.Join(homePath, "wasm")
+	nodeConfig, err := wasm.ReadNodeConfig(appOpts)
+	if err != nil {
+		return err
+	}
+
+	app.WasmKeeper = wasmkeeper.NewKeeper(
+		app.appCodec,
+		runtime.NewKVStoreService(app.GetKey(wasmtypes.StoreKey)),
+		app.AuthKeeper,
+		app.BankKeeper,
+		app.StakingKeeper,
+		distrkeeper.NewQuerier(app.DistrKeeper),
+		app.IBCKeeper.ChannelKeeper,
+		app.IBCKeeper.ChannelKeeper,
+		app.IBCKeeper.ChannelKeeperV2,
+		app.TransferKeeper,
+		app.MsgServiceRouter(),
+		app.GRPCQueryRouter(),
+		wasmDir,
+		nodeConfig,
+		wasmtypes.VMConfig{},
+		wasmkeeper.BuiltInCapabilities(),
+		govModuleAddr,
+	)
+
 	// create IBC module from bottom to top of stack
 	var (
 		transferStack      porttypes.IBCModule = ibctransfer.NewIBCModule(app.TransferKeeper)
 		transferStackV2    ibcapi.IBCModule    = ibctransferv2.NewIBCModule(app.TransferKeeper)
 		icaControllerStack porttypes.IBCModule = icacontroller.NewIBCMiddleware(app.ICAControllerKeeper)
 		icaHostStack       porttypes.IBCModule = icahost.NewIBCModule(app.ICAHostKeeper)
+		wasmStack          porttypes.IBCModule = wasm.NewIBCHandler(app.WasmKeeper, app.IBCKeeper.ChannelKeeper, app.TransferKeeper, app.IBCKeeper.ChannelKeeper)
 	)
 
 	// create IBC v1 router, add transfer route, then set it on the keeper
 	ibcRouter := porttypes.NewRouter().
 		AddRoute(ibctransfertypes.ModuleName, transferStack).
 		AddRoute(icacontrollertypes.SubModuleName, icaControllerStack).
-		AddRoute(icahosttypes.SubModuleName, icaHostStack)
+		AddRoute(icahosttypes.SubModuleName, icaHostStack).
+		AddRoute(wasmtypes.ModuleName, wasmStack)
 
 	// create IBC v2 router, add transfer route, then set it on the keeper
 	ibcv2Router := ibcapi.NewRouter().
-		AddRoute(ibctransfertypes.PortID, transferStackV2)
+		AddRoute(ibctransfertypes.PortID, transferStackV2).
+		AddPrefixRoute(wasmkeeper.PortIDPrefixV2, wasmkeeper.NewIBC2Handler(app.WasmKeeper))
 
 	// this line is used by starport scaffolding # ibc/app/module
 
@@ -135,19 +171,17 @@ func (app *App) registerIBCModules(appOpts servertypes.AppOptions) error {
 	soloLightClientModule := solomachine.NewLightClientModule(app.appCodec, storeProvider)
 	clientKeeper.AddRoute(solomachine.ModuleName, &soloLightClientModule)
 
-	// register IBC modules and arcade module
-	arcadeModule := arcademodule.NewAppModule(app.appCodec, app.ArcadeKeeper, app.AuthKeeper, app.BankKeeper)
+	// register IBC modules
 	if err := app.RegisterModules(
 		ibc.NewAppModule(app.IBCKeeper),
 		ibctransfer.NewAppModule(app.TransferKeeper),
 		icamodule.NewAppModule(&app.ICAControllerKeeper, &app.ICAHostKeeper),
 		ibctm.NewAppModule(tmLightClientModule),
 		solomachine.NewAppModule(soloLightClientModule),
-		arcadeModule,
+		wasm.NewAppModule(app.appCodec, &app.WasmKeeper, app.StakingKeeper, app.AuthKeeper, app.BankKeeper, app.MsgServiceRouter(), nil),
 	); err != nil {
 		return err
 	}
-
 	return nil
 }
 

@@ -1,0 +1,312 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "retrochain/btcstake/v1/query.proto",
+    "version": "version not set"
+  },
+  "tags": [
+    {
+      "name": "Query"
+    }
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/btcstake/v1/params": {
+      "get": {
+        "operationId": "Query_Params2",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/retrochain.btcstake.v1.QueryParamsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "tags": [
+          "Query"
+        ]
+      }
+    },
+    "/btcstake/v1/pending_rewards/{address}": {
+      "get": {
+        "operationId": "Query_PendingRewards2",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/retrochain.btcstake.v1.QueryPendingRewardsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "address",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "Query"
+        ]
+      }
+    },
+    "/btcstake/v1/pool": {
+      "get": {
+        "operationId": "Query_Pool2",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/retrochain.btcstake.v1.QueryPoolResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "tags": [
+          "Query"
+        ]
+      }
+    },
+    "/btcstake/v1/stake/{address}": {
+      "get": {
+        "operationId": "Query_Stake2",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/retrochain.btcstake.v1.QueryStakeResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "address",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "Query"
+        ]
+      }
+    },
+    "/retrochain/btcstake/v1/params": {
+      "get": {
+        "operationId": "Query_Params",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/retrochain.btcstake.v1.QueryParamsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "tags": [
+          "Query"
+        ]
+      }
+    },
+    "/retrochain/btcstake/v1/pending_rewards/{address}": {
+      "get": {
+        "operationId": "Query_PendingRewards",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/retrochain.btcstake.v1.QueryPendingRewardsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "address",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "Query"
+        ]
+      }
+    },
+    "/retrochain/btcstake/v1/pool": {
+      "get": {
+        "operationId": "Query_Pool",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/retrochain.btcstake.v1.QueryPoolResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "tags": [
+          "Query"
+        ]
+      }
+    },
+    "/retrochain/btcstake/v1/stake/{address}": {
+      "get": {
+        "operationId": "Query_Stake",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/retrochain.btcstake.v1.QueryStakeResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "address",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "Query"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "google.protobuf.Any": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "google.rpc.Status": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/google.protobuf.Any"
+          }
+        }
+      }
+    },
+    "retrochain.btcstake.v1.Params": {
+      "type": "object",
+      "properties": {
+        "allowed_denom": {
+          "type": "string",
+          "description": "allowed_denom is the IBC denom (e.g. ibc/...) that can be staked."
+        }
+      },
+      "description": "Params defines module parameters."
+    },
+    "retrochain.btcstake.v1.QueryParamsResponse": {
+      "type": "object",
+      "properties": {
+        "params": {
+          "$ref": "#/definitions/retrochain.btcstake.v1.Params"
+        }
+      }
+    },
+    "retrochain.btcstake.v1.QueryPendingRewardsResponse": {
+      "type": "object",
+      "properties": {
+        "pending_uretro": {
+          "type": "string"
+        }
+      }
+    },
+    "retrochain.btcstake.v1.QueryPoolResponse": {
+      "type": "object",
+      "properties": {
+        "allowed_denom": {
+          "type": "string"
+        },
+        "total_staked_amount": {
+          "type": "string"
+        },
+        "reward_balance_uretro": {
+          "type": "string"
+        },
+        "undistributed_uretro": {
+          "type": "string"
+        },
+        "reward_index": {
+          "type": "string"
+        }
+      }
+    },
+    "retrochain.btcstake.v1.QueryStakeResponse": {
+      "type": "object",
+      "properties": {
+        "staked_amount": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "messages": [
+    {
+      "@type": "/retrochain.btcstake.v1.MsgUpdateParams",
+      "authority": "cosmos10d07y265gmmuvt4z0w9aw880jnsr700j6zn9kn",
+      "params": {
+        "allowed_denom": "REPLACE_WITH_WBTC_IBC_DENOM"
+      }
+    }
+  ],
+  "metadata": "",
+  "deposit": "50000000uretro",
+  "title": "RC1: Set btcstake allowed denom (EDIT DENOM)",
+  "summary": "Sets x/btcstake params.allowed_denom to the IBC denom for wrapped BTC (WBTC). NOTE: Edit the denom before submitting.",
+  "expedited": true
+}

@@ -34,7 +34,7 @@ RetroChain supports multiple classic arcade game genres:
 - **Token Symbol**: RETRO
 - **Base Denom**: uretro (micro-retro)
 - **Decimals**: 6
-- **Total Genesis Supply**: 21,000,000 RETRO
+- **Genesis Supply**: Dev template (`config.yml`) is 21,000,000 RETRO; the running network is 100,000,000 RETRO at genesis (see `TOKENOMICS.md`)
 - **Use Cases**:
   - Buy arcade credits
   - Purchase power-ups
@@ -78,13 +78,24 @@ cd retrochain
 ignite chain serve
 ```
 
+### Secrets & local state (important)
+
+This repo intentionally does **not** include any real **mnemonics**, **private keys**, or a canonical mainnet `genesis.json`.
+
+- Generate your own keys locally (e.g. `retrochaind keys add ...`) and keep mnemonics/private keys out of git.
+- Node state and key material live under your local home directory (e.g. `$HOME/.retrochaind/`) and should never be committed.
+- For running a node (beyond `ignite chain serve`), start with `QUICK_REFERENCE.md` and `PRODUCTION_READINESS.md`.
+
 The `serve` command will:
 - Install dependencies
 - Build the chain
 - Initialize with genesis accounts
 - Start the blockchain in development mode
 
-### Default Accounts
+### Default Accounts (dev template)
+
+These accounts are the **local dev template** accounts created by `ignite chain serve` from `config.yml`.
+They are **not** the balances/allocations of the running network (`retrochain-mainnet`).
 
 ```
 ?? Alice (Validator)
@@ -100,7 +111,7 @@ The `serve` command will:
 
 ### Faucet
 
-Get free RETRO tokens for testing:
+Get free RETRO tokens for testing (dev/test networks only):
 - **Endpoint**: http://0.0.0.0:4500
 - **Amount per request**: 10 RETRO
 - **Max per address**: 1,000 RETRO
@@ -237,7 +248,7 @@ retrochaind tx arcade submit-tournament-score [tournament-id] [score] --from ali
 
 Your blockchain can be configured with `config.yml`. Key settings:
 
-- **Chain ID**: retrochain-arcade-1
+- **Chain ID**: dev template (`config.yml`) is `retrochain-arcade-1`; running network is `retrochain-mainnet`
 - **Staking Denom**: uretro
 - **Genesis Accounts**: Alice, Bob, Dev
 - **API**: http://0.0.0.0:1317

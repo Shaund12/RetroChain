@@ -9,18 +9,13 @@ import (
 
 	"cosmossdk.io/collections"
 	errorsmod "cosmossdk.io/errors"
-	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-// RewardTokensPerThousandPoints defines how many uretro tokens are rewarded per 1000 points scored.
-const RewardTokensPerThousandPoints = 1000
-
 // EndSession handles ending a game session and distributing rewards.
 // It validates the session ownership, marks it as completed, and rewards the player based on score.
-func (k *msgServer) EndSession(ctx context.Context, sessionID uint64, player string) (*types.GameSession, error) {
-	playerAddr, err := k.addressCodec.StringToBytes(player)
-	if err != nil {
+func (k *msgServer) endSessionInternal(ctx context.Context, sessionID uint64, player string, finalScore uint64, finalLevel uint64) (*types.GameSession, error) {
+	if _, err := k.addressCodec.StringToBytes(player); err != nil {
 		return nil, errorsmod.Wrap(err, "invalid player address")
 	}
 
@@ -43,26 +38,37 @@ func (k *msgServer) EndSession(ctx context.Context, sessionID uint64, player str
 		return nil, errorsmod.Wrap(types.ErrInvalidRequest, "session is not active")
 	}
 
+	params, err := k.getParams(ctx)
+	if err != nil {
+		return nil, errorsmod.Wrap(err, "failed to load params")
+	}
+
 	// Get current block time
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
-	endTime := sdkCtx.BlockTime().Unix()
+	endTime := sdkCtx.BlockTime()
+
+	// Update final score/level if provided
+	if finalScore > session.CurrentScore {
+		session.CurrentScore = finalScore
+	}
+	if finalLevel > 0 {
+		session.Level = finalLevel
+	}
 
 	// Mark session as completed
 	session.Status = types.SessionStatusCompleted
-	session.EndTime = endTime
+	session.EndTime = &endTime
 
 	// Store the updated session
 	if err := k.SetSession(ctx, session); err != nil {
 		return nil, errorsmod.Wrap(err, "failed to update session")
 	}
 
-	// Calculate and distribute rewards based on score
-	// Reward: 1000 uretro per 1000 points (1:1 ratio per point)
+	// Calculate and distribute rewards based on score (arcade tokens)
 	if session.CurrentScore > 0 {
-		rewardAmount := (session.CurrentScore / 1000) * RewardTokensPerThousandPoints
+		rewardAmount := (session.CurrentScore / 1000) * uint64(params.TokensPerThousandPoints)
 		if rewardAmount > 0 {
-			coins := sdk.NewCoins(sdk.NewCoin("uretro", math.NewIntFromUint64(rewardAmount)))
-			if err := k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, playerAddr, coins); err != nil {
+			if err := k.updateLeaderboard(ctx, player, 0, 0, 0, 0, rewardAmount); err != nil {
 				// Don't fail the session end if rewards fail - just log the event
 				sdkCtx.EventManager().EmitEvent(
 					sdk.NewEvent(
@@ -90,7 +96,7 @@ func (k *msgServer) EndSession(ctx context.Context, sessionID uint64, player str
 		sdk.NewEvent(
 			types.EventSessionEnded,
 			sdk.NewAttribute(types.AttrSessionID, strconv.FormatUint(sessionID, 10)),
-			sdk.NewAttribute(types.AttrGameID, session.GameID),
+			sdk.NewAttribute(types.AttrGameID, session.GameId),
 			sdk.NewAttribute(types.AttrPlayer, player),
 			sdk.NewAttribute(types.AttrScore, strconv.FormatUint(session.CurrentScore, 10)),
 		),
@@ -102,7 +108,7 @@ func (k *msgServer) EndSession(ctx context.Context, sessionID uint64, player str
 			sdk.NewEvent(
 				types.EventHighScore,
 				sdk.NewAttribute(types.AttrSessionID, strconv.FormatUint(sessionID, 10)),
-				sdk.NewAttribute(types.AttrGameID, session.GameID),
+				sdk.NewAttribute(types.AttrGameID, session.GameId),
 				sdk.NewAttribute(types.AttrPlayer, player),
 				sdk.NewAttribute(types.AttrScore, strconv.FormatUint(session.CurrentScore, 10)),
 			),
@@ -113,7 +119,7 @@ func (k *msgServer) EndSession(ctx context.Context, sessionID uint64, player str
 }
 
 // GameOver handles ending a session when the player loses (game over).
-func (k *msgServer) GameOver(ctx context.Context, sessionID uint64, player string) (*types.GameSession, error) {
+func (k *msgServer) gameOverInternal(ctx context.Context, sessionID uint64, player string) (*types.GameSession, error) {
 	playerAddr, err := k.addressCodec.StringToBytes(player)
 	if err != nil {
 		return nil, errorsmod.Wrap(err, "invalid player address")
@@ -141,11 +147,11 @@ func (k *msgServer) GameOver(ctx context.Context, sessionID uint64, player strin
 
 	// Get current block time
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
-	endTime := sdkCtx.BlockTime().Unix()
+	endTime := sdkCtx.BlockTime()
 
 	// Mark session as game over
 	session.Status = types.SessionStatusGameOver
-	session.EndTime = endTime
+	session.EndTime = &endTime
 
 	// Store the updated session
 	if err := k.SetSession(ctx, session); err != nil {
@@ -157,11 +163,22 @@ func (k *msgServer) GameOver(ctx context.Context, sessionID uint64, player strin
 		sdk.NewEvent(
 			types.EventGameOver,
 			sdk.NewAttribute(types.AttrSessionID, strconv.FormatUint(sessionID, 10)),
-			sdk.NewAttribute(types.AttrGameID, session.GameID),
+			sdk.NewAttribute(types.AttrGameID, session.GameId),
 			sdk.NewAttribute(types.AttrPlayer, player),
 			sdk.NewAttribute(types.AttrScore, strconv.FormatUint(session.CurrentScore, 10)),
 		),
 	)
+
+	if _, err := k.upsertHighScore(ctx, session.GameId, session.Player, session.CurrentScore, session.Level, endTime); err == nil {
+		_ = k.updateLeaderboard(ctx, session.Player, session.CurrentScore, 0, 0, 0, 0)
+	}
+	// Record high score and leaderboard totals
+	if _, err := k.upsertHighScore(ctx, session.GameId, session.Player, session.CurrentScore, session.Level, endTime); err == nil {
+		// ignore high score error; rewards handled above
+	}
+	if err := k.updateLeaderboard(ctx, session.Player, session.CurrentScore, 0, 0, 0, 0); err != nil {
+		return nil, errorsmod.Wrap(err, "failed to update leaderboard")
+	}
 
 	return &session, nil
 }

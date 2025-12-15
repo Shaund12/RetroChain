@@ -1,0 +1,20 @@
+[workspace]
+resolver = "2"
+members = [
+  "ra_cw20",
+  "ra_converter",
+]
+
+[workspace.package]
+edition = "2021"
+license = "Apache-2.0"
+
+[workspace.dependencies]
+cosmwasm-std = "1.5"
+cosmwasm-schema = "1.5"
+cw2 = "1"
+cw20 = "1"
+cw20-base = { version = "1", features = ["library"] }
+cw-storage-plus = "1"
+serde = { version = "1", features = ["derive"] }
+thiserror = "1"

@@ -3,7 +3,52 @@ vue/dist
 release/
 .idea/
 .vscode/
+.vs/
 .DS_Store
 *.dot
 *.log
 *.ign
+
+# Local databases (never commit)
+*.db
+*.sqlite
+*.sqlite3
+
+# Local artifacts and secrets
+dist/
+build/
+migration-current/
+retrochaind
+third_party/
+.venv/
+tools/__pycache__/
+*.pyc
+docs/api/
+docs/arcade/
+docs/static/cosmos-sdk-swagger.yaml
+
+# Frontend build artifacts
+retrochain-explorer/node_modules/
+retrochain-explorer/dist/
+retrochain-explorer/.vite/
+retrochain-explorer/.turbo/
+retrochain-explorer/.cache/
+
+# Rust/CosmWasm build artifacts
+contracts/**/target/
+
+# Secrets / credentials (never commit)
+tools/ibc/hermes/config.toml
+.hermes/
+*.mnemonic
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+
+# Local env files (keep examples)
+.env
+.env.*
+!*.env.example
+!.env.example

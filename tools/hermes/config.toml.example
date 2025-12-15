@@ -1,0 +1,84 @@
+# Hermes config template for an IBC transfer route between Cosmos Hub (ATOM) and RetroChain (RETRO).
+#
+# Copy to: ~/.hermes/config.toml
+# Then edit endpoints, key_name, gas_price, and trusting_periods.
+#
+# Notes:
+# - RetroChain chain-id (running network): retrochain-mainnet
+# - RetroChain base denom: uretro
+# - RetroChain address prefix: cosmos
+# - RetroChain default ports (local): RPC 26657, gRPC 9090, WS 26657/websocket
+
+[global]
+log_level = "info"
+
+[mode]
+[mode.clients]
+enabled = true
+refresh = true
+misbehaviour = true
+
+[mode.connections]
+enabled = true
+
+[mode.channels]
+enabled = true
+
+[mode.packets]
+enabled = true
+clear_interval = 100
+clear_on_start = true
+tx_confirmation = true
+
+[[chains]]
+id = "retrochain-mainnet"
+# If Hermes is running on the same machine as your RetroChain node, these defaults usually work.
+rpc_addr = "http://localhost:26657"
+grpc_addr = "http://localhost:9090"
+websocket_addr = "ws://localhost:26657/websocket"
+
+rpc_timeout = "10s"
+account_prefix = "cosmos"
+key_name = "retro_relayer"
+store_prefix = "ibc"
+
+# Adjust gas_price to match your chain's minimum gas price.
+# (If your node enforces min gas prices and this is too low, Hermes txs will fail.)
+gas_price = { price = 0.005, denom = "uretro" }
+
+# These values are typical defaults; tune as needed.
+max_gas = 3000000
+max_msg_num = 30
+max_tx_size = 2097152
+clock_drift = "5s"
+trust_threshold = { numerator = "1", denominator = "3" }
+
+# IMPORTANT: set trusting_period to < unbonding_time.
+# RetroChain unbonding time is typically 21 days (1814400s) on many networks,
+# but confirm your running chain params before finalizing.
+trusting_period = "14days"
+
+[[chains]]
+id = "cosmoshub-4"
+# Replace with reliable public/private endpoints.
+# Hermes needs BOTH RPC and gRPC.
+rpc_addr = "https://REPLACE_ME_HUB_RPC"
+grpc_addr = "https://REPLACE_ME_HUB_GRPC"
+websocket_addr = "wss://REPLACE_ME_HUB_RPC_WEBSOCKET"
+
+rpc_timeout = "10s"
+account_prefix = "cosmos"
+key_name = "hub_relayer"
+store_prefix = "ibc"
+
+# Typical Cosmos Hub gas price; adjust to whatever you actually use.
+gas_price = { price = 0.025, denom = "uatom" }
+
+max_gas = 3000000
+max_msg_num = 30
+max_tx_size = 2097152
+clock_drift = "5s"
+trust_threshold = { numerator = "1", denominator = "3" }
+
+# Cosmos Hub unbonding time is long; 14 days is commonly safe.
+trusting_period = "14days"

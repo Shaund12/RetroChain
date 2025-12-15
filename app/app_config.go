@@ -3,6 +3,11 @@ package app
 import (
 	_ "retrochain/x/arcade/module"
 	arcademoduletypes "retrochain/x/arcade/types"
+	_ "retrochain/x/btcstake/module"
+	btcstaketypes "retrochain/x/btcstake/types"
+	_ "retrochain/x/burn/module"
+	burnmoduletypes "retrochain/x/burn/types"
+	_ "retrochain/x/retrochain/module" // import for side-effects (module registration)
 	"time"
 
 	runtimev1alpha1 "cosmossdk.io/api/cosmos/app/runtime/v1alpha1"
@@ -38,6 +43,7 @@ import (
 	_ "cosmossdk.io/x/nft/module" // import for side-effects
 	_ "cosmossdk.io/x/upgrade"    // import for side-effects
 	upgradetypes "cosmossdk.io/x/upgrade/types"
+	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 	"github.com/cosmos/cosmos-sdk/runtime"
 	_ "github.com/cosmos/cosmos-sdk/x/auth/tx/config" // import for side-effects
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
@@ -70,11 +76,13 @@ import (
 	ibctransfertypes "github.com/cosmos/ibc-go/v10/modules/apps/transfer/types"
 	ibcexported "github.com/cosmos/ibc-go/v10/modules/core/exported"
 	"google.golang.org/protobuf/types/known/durationpb"
+
+	retrochaintypes "retrochain/x/retrochain/types"
 )
 
 var (
 	moduleAccPerms = []*authmodulev1.ModuleAccountPermission{
-		{Account: authtypes.FeeCollectorName},
+		{Account: authtypes.FeeCollectorName, Permissions: []string{authtypes.Burner}},
 		{Account: distrtypes.ModuleName},
 		{Account: minttypes.ModuleName, Permissions: []string{authtypes.Minter}},
 		{Account: stakingtypes.BondedPoolName, Permissions: []string{authtypes.Burner, stakingtypes.ModuleName}},
@@ -83,6 +91,8 @@ var (
 		{Account: nft.ModuleName},
 		{Account: ibctransfertypes.ModuleName, Permissions: []string{authtypes.Minter, authtypes.Burner}},
 		{Account: icatypes.ModuleName},
+		{Account: wasmtypes.ModuleName, Permissions: []string{authtypes.Burner}},
+		{Account: btcstaketypes.ModuleName},
 		{Account: arcademoduletypes.ModuleName, Permissions: []string{authtypes.Minter, authtypes.Burner, authtypes.Staking}}}
 
 	// blocked account addresses
@@ -93,6 +103,7 @@ var (
 		stakingtypes.BondedPoolName,
 		stakingtypes.NotBondedPoolName,
 		nft.ModuleName,
+		wasmtypes.ModuleName,
 		// We allow the following module accounts to receive funds:
 		// govtypes.ModuleName
 	}
@@ -116,6 +127,7 @@ var (
 					// NOTE: staking module is required if HistoricalEntries param > 0
 					BeginBlockers: []string{
 						minttypes.ModuleName,
+						burnmoduletypes.ModuleName,
 						distrtypes.ModuleName,
 						slashingtypes.ModuleName,
 						evidencetypes.ModuleName,
@@ -125,6 +137,8 @@ var (
 						// ibc modules
 						ibcexported.ModuleName,
 						// chain modules
+						retrochaintypes.ModuleName,
+						wasmtypes.ModuleName,
 						arcademoduletypes.ModuleName,
 						// this line is used by starport scaffolding # stargate/app/beginBlockers
 					},
@@ -134,6 +148,9 @@ var (
 						feegrant.ModuleName,
 						group.ModuleName,
 						// chain modules
+						retrochaintypes.ModuleName,
+						burnmoduletypes.ModuleName,
+						wasmtypes.ModuleName,
 						arcademoduletypes.ModuleName,
 						// this line is used by starport scaffolding # stargate/app/endBlockers
 					},
@@ -156,6 +173,7 @@ var (
 						slashingtypes.ModuleName,
 						govtypes.ModuleName,
 						minttypes.ModuleName,
+						retrochaintypes.ModuleName,
 						genutiltypes.ModuleName,
 						evidencetypes.ModuleName,
 						authz.ModuleName,
@@ -171,10 +189,29 @@ var (
 						ibctransfertypes.ModuleName,
 						icatypes.ModuleName,
 						// chain modules
+						wasmtypes.ModuleName,
+						burnmoduletypes.ModuleName,
+						btcstaketypes.ModuleName,
 						arcademoduletypes.ModuleName,
 						// this line is used by starport scaffolding # stargate/app/initGenesis
 					},
 				}),
+			},
+			{
+				Name:   retrochaintypes.ModuleName,
+				Config: appconfig.WrapAny(&retrochaintypes.Module{}),
+			},
+			{
+				Name:   burnmoduletypes.ModuleName,
+				Config: appconfig.WrapAny(&burnmoduletypes.Module{}),
+			},
+			{
+				Name:   btcstaketypes.ModuleName,
+				Config: appconfig.WrapAny(&btcstaketypes.Module{}),
+			},
+			{
+				Name:   arcademoduletypes.ModuleName,
+				Config: appconfig.WrapAny(&arcademoduletypes.Module{}),
 			},
 			{
 				Name: authtypes.ModuleName,

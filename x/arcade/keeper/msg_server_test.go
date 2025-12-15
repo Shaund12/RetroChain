@@ -289,6 +289,109 @@ func TestMsgSubmitScore_UnauthorizedPlayer(t *testing.T) {
 	require.Contains(t, err.Error(), "only the session owner can submit scores")
 }
 
+func TestRegisterGameValidation(t *testing.T) {
+	f := initFixture(t)
+	ms := keeper.NewMsgServerImpl(f.keeper)
+
+	creator := sdk.AccAddress([]byte("creator_address_12345"))
+	creatorStr, err := f.addressCodec.BytesToString(creator)
+	require.NoError(t, err)
+
+	t.Run("invalid difficulty", func(t *testing.T) {
+		_, err := ms.RegisterGame(f.ctx, &types.MsgRegisterGame{
+			Creator: creatorStr,
+			Game: types.ArcadeGame{
+				GameId:         "game-high-diff",
+				Name:           "Too Hard",
+				BaseDifficulty: 20,
+			},
+		})
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "base_difficulty")
+	})
+
+	t.Run("defaults applied", func(t *testing.T) {
+		_, err := ms.RegisterGame(f.ctx, &types.MsgRegisterGame{
+			Creator: creatorStr,
+			Game: types.ArcadeGame{
+				GameId: "game-ok",
+				Name:   "OK Game",
+			},
+		})
+		require.NoError(t, err)
+
+		stored, err := f.keeper.GetArcadeGame(f.ctx, "game-ok")
+		require.NoError(t, err)
+		require.Equal(t, uint64(1), stored.BaseDifficulty)
+		require.Equal(t, uint64(1), stored.CreditsPerPlay)
+		require.Equal(t, uint64(1), stored.MaxPlayers)
+	})
+}
+
+func TestActivateComboValidation(t *testing.T) {
+	f := initFixture(t)
+	ms := keeper.NewMsgServerImpl(f.keeper)
+
+	player := sdk.AccAddress([]byte("combo_player"))
+	playerStr, _ := f.addressCodec.BytesToString(player)
+	_ = f.keeper.SetPlayerCredits(f.ctx, playerStr, 5)
+	_, _ = ms.StartSession(f.ctx, &types.MsgStartSession{Creator: playerStr, GameId: "game"})
+
+	_, err := ms.ActivateCombo(f.ctx, &types.MsgActivateCombo{Creator: playerStr, SessionId: 0, ComboHits: 0})
+	require.Error(t, err)
+	require.Contains(t, err.Error(), "combo_hits")
+}
+
+func TestUsePowerUpChargesTokens(t *testing.T) {
+	f := initFixture(t)
+	ms := keeper.NewMsgServerImpl(f.keeper)
+
+	player := sdk.AccAddress([]byte("power_player"))
+	playerStr, _ := f.addressCodec.BytesToString(player)
+	_ = f.keeper.SetPlayerCredits(f.ctx, playerStr, 5)
+	_, _ = ms.StartSession(f.ctx, &types.MsgStartSession{Creator: playerStr, GameId: "game"})
+
+	// No tokens present
+	_, err := ms.UsePowerUp(f.ctx, &types.MsgUsePowerUp{Creator: playerStr, SessionId: 0, PowerUpId: "shield"})
+	require.Error(t, err)
+
+	// Add tokens and try again
+	entry := types.LeaderboardEntry{Player: playerStr, ArcadeTokens: 10}
+	require.NoError(t, f.keeper.Leaderboard.Set(f.ctx, playerStr, entry))
+	_, err = ms.UsePowerUp(f.ctx, &types.MsgUsePowerUp{Creator: playerStr, SessionId: 0, PowerUpId: "shield"})
+	require.NoError(t, err)
+	updated, err := f.keeper.Leaderboard.Get(f.ctx, playerStr)
+	require.NoError(t, err)
+	require.Less(t, updated.ArcadeTokens, entry.ArcadeTokens)
+}
+
+func TestTournamentValidation(t *testing.T) {
+	f := initFixture(t)
+	ms := keeper.NewMsgServerImpl(f.keeper)
+	creator := sdk.AccAddress([]byte("tour_creator"))
+	creatorStr, _ := f.addressCodec.BytesToString(creator)
+
+	_, err := ms.CreateTournament(f.ctx, &types.MsgCreateTournament{Creator: creatorStr, Tournament: types.Tournament{TournamentId: "t1", Name: "", GameId: ""}})
+	require.Error(t, err)
+
+	_, err = ms.JoinTournament(f.ctx, &types.MsgJoinTournament{Creator: creatorStr, TournamentId: ""})
+	require.Error(t, err)
+
+	_, err = ms.SubmitTournamentScore(f.ctx, &types.MsgSubmitTournamentScore{Creator: creatorStr, TournamentId: "", Score: 0})
+	require.Error(t, err)
+}
+
+func TestSetHighScoreInitialsValidation(t *testing.T) {
+	f := initFixture(t)
+	ms := keeper.NewMsgServerImpl(f.keeper)
+	player := sdk.AccAddress([]byte("hs_player"))
+	playerStr, _ := f.addressCodec.BytesToString(player)
+
+	_, err := ms.SetHighScoreInitials(f.ctx, &types.MsgSetHighScoreInitials{Creator: playerStr, GameId: "game", Initials: "LONG"})
+	require.Error(t, err)
+	require.Contains(t, err.Error(), "initials")
+}
+
 func TestEndSession(t *testing.T) {
 	f := initFixture(t)
 	ms := keeper.NewMsgServerImpl(f.keeper)
@@ -407,7 +510,7 @@ func TestQuerySession(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, session)
 	require.Equal(t, testAddrStr, session.Player)
-	require.Equal(t, "test-game", session.GameID)
+	require.Equal(t, "test-game", session.GameId)
 	require.Equal(t, types.SessionStatusActive, session.Status)
 
 	// Query non-existent session

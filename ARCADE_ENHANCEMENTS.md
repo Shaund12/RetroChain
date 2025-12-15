@@ -212,7 +212,7 @@ Universal and game-specific achievements
 - Symbol: RETRO
 - Base: uretro (micro-retro)
 - Decimals: 6
-- Genesis Supply: 21,000,000 RETRO
+- Genesis Supply: Dev template (`config.yml`) 21,000,000 RETRO; running network 100,000,000 RETRO at genesis (see `TOKENOMICS.md`)
 
 **Use Cases**:
 - Buy arcade credits

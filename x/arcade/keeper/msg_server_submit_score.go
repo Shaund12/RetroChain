@@ -38,15 +38,35 @@ func (k *msgServer) SubmitScore(ctx context.Context, msg *types.MsgSubmitScore) 
 		return nil, errorsmod.Wrap(types.ErrInvalidRequest, "session is not active")
 	}
 
-	// Update the session score
-	session.CurrentScore = msg.Score
+	params, err := k.getParams(ctx)
+	if err != nil {
+		return nil, errorsmod.Wrap(err, "failed to load params")
+	}
 
-	// Store the updated session
+	priorScore := session.CurrentScore
+	// Update session fields
+	session.CurrentScore = msg.Score
+	if msg.Level > 0 {
+		session.Level = msg.Level
+	}
+
+	// Calculate score delta for leaderboard updates
+	var delta uint64
+	if msg.Score > priorScore {
+		delta = msg.Score - priorScore
+	}
+
+	// Persist session update (endSessionInternal will overwrite on game_over)
 	if err := k.SetSession(ctx, session); err != nil {
 		return nil, errorsmod.Wrap(err, "failed to update session")
 	}
 
-	// Emit score updated event
+	if delta > 0 {
+		if err := k.updateLeaderboard(ctx, msg.Creator, delta, 0, 0, 0, 0); err != nil {
+			return nil, errorsmod.Wrap(err, "failed to update leaderboard")
+		}
+	}
+
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	sdkCtx.EventManager().EmitEvent(
 		sdk.NewEvent(
@@ -57,5 +77,55 @@ func (k *msgServer) SubmitScore(ctx context.Context, msg *types.MsgSubmitScore) 
 		),
 	)
 
-	return &types.MsgSubmitScoreResponse{}, nil
+	isHighScore := false
+	rank := uint64(0)
+	var earnedTokens uint64
+
+	// If game_over, finalize the session (awards score-based tokens on completion).
+	if msg.GameOver {
+		if _, err := k.endSessionInternal(ctx, msg.SessionId, msg.Creator, msg.Score, msg.Level); err != nil {
+			return nil, err
+		}
+		// Score completion reward (arcade tokens)
+		earnedTokens = (msg.Score / 1000) * uint64(params.TokensPerThousandPoints)
+	} else if delta > 0 {
+		// Incremental score reward (arcade tokens)
+		earnedTokens = (delta / 1000) * uint64(params.TokensPerThousandPoints)
+		if earnedTokens > 0 {
+			if err := k.updateLeaderboard(ctx, msg.Creator, 0, 0, 0, 0, earnedTokens); err != nil {
+				return nil, errorsmod.Wrap(err, "failed to credit leaderboard tokens")
+			}
+		}
+	}
+
+	// Track/compute high-score status and apply bonus.
+	if msg.GameOver {
+		if hs, err := k.upsertHighScore(ctx, session.GameId, session.Player, msg.Score, session.Level, sdkCtx.BlockTime()); err == nil {
+			isHighScore = hs != nil && hs.Score == msg.Score
+		}
+	}
+	if isHighScore {
+		scores, err := k.GetHighScores(ctx, session.GameId, 0)
+		if err == nil {
+			for _, sc := range scores {
+				if sc.Player == session.Player && sc.Score == msg.Score {
+					rank = sc.Rank
+					break
+				}
+			}
+		}
+		if params.HighScoreReward > 0 {
+			bonus := uint64(params.HighScoreReward)
+			if err := k.updateLeaderboard(ctx, msg.Creator, 0, 0, 0, 0, bonus); err == nil {
+				earnedTokens += bonus
+			}
+		}
+	}
+
+	achievementsUnlocked, err := k.detectNewlyUnlockedAchievements(ctx, msg.Creator, session.GameId)
+	if err != nil {
+		return nil, errorsmod.Wrap(err, "failed to evaluate achievements")
+	}
+
+	return &types.MsgSubmitScoreResponse{IsHighScore: isHighScore, Rank: rank, TokensEarned: earnedTokens, AchievementsUnlocked: achievementsUnlocked}, nil
 }

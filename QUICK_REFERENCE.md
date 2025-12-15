@@ -6,6 +6,8 @@ Essential commands and endpoints for developers and blockchain explorers.
 
 ## ?? Connection Information
 
+These are the **default local dev** addresses. For a remote/public network, replace with your RPC/REST endpoints.
+
 | Service | Address | Description |
 |---------|---------|-------------|
 | RPC | `http://localhost:26657` | Tendermint RPC |
@@ -13,7 +15,7 @@ Essential commands and endpoints for developers and blockchain explorers.
 | gRPC | `localhost:9090` | gRPC endpoint |
 | gRPC-Web | `http://localhost:9091` | gRPC-Web endpoint |
 | WebSocket | `ws://localhost:26657/websocket` | Real-time events |
-| Faucet | `http://localhost:4500` | Test token faucet |
+| Faucet | `http://localhost:4500` | Test token faucet (dev/test networks only) |
 
 ---
 
@@ -24,9 +26,9 @@ Essential commands and endpoints for developers and blockchain explorers.
 | Symbol | RETRO |
 | Base Denom | uretro |
 | Decimals | 6 |
-| Chain ID | retrochain-arcade-1 |
+| Chain ID | Running network: `retrochain-mainnet`; Dev template (`config.yml`): `retrochain-arcade-1` |
 | Address Prefix | cosmos |
-| Genesis Supply | 21,000,000 RETRO |
+| Genesis Supply | Dev template (`config.yml`): 21,000,000 RETRO; Running network: 100,000,000 RETRO (see `TOKENOMICS.md`) |
 | 1 RETRO | 1,000,000 uretro |
 
 ---
@@ -278,7 +280,7 @@ retrochaind keys delete [name]
 
 ```bash
 --from            # Signer key name
---chain-id        # retrochain-arcade-1
+--chain-id        # retrochain-mainnet
 --gas             # Gas limit (or 'auto')
 --gas-adjustment  # 1.3 (for auto gas)
 --gas-prices      # 0.025uretro

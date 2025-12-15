@@ -28,10 +28,19 @@ type Keeper struct {
 	// Auth keeper for account management
 	authKeeper types.AuthKeeper
 
-	Schema         collections.Schema
-	Params         collections.Item[types.Params]
-	PlayerCredits  collections.Map[string, uint64]
-	SessionCounter collections.Sequence
+	Schema           collections.Schema
+	Params           collections.Item[types.Params]
+	PlayerCredits    collections.Map[string, uint64]
+	SessionCounter   collections.Sequence
+	ArcadeGames      collections.Map[string, types.ArcadeGame]
+	HighScoreCounter collections.Sequence
+	HighScores       collections.Map[uint64, types.HighScore]
+	Leaderboard      collections.Map[string, types.LeaderboardEntry]
+	Achievements     collections.Map[string, types.PlayerAchievement]
+	Tournaments      collections.Map[string, types.Tournament]
+	PlayerCoinsInserted     collections.Map[string, uint64]
+	PlayerLastCoinInsertTime collections.Map[string, int64]
+	PlayerQuickStartAchieved collections.Map[string, bool]
 	// GameSessions stores game sessions as JSON bytes.
 	// Note: We use JSON encoding because GameSession is not a protobuf message
 	// and we're implementing this without modifying the proto files.
@@ -65,10 +74,19 @@ func NewKeeper(
 		bankKeeper:   bankKeeper,
 		authKeeper:   authKeeper,
 
-		Params:         collections.NewItem(sb, types.ParamsKey, "params", codec.CollValue[types.Params](cdc)),
-		PlayerCredits:  collections.NewMap(sb, types.PlayerCreditsKeyPrefix, "player_credits", collections.StringKey, collections.Uint64Value),
-		SessionCounter: collections.NewSequence(sb, types.SessionCounterKey, "session_counter"),
-		GameSessions:   collections.NewMap(sb, types.GameSessionKeyPrefix, "game_sessions", collections.Uint64Key, collections.BytesValue),
+		Params:           collections.NewItem(sb, types.ParamsKey, "params", codec.CollValue[types.Params](cdc)),
+		PlayerCredits:    collections.NewMap(sb, types.PlayerCreditsKeyPrefix, "player_credits", collections.StringKey, collections.Uint64Value),
+		SessionCounter:   collections.NewSequence(sb, types.SessionCounterKey, "session_counter"),
+		ArcadeGames:      collections.NewMap(sb, types.ArcadeGameKeyPrefix, "arcade_games", collections.StringKey, codec.CollValue[types.ArcadeGame](cdc)),
+		HighScoreCounter: collections.NewSequence(sb, types.HighScoreCounterKey, "high_score_counter"),
+		HighScores:       collections.NewMap(sb, types.HighScoreKeyPrefix, "high_scores", collections.Uint64Key, codec.CollValue[types.HighScore](cdc)),
+		Leaderboard:      collections.NewMap(sb, types.LeaderboardKeyPrefix, "leaderboard", collections.StringKey, codec.CollValue[types.LeaderboardEntry](cdc)),
+		Achievements:     collections.NewMap(sb, types.AchievementKeyPrefix, "achievements", collections.StringKey, codec.CollValue[types.PlayerAchievement](cdc)),
+		Tournaments:      collections.NewMap(sb, types.TournamentKeyPrefix, "tournaments", collections.StringKey, codec.CollValue[types.Tournament](cdc)),
+		PlayerCoinsInserted:     collections.NewMap(sb, types.PlayerCoinsInsertedKeyPrefix, "player_coins_inserted", collections.StringKey, collections.Uint64Value),
+		PlayerLastCoinInsertTime: collections.NewMap(sb, types.PlayerLastCoinInsertTimeKeyPrefix, "player_last_coin_insert_time", collections.StringKey, collections.Int64Value),
+		PlayerQuickStartAchieved: collections.NewMap(sb, types.PlayerQuickStartAchievedKeyPrefix, "player_quick_start_achieved", collections.StringKey, collections.BoolValue),
+		GameSessions:     collections.NewMap(sb, types.GameSessionKeyPrefix, "game_sessions", collections.Uint64Key, collections.BytesValue),
 	}
 
 	schema, err := sb.Build()
@@ -123,10 +141,22 @@ func (k Keeper) SetSession(ctx context.Context, session types.GameSession) error
 	if err != nil {
 		return err
 	}
-	return k.GameSessions.Set(ctx, session.SessionID, data)
+	return k.GameSessions.Set(ctx, session.SessionId, data)
 }
 
 // NextSessionID returns the next session ID and increments the counter.
 func (k Keeper) NextSessionID(ctx context.Context) (uint64, error) {
 	return k.SessionCounter.Next(ctx)
+}
+
+// getParams returns current params or defaults when unset.
+func (k Keeper) getParams(ctx context.Context) (types.Params, error) {
+	params, err := k.Params.Get(ctx)
+	if err != nil {
+		if errors.Is(err, collections.ErrNotFound) {
+			return types.DefaultParams(), nil
+		}
+		return types.Params{}, err
+	}
+	return params, nil
 }

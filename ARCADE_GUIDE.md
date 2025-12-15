@@ -23,7 +23,7 @@ Welcome to the RetroChain Arcade! This comprehensive guide will help you become 
 
 You'll need RETRO tokens to play games. You can:
 
-1. **Use the Faucet** (for testing):
+1. **Use the Faucet** (dev/test networks only):
    ```bash
    curl -X POST http://0.0.0.0:4500/faucet -d '{"address": "your-address"}'
    ```
@@ -629,19 +629,19 @@ retrochaind query arcade get-player-stats [address]
 ### From the Top Players
 
 > "Master one game completely before moving to the next. Depth beats breadth."  
-> — **ACE**, Global Rank #1
+> ï¿½ **ACE**, Global Rank #1
 
 > "Save your power-ups for when you really need them. A shield during a boss fight is worth 10 shields on easy levels."  
-> — **REX**, Tournament Champion
+> ï¿½ **REX**, Tournament Champion
 
 > "Build your combos slowly at first. Rushing leads to mistakes."  
-> — **ZEN**, Combo Master
+> ï¿½ **ZEN**, Combo Master
 
 > "Join tournaments even if you think you can't win. The experience is invaluable."  
-> — **PRO**, Tournament Veteran
+> ï¿½ **PRO**, Tournament Veteran
 
 > "Check the leaderboard daily. Study what the top players are doing."  
-> — **MAX**, Leaderboard Analyst
+> ï¿½ **MAX**, Leaderboard Analyst
 
 ---
 

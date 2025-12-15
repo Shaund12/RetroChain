@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package retrochain.btcstake.v1;
+
+import "gogoproto/gogo.proto";
+import "retrochain/btcstake/v1/params.proto";
+
+option go_package = "retrochain/x/btcstake/types";
+
+// GenesisState defines the btcstake module's genesis state.
+message GenesisState {
+  Params params = 1 [(gogoproto.nullable) = false];
+}

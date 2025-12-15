@@ -1,0 +1,92 @@
+# Hermes relayer config for Retrochain <-> Cosmos Hub (cosmoshub-4)
+# Copy to config.toml and fill in the retrochain endpoints and wallet mnemonics.
+
+[global]
+log_level = "info"
+clear_on_start = false
+
+[mode]
+clients.enabled = true
+connections.enabled = true
+channels.enabled = true
+packets.enabled = true
+
+[mode.packets]
+clear_interval = 100
+clear_on_start = false
+filter = false
+
+timeout = "30s"
+
+authentication = "rpc"
+
+[rest]
+enabled = false
+host = "127.0.0.1"
+port = 3000
+
+# ---------- Chains ----------
+
+[[chains]]
+# Retrochain
+id = "retrochain"
+rpc_addr = "http://retrochain.ddns.net:26657"
+grpc_addr = "http://retrochain.ddns.net:9090"
+websocket_addr = "ws://retrochain.ddns.net:26657/websocket"
+account_prefix = "cosmos"
+key_name = "relayer-retrochain"
+store_prefix = "ibc"
+max_gas = 600000
+max_msg_num = 15
+max_tx_size = 180000
+fee_granter = ""
+fee_payer = ""
+clock_drift = "15s"
+trusting_period = "336h" # ~14 days; set to 2/3 of unbonding
+address_type = { derivation = "cosmos" }
+
+# Set gas price/denom for retrochain
+[chains.gas_price]
+price = 0.025
+denom = "uretro"
+
+[chains.event_source]
+mode = "push"
+url = "ws://retrochain.ddns.net:26657/websocket"
+batch_delay = "500ms"
+
+[[chains.trusting_periods]]
+
+# Optional: packet filter (disabled)
+#[chains.packet_filter]
+#policy = "allow"
+#list = []
+
+
+[[chains]]
+# Cosmos Hub mainnet
+id = "cosmoshub-4"
+rpc_addr = "https://rpc.cosmos.directory/cosmoshub"
+grpc_addr = "https://grpc.cosmos.directory/cosmoshub"
+websocket_addr = "wss://rpc.cosmos.directory/cosmoshub/websocket"
+account_prefix = "cosmos"
+key_name = "relayer-cosmoshub"
+store_prefix = "ibc"
+max_gas = 700000
+max_msg_num = 15
+max_tx_size = 180000
+fee_granter = ""
+fee_payer = ""
+clock_drift = "20s"
+trusting_period = "336h"
+address_type = { derivation = "cosmos" }
+
+[chains.gas_price]
+price = 0.025
+denom = "uatom"
+
+[chains.event_source]
+mode = "push"
+url = "wss://rpc.cosmos.directory/cosmoshub/websocket"
+batch_delay = "500ms"
+

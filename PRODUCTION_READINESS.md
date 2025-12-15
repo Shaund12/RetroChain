@@ -105,7 +105,7 @@ This document outlines the production readiness status, completed improvements, 
 ```bash
 # Node configuration
 RETROCHAIN_HOME=/path/to/data
-RETROCHAIN_CHAIN_ID=retrochain-arcade-1
+RETROCHAIN_CHAIN_ID=<your-chain-id>
 
 # API configuration
 RETROCHAIN_API_ADDRESS=0.0.0.0:1317
@@ -114,11 +114,13 @@ RETROCHAIN_GRPC_ADDRESS=0.0.0.0:9090
 
 ### Genesis Configuration
 
-The chain is pre-configured with:
+Dev template (local) is pre-configured with:
 
 - **Accounts**: Alice (validator), Bob, Dev with RETRO tokens
 - **Staking**: uretro bond denom
 - **Arcade Module**: Default parameters configured
+
+For the running network (`retrochain-mainnet`), do not assume these dev-template accounts/allocations; see `TOKENOMICS.md`.
 
 ---
 

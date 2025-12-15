@@ -7,6 +7,7 @@ import (
 	"cosmossdk.io/client/v2/autocli"
 	"cosmossdk.io/depinject"
 	"cosmossdk.io/log"
+	wasm "github.com/CosmWasm/wasmd/x/wasm"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/config"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -87,6 +88,11 @@ func NewRootCmd() *cobra.Command {
 		moduleBasicManager[name] = module.CoreAppModuleBasicAdaptor(name, mod)
 		autoCliOpts.Modules[name] = mod
 	}
+
+	// Manually register CosmWasm basics since it's wired manually in the app.
+	wasmBasic := wasm.AppModuleBasic{}
+	moduleBasicManager[wasm.ModuleName] = wasmBasic
+	wasmBasic.RegisterInterfaces(clientCtx.InterfaceRegistry)
 
 	initRootCmd(rootCmd, clientCtx.TxConfig, moduleBasicManager)
 

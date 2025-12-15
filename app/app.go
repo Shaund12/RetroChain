@@ -1,16 +1,21 @@
 package app
 
 import (
+	"context"
 	"io"
 
 	clienthelpers "cosmossdk.io/client/v2/helpers"
 	"cosmossdk.io/core/appmodule"
 	"cosmossdk.io/depinject"
 	"cosmossdk.io/log"
+	math "cosmossdk.io/math"
 	storetypes "cosmossdk.io/store/types"
 	circuitkeeper "cosmossdk.io/x/circuit/keeper"
 	upgradekeeper "cosmossdk.io/x/upgrade/keeper"
+	upgradetypes "cosmossdk.io/x/upgrade/types"
 
+	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
+	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 	abci "github.com/cometbft/cometbft/abci/types"
 	dbm "github.com/cosmos/cosmos-db"
 	"github.com/cosmos/cosmos-sdk/baseapp"
@@ -46,8 +51,14 @@ import (
 	ibckeeper "github.com/cosmos/ibc-go/v10/modules/core/keeper"
 
 	"retrochain/docs"
-	_ "retrochain/x/arcade/module" // import for side-effects (module registration)
 	arcademodulekeeper "retrochain/x/arcade/keeper"
+	_ "retrochain/x/arcade/module" // import for side-effects (module registration)
+	btcstakekeeper "retrochain/x/btcstake/keeper"
+	btcstaketypes "retrochain/x/btcstake/types"
+	retrochainkeeper "retrochain/x/retrochain/keeper"
+	retrochaintypes "retrochain/x/retrochain/types"
+	burnkeeper "retrochain/x/burn/keeper"
+	burntypes "retrochain/x/burn/types"
 )
 
 const (
@@ -57,6 +68,19 @@ const (
 	AccountAddressPrefix = "cosmos"
 	// ChainCoinType is the coin type of the chain.
 	ChainCoinType = 118
+
+	// wasmUpgradeName is the on-chain upgrade name that adds the wasm store key.
+	wasmUpgradeName = "rc1-wasm-v1"
+	// burnUpgradeName is the on-chain upgrade that adds the burn module store key.
+	burnUpgradeName = "rc1-burn-v1"
+	// burnTokenomicsUpgradeName adjusts burn behavior/order to tame inflation.
+	burnTokenomicsUpgradeName = "rc1-burn-tokenomics-v1"
+	// btcstakeUpgradeName adds the btcstake module store key.
+	btcstakeUpgradeName = "rc1-btcstake-v1"
+	// combinedUpgradeName is a single upgrade that enables wasm + burn + btcstake in one shot.
+	combinedUpgradeName = "rc1-combined-v1"
+	// retrochainUpgradeName is the on-chain upgrade that adds the retrochain module store key.
+	retrochainUpgradeName = "rc1-retrochain-v1"
 )
 
 // DefaultNodeHome default home directories for the application daemon
@@ -92,12 +116,16 @@ type App struct {
 	ConsensusParamsKeeper consensuskeeper.Keeper
 	CircuitBreakerKeeper  circuitkeeper.Keeper
 	ParamsKeeper          paramskeeper.Keeper
+	RetrochainKeeper      retrochainkeeper.Keeper
 
 	// ibc keepers
 	IBCKeeper           *ibckeeper.Keeper
 	ICAControllerKeeper icacontrollerkeeper.Keeper
 	ICAHostKeeper       icahostkeeper.Keeper
 	TransferKeeper      ibctransferkeeper.Keeper
+	WasmKeeper          wasmkeeper.Keeper
+	BurnKeeper          burnkeeper.Keeper
+	BtcstakeKeeper      btcstakekeeper.Keeper
 
 	// simulation manager
 	sm           *module.SimulationManager
@@ -174,23 +202,12 @@ func New(
 		&app.ConsensusParamsKeeper,
 		&app.CircuitBreakerKeeper,
 		&app.ParamsKeeper,
+		&app.RetrochainKeeper,
+		&app.ArcadeKeeper,
+		&app.BtcstakeKeeper,
 	); err != nil {
 		panic(err)
 	}
-
-	// Manually create arcade keeper (not using depinject) - MUST be before app.Build()
-	// Create arcade store service
-	arcadeStoreKey := storetypes.NewKVStoreKey("arcade")
-	arcadeStoreService := runtime.NewKVStoreService(arcadeStoreKey)
-	govModuleAddr := authtypes.NewModuleAddress("gov")
-	app.ArcadeKeeper = arcademodulekeeper.NewKeeper(
-		arcadeStoreService,
-		app.appCodec,
-		app.AuthKeeper.AddressCodec(),
-		govModuleAddr,
-		app.BankKeeper,
-		app.AuthKeeper,
-	)
 
 	// add to default baseapp options
 	// enable optimistic execution
@@ -199,10 +216,13 @@ func New(
 	// build app
 	app.App = appBuilder.Build(db, traceStore, baseAppOptions...)
 
-	// register legacy modules including arcade
+	// register legacy modules (IBC + wasm)
 	if err := app.registerIBCModules(appOpts); err != nil {
 		panic(err)
 	}
+
+	// configure upgrade handlers after module registration
+	app.setupUpgradeHandlers()
 
 	/****  Module Options ****/
 
@@ -230,6 +250,82 @@ func New(
 	}
 
 	return app
+}
+
+// setupUpgradeHandlers wires the wasm store addition behind an x/upgrade plan.
+func (app *App) setupUpgradeHandlers() {
+	wasmStoreUpgrades := storetypes.StoreUpgrades{Added: []string{wasmtypes.StoreKey}}
+	burnStoreUpgrades := storetypes.StoreUpgrades{Added: []string{burntypes.StoreKey}}
+	btcstakeStoreUpgrades := storetypes.StoreUpgrades{Added: []string{btcstaketypes.StoreKey}}
+	combinedStoreUpgrades := storetypes.StoreUpgrades{Added: []string{wasmtypes.StoreKey, burntypes.StoreKey, btcstaketypes.StoreKey}}
+	retrochainStoreUpgrades := storetypes.StoreUpgrades{Added: []string{retrochaintypes.StoreKey}}
+
+	setBurnTokenomicsParams := func(ctx sdk.Context) error {
+		// Target inflation control: burn 80% of the fee_collector balance each block.
+		// NOTE: This only has the intended effect if burn runs BEFORE distribution.
+		return app.BurnKeeper.SetParams(ctx, burntypes.Params{
+			FeeBurnRate:       math.LegacyNewDecWithPrec(8, 1), // 0.8
+			ProvisionBurnRate: math.LegacyNewDecWithPrec(0, 1), // 0.0
+		})
+	}
+
+	app.UpgradeKeeper.SetUpgradeHandler(wasmUpgradeName, func(ctx context.Context, plan upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
+		return app.ModuleManager.RunMigrations(ctx, app.Configurator(), vm)
+	})
+
+	app.UpgradeKeeper.SetUpgradeHandler(burnUpgradeName, func(ctx context.Context, plan upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
+		return app.ModuleManager.RunMigrations(ctx, app.Configurator(), vm)
+	})
+
+	app.UpgradeKeeper.SetUpgradeHandler(burnTokenomicsUpgradeName, func(ctx context.Context, plan upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
+		if err := setBurnTokenomicsParams(sdk.UnwrapSDKContext(ctx)); err != nil {
+			return vm, err
+		}
+		return app.ModuleManager.RunMigrations(ctx, app.Configurator(), vm)
+	})
+
+	app.UpgradeKeeper.SetUpgradeHandler(btcstakeUpgradeName, func(ctx context.Context, plan upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
+		return app.ModuleManager.RunMigrations(ctx, app.Configurator(), vm)
+	})
+
+	app.UpgradeKeeper.SetUpgradeHandler(combinedUpgradeName, func(ctx context.Context, plan upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
+		if err := setBurnTokenomicsParams(sdk.UnwrapSDKContext(ctx)); err != nil {
+			return vm, err
+		}
+		return app.ModuleManager.RunMigrations(ctx, app.Configurator(), vm)
+	})
+
+	app.UpgradeKeeper.SetUpgradeHandler(retrochainUpgradeName, func(ctx context.Context, plan upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
+		return app.ModuleManager.RunMigrations(ctx, app.Configurator(), vm)
+	})
+
+	upgradeInfo, err := app.UpgradeKeeper.ReadUpgradeInfoFromDisk()
+	if err != nil {
+		panic(err)
+	}
+
+	switch upgradeInfo.Name {
+	case wasmUpgradeName:
+		if !app.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height) {
+			app.SetStoreLoader(upgradetypes.UpgradeStoreLoader(upgradeInfo.Height, &wasmStoreUpgrades))
+		}
+	case burnUpgradeName:
+		if !app.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height) {
+			app.SetStoreLoader(upgradetypes.UpgradeStoreLoader(upgradeInfo.Height, &burnStoreUpgrades))
+		}
+	case btcstakeUpgradeName:
+		if !app.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height) {
+			app.SetStoreLoader(upgradetypes.UpgradeStoreLoader(upgradeInfo.Height, &btcstakeStoreUpgrades))
+		}
+	case combinedUpgradeName:
+		if !app.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height) {
+			app.SetStoreLoader(upgradetypes.UpgradeStoreLoader(upgradeInfo.Height, &combinedStoreUpgrades))
+		}
+	case retrochainUpgradeName:
+		if !app.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height) {
+			app.SetStoreLoader(upgradetypes.UpgradeStoreLoader(upgradeInfo.Height, &retrochainStoreUpgrades))
+		}
+	}
 }
 
 // GetSubspace returns a param subspace for a given module name.
@@ -275,6 +371,10 @@ func (app *App) SimulationManager() *module.SimulationManager {
 // RegisterAPIRoutes registers all application module routes with the provided
 // API server.
 func (app *App) RegisterAPIRoutes(apiSvr *api.Server, apiConfig config.APIConfig) {
+	// Register explorer-friendly routes first so they take precedence over the
+	// gRPC-Gateway catch-all registered by the base app.
+	app.registerCustomAPIRoutes(apiSvr)
+
 	app.App.RegisterAPIRoutes(apiSvr, apiConfig)
 	// register swagger API in app.go so that other applications can override easily
 	if err := server.RegisterSwaggerAPI(apiSvr.ClientCtx, apiSvr.Router, apiConfig.Swagger); err != nil {

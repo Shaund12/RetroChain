@@ -143,7 +143,7 @@ Contact Cosmostation for integration:
 - Email: contact@cosmostation.io
 
 Provide:
-- Chain ID: `retrochain-arcade-1`
+- Chain ID: `retrochain-mainnet`
 - RPC: Your RPC endpoint
 - REST: Your REST API endpoint
 - Token info: RETRO (uretro)
@@ -166,7 +166,7 @@ cp .env.example .env
 
 **Configuration (.env):**
 ```env
-NEXT_PUBLIC_CHAIN_ID=retrochain-arcade-1
+NEXT_PUBLIC_CHAIN_ID=retrochain-mainnet
 NEXT_PUBLIC_CHAIN_NAME=RetroChain
 NEXT_PUBLIC_RPC_ENDPOINT=http://localhost:26657
 NEXT_PUBLIC_API_ENDPOINT=http://localhost:1317

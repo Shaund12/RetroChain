@@ -1,22 +1,10 @@
 package types
 
-// GameSession represents an active game session in the arcade.
-type GameSession struct {
-	SessionID    uint64 `json:"session_id"`
-	GameID       string `json:"game_id"`
-	Player       string `json:"player"`
-	CreditsUsed  uint64 `json:"credits_used"`
-	CurrentScore uint64 `json:"current_score"`
-	Status       string `json:"status"`
-	StartTime    int64  `json:"start_time"`
-	EndTime      int64  `json:"end_time,omitempty"`
-}
-
-// Session status constants
+// Session status helper aliases to the proto enums for readability in keeper code.
 const (
-	SessionStatusActive    = "STATUS_ACTIVE"
-	SessionStatusCompleted = "STATUS_COMPLETED"
-	SessionStatusGameOver  = "STATUS_GAME_OVER"
+	SessionStatusActive    = SessionStatus_STATUS_ACTIVE
+	SessionStatusCompleted = SessionStatus_STATUS_COMPLETED
+	SessionStatusGameOver  = SessionStatus_STATUS_GAME_OVER
 )
 
 // PlayerCredits represents a player's available credits for arcade games.

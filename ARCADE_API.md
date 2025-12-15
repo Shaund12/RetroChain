@@ -51,7 +51,7 @@ message MsgInsertCoinResponse {
 ```bash
 retrochaind tx arcade insert-coin 5 space-raiders \
   --from alice \
-  --chain-id retrochain-arcade-1 \
+  --chain-id retrochain-mainnet \
   --gas auto \
   --gas-adjustment 1.3
 ```
@@ -1011,7 +1011,7 @@ tx = Transaction(
     fee=1000,
     gas=200000,
     memo="",
-    chain_id="retrochain-arcade-1",
+  chain_id="retrochain-mainnet",
     sync_mode="sync",
 )
 

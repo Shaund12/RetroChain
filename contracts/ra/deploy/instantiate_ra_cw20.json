@@ -1,0 +1,10 @@
+{
+  "name": "RetroArcade",
+  "symbol": "RA",
+  "decimals": 6,
+  "initial_balances": [],
+  "mint": {
+    "minter": "cosmos1fscvf7rphx477z6vd4sxsusm2u8a70kewvc8wy"
+  },
+  "marketing": null
+}
