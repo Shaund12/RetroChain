@@ -37,6 +37,10 @@ retrochain-explorer/.cache/
 # Rust/CosmWasm build artifacts
 contracts/**/target/
 
+# Generated Go code under proto/ (generated elsewhere; keep proto/ as source-of-truth)
+proto/**/*.pb.go
+proto/**/*.pb.gw.go
+
 # Secrets / credentials (never commit)
 tools/ibc/hermes/config.toml
 .hermes/
