@@ -1,35 +1,35 @@
-# ??? RetroChain - The Ultimate Cosmos ARCADE Blockchain
+# 🕹️ RetroChain - The Ultimate Cosmos ARCADE Blockchain
 
 **RetroChain** is a revolutionary blockchain built for the **ARCADE GAMING ERA**! Powered by Cosmos SDK and Tendermint, RetroChain brings the nostalgia and excitement of classic arcade gaming into the blockchain world.
 
-## ?? What Makes RetroChain AMAZING?
+## ✨ What Makes RetroChain AMAZING?
 
-### ?? Core Arcade Features
-- **?? Insert Coin to Play** - Use RETRO tokens to buy credits and play games
-- **?? High Score Tables** - Classic arcade high score tracking with initials
-- **?? Multiple Game Genres** - Shooters, Platformers, Puzzle, Fighting, Racing, Beat 'em Up, Maze, and Pinball
-- **? Combo System** - Chain hits for massive score multipliers
-- **?? Power-Ups** - Collect and use power-ups during gameplay
-- **?? Continue System** - Don't give up! Continue your game after Game Over
-- **??? Achievements** - Unlock achievements and earn bonus RETRO tokens
-- **?? Global Leaderboards** - Compete with players worldwide
-- **?? Tournaments** - Join arcade tournaments with prize pools
-- **?? Player Stats** - Track your gaming career with detailed statistics
+### 🕹️ Core Arcade Features
+- **🪙 Insert Coin to Play** - Use RETRO tokens to buy credits and play games
+- **🏅 High Score Tables** - Classic arcade high score tracking with initials
+- **🎲 Multiple Game Genres** - Shooters, Platformers, Puzzle, Fighting, Racing, Beat 'em Up, Maze, and Pinball
+- **⚡ Combo System** - Chain hits for massive score multipliers
+- **💥 Power-Ups** - Collect and use power-ups during gameplay
+- **🔄 Continue System** - Don't give up! Continue your game after Game Over
+- **🏆 Achievements** - Unlock achievements and earn bonus RETRO tokens
+- **🌐 Global Leaderboards** - Compete with players worldwide
+- **🎯 Tournaments** - Join arcade tournaments with prize pools
+- **📊 Player Stats** - Track your gaming career with detailed statistics
 
-### ?? Arcade Game Library
+### 🎮 Arcade Game Library
 
 RetroChain supports multiple classic arcade game genres:
 
-1. **SHOOTER** ?? - Space Invaders style games
-2. **PLATFORMER** ?? - Jump and run classics
-3. **PUZZLE** ?? - Match-3 and brain teasers
-4. **FIGHTING** ?? - Head-to-head combat
-5. **RACING** ??? - Speed and drift challenges
-6. **BEAT 'EM UP** ?? - Side-scrolling action
-7. **MAZE** ?? - Pac-Man style navigation
-8. **PINBALL** ?? - Classic flipper action
+1. **SHOOTER** 🚀 - Space Invaders style games
+2. **PLATFORMER** 🦘 - Jump and run classics
+3. **PUZZLE** 🧩 - Match-3 and brain teasers
+4. **FIGHTING** 🥊 - Head-to-head combat
+5. **RACING** 🏎️ - Speed and drift challenges
+6. **BEAT 'EM UP** 👊 - Side-scrolling action
+7. **MAZE** 🌀 - Pac-Man style navigation
+8. **PINBALL** 🎱 - Classic flipper action
 
-### ?? RETRO Token Economics
+### 💰 RETRO Token Economics
 
 - **Token Symbol**: RETRO
 - **Base Denom**: uretro (micro-retro)
@@ -42,7 +42,7 @@ RetroChain supports multiple classic arcade game genres:
   - Achievement rewards
   - Governance voting
 
-### ?? Game Sessions
+### 🎮 Game Sessions
 
 Start a game session with these features:
 - Adjustable difficulty levels (1-10)
@@ -53,7 +53,7 @@ Start a game session with these features:
 - Continue system
 - Session persistence
 
-### ?? Scoring & Rewards
+### 🏅 Scoring & Rewards
 
 - **Score Points**: Earn points during gameplay
 - **Arcade Tokens**: Convert scores to RETRO tokens (configurable ratio)
@@ -61,7 +61,7 @@ Start a game session with these features:
 - **Achievement Bonuses**: Multiplied rewards for special accomplishments
 - **Tournament Prizes**: Win RETRO from competitive prize pools
 
-## ?? Get Started
+## 🚀 Get Started
 
 ### Prerequisites
 - Go 1.21+
@@ -98,14 +98,14 @@ These accounts are the **local dev template** accounts created by `ignite chain 
 They are **not** the balances/allocations of the running network (`retrochain-mainnet`).
 
 ```
-?? Alice (Validator)
+👩‍🚀 Alice (Validator)
    - Balance: 10,000,000 RETRO
    - Bonded: 1,000,000 RETRO
 
-?? Bob (Player)
+👾 Bob (Player)
    - Balance: 5,000,000 RETRO
 
-?? Dev (Developer)
+👨‍💻 Dev (Developer)
    - Balance: 6,000,000 RETRO
 ```
 
@@ -117,7 +117,7 @@ Get free RETRO tokens for testing (dev/test networks only):
 - **Max per address**: 1,000 RETRO
 - **Rate limit**: 1 hour
 
-## ?? Playing Games on RetroChain
+## 🕹️ Playing Games on RetroChain
 
 ### 1. Insert Coin (Buy Credits)
 
@@ -167,7 +167,7 @@ retrochaind tx arcade submit-score [session-id] [score] [level] [game-over] --fr
 retrochaind tx arcade set-high-score-initials [game-id] "ABC" --from alice
 ```
 
-## ?? Query Commands
+## 🔍 Query Commands
 
 ### View All Games
 
@@ -217,7 +217,7 @@ retrochaind query arcade list-achievements [player-address]
 retrochaind query arcade list-tournaments
 ```
 
-## ?? Tournament System
+## 🏆 Tournament System
 
 ### Create a Tournament
 
@@ -242,7 +242,7 @@ retrochaind tx arcade join-tournament [tournament-id] --from alice
 retrochaind tx arcade submit-tournament-score [tournament-id] [score] --from alice
 ```
 
-## ??? Development
+## 🛠️ Development
 
 ### Configure
 
@@ -291,7 +291,7 @@ Arcade module parameters can be updated via governance:
 - `achievement_reward_multiplier` - Achievement bonus rate
 - `power_up_cost` - Cost to use power-ups
 
-## ?? Release
+## 📦 Release
 
 Create and push a new version tag:
 
@@ -310,16 +310,16 @@ Install the latest version:
 curl https://get.ignite.com/username/retrochain@latest! | sudo bash
 ```
 
-## ?? Arcade Module Features
+## 🎛️ Arcade Module Features
 
 ### Game Session Lifecycle
 
 ```
-Insert Coin ? Start Session ? Play Game ? Update Score ? 
-  ?? Use Power-Ups
-  ?? Activate Combos
-  ?? Continue (if Game Over)
-  ?? Submit Final Score ? Check High Score ? End Session
+Insert Coin -> Start Session -> Play Game -> Update Score -> 
+  🔋 Use Power-Ups
+  ⚡ Activate Combos
+  🔁 Continue (if Game Over)
+  🏁 Submit Final Score -> Check High Score -> End Session
 ```
 
 ### Achievement System
@@ -342,7 +342,7 @@ Collect and use power-ups:
 - **Rapid Fire** - Increased attack speed
 - **Magnet** - Attract items
 
-## ?? Blockchain Explorer Integration
+## 🌐 Blockchain Explorer Integration
 
 RetroChain is fully compatible with Cosmos blockchain explorers!
 
@@ -511,14 +511,14 @@ Add to `chains.config.json`:
 }
 ```
 
-## ?? Documentation
+## 📚 Documentation
 
-**[?? Complete Documentation Index ?](DOCUMENTATION_INDEX.md)**
+**[📖 Complete Documentation Index 🧭](DOCUMENTATION_INDEX.md)**
 
-### ?? RetroChain Guides
+### 🧭 RetroChain Guides
 
 #### Quick Start
-- **[QUICK_REFERENCE.md](QUICK_REFERENCE.md)** ? - Essential commands and endpoints (350+ lines)
+- **[QUICK_REFERENCE.md](QUICK_REFERENCE.md)** 🧾 - Essential commands and endpoints (350+ lines)
   - Connection information and endpoints
   - Token details and economics
   - Quick command reference
@@ -526,12 +526,12 @@ Add to `chains.config.json`:
   - Transaction types reference
   - Example workflows
 
-- **[ARCADE_BANNER.txt](ARCADE_BANNER.txt)** ?? - ASCII art welcome banner (200+ lines)
+- **[ARCADE_BANNER.txt](ARCADE_BANNER.txt)** 🪩 - ASCII art welcome banner (200+ lines)
 
 #### Core Documentation
-- **[README.md](readme.md)** ?? - Main documentation (you are here!)
-- **[FEATURE_SUMMARY.md](FEATURE_SUMMARY.md)** ? - Complete feature list (600+ lines)
-- **[ARCADE_ENHANCEMENTS.md](ARCADE_ENHANCEMENTS.md)** ?? - Technical enhancements (500+ lines)
+- **[README.md](readme.md)** 🧠 - Main documentation (you are here!)
+- **[FEATURE_SUMMARY.md](FEATURE_SUMMARY.md)** 🗒️ - Complete feature list (600+ lines)
+- **[ARCADE_ENHANCEMENTS.md](ARCADE_ENHANCEMENTS.md)** 🛠️ - Technical enhancements (500+ lines)
 
 #### Player Guides
 - **[ARCADE_GUIDE.md](ARCADE_GUIDE.md)** - Comprehensive player's guide (800+ lines)
@@ -581,7 +581,7 @@ Add to `chains.config.json`:
   - Statistics and metrics
   - Future roadmap
 
-### ?? External Resources
+### 🔗 External Resources
 - [Ignite CLI Documentation](https://ignite.com/cli)
 - [Cosmos SDK Documentation](https://docs.cosmos.network)
 - [Tendermint Documentation](https://docs.tendermint.com)
@@ -589,46 +589,46 @@ Add to `chains.config.json`:
 - [CosmJS Documentation](https://cosmos.github.io/cosmjs/)
 - [Developer Chat](https://discord.com/invite/ignitecli)
 
-## ?? Why RetroChain?
+## 💡 Why RetroChain?
 
 RetroChain combines the best of both worlds:
 
-? **Blockchain Technology**
+🔗 **Blockchain Technology**
 - Decentralized and trustless
 - Transparent scoring
 - Immutable high score records
 - Token-based economy
 - Community governance
 
-? **Classic Arcade Gaming**
+👾 **Classic Arcade Gaming**
 - Nostalgic gameplay
 - Competitive leaderboards
 - Achievement systems
 - Tournament play
 - Social gaming
 
-## ?? Roadmap
+## 🛣️ Roadmap
 
-- ? Core arcade module
-- ? High score tracking
-- ? Tournament system
-- ? Achievement system
-- ?? NFT arcade cabinets
-- ?? Cross-chain gaming
-- ?? Game developer SDK
-- ?? Mobile arcade app
-- ?? VR arcade integration
+- 🎯 Core arcade module
+- 🏅 High score tracking
+- 🏆 Tournament system
+- 🏅 Achievement system
+- 🖼️ NFT arcade cabinets
+- 🔗 Cross-chain gaming
+- 🧑‍💻 Game developer SDK
+- 📱 Mobile arcade app
+- 🥽 VR arcade integration
 
-## ?? Contributing
+## 🤝 Contributing
 
 We welcome contributions! RetroChain is built for the community.
 
-## ?? License
+## 📜 License
 
 This project is licensed under the Apache License 2.0.
 
 ---
 
-**Made with ?? and ??? by the RetroChain Team**
+**Made with ❤️ and 🕹️ by the RetroChain Team**
 
 *"Insert Coin to Continue..."*
