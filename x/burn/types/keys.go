@@ -9,11 +9,15 @@ const (
     // StoreKey defines the primary module store key
     StoreKey = ModuleName
 
-    // RouterKey is the message route for the module (no msgs, kept for completeness)
+    // RouterKey is the message route for the module
     RouterKey = ModuleName
 
     // MemStoreKey defines the in-memory store key
     MemStoreKey = "mem_burn"
+
+    // GovModuleName duplicates the gov module's name to avoid a dependency with x/gov.
+    // It should be synced with the gov module's name if it is ever changed.
+    GovModuleName = "gov"
 )
 
 var (

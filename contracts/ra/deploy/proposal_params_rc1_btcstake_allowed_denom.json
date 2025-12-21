@@ -4,13 +4,13 @@
       "@type": "/retrochain.btcstake.v1.MsgUpdateParams",
       "authority": "cosmos10d07y265gmmuvt4z0w9aw880jnsr700j6zn9kn",
       "params": {
-        "allowed_denom": "REPLACE_WITH_WBTC_IBC_DENOM"
+        "allowed_denom": "ibc/CF57A83CED6CEC7D706631B5DC53ABC21B7EDA7DF7490732B4361E6D5DD19C73"
       }
     }
   ],
   "metadata": "",
   "deposit": "50000000uretro",
-  "title": "RC1: Set btcstake allowed denom (EDIT DENOM)",
-  "summary": "Sets x/btcstake params.allowed_denom to the IBC denom for wrapped BTC (WBTC). NOTE: Edit the denom before submitting.",
+  "title": "RC1: Set btcstake allowed denom (WBTC)",
+  "summary": "Sets x/btcstake params.allowed_denom to the current RetroChain IBC denom for WBTC.",
   "expedited": true
 }

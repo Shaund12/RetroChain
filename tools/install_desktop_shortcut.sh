@@ -22,7 +22,7 @@ cat > "$DESKTOP_FILE" <<EOF
 Type=Application
 Name=$APP_NAME
 Comment=Start/stop Retrochain node, Hermes, and Modules commands
-Exec=$LAUNCHER_PATH
+Exec=/usr/bin/env bash "$LAUNCHER_PATH"
 Icon=$ICON_NAME
 Terminal=false
 Categories=Utility;

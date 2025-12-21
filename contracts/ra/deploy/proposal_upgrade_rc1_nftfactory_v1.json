@@ -1,0 +1,18 @@
+{
+  "messages": [
+    {
+      "@type": "/cosmos.upgrade.v1beta1.MsgSoftwareUpgrade",
+      "authority": "cosmos10d07y265gmmuvt4z0w9aw880jnsr700j6zn9kn",
+      "plan": {
+        "name": "rc1-nftfactory-v1",
+        "height": "134211",
+        "info": "Add x/nftfactory store key (permissionless class creation + admin-only mint into x/nft)"
+      }
+    }
+  ],
+  "metadata": "",
+  "deposit": "50000000uretro",
+  "title": "RC1: Enable NFTFactory (native NFTs)",
+  "summary": "Adds the x/nftfactory store key via the rc1-nftfactory-v1 upgrade so users can permissionlessly create native NFT classes (nft/<creator>/<sub_id>) and mint NFTs (admin-only) backed by the chain's x/nft module.",
+  "expedited": true
+}

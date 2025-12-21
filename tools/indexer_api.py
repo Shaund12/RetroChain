@@ -15,7 +15,9 @@ Endpoints (v1):
 - GET /v1/txs/<tx_hash>
 - GET /v1/events?height=&tx_hash=&type=&source=&limit=&offset=&order=asc
 
-CORS: enabled for all origins.
+CORS:
+- Disabled by default.
+- Configure an allowlist via `--cors-origins` or `INDEXER_API_CORS_ORIGINS`.
 """
 
 from __future__ import annotations
@@ -30,14 +32,32 @@ from typing import Any
 from urllib.parse import parse_qs, urlparse
 
 
+def _cors_origin_for_request(handler: BaseHTTPRequestHandler) -> str | None:
+    allowed: list[str] = getattr(handler.server, "cors_allowed_origins", [])  # type: ignore[attr-defined]
+    origin = (handler.headers.get("Origin") or "").strip()
+    if not origin or not allowed:
+        return None
+    if "*" in allowed:
+        return "*"
+    return origin if origin in allowed else None
+
+
+def _maybe_write_cors_headers(handler: BaseHTTPRequestHandler) -> None:
+    cors_origin = _cors_origin_for_request(handler)
+    if not cors_origin:
+        return
+    handler.send_header("Access-Control-Allow-Origin", cors_origin)
+    handler.send_header("Vary", "Origin")
+    handler.send_header("Access-Control-Allow-Methods", "GET, OPTIONS")
+    handler.send_header("Access-Control-Allow-Headers", "Content-Type")
+
+
 def _json_response(handler: BaseHTTPRequestHandler, status: int, obj: Any) -> None:
     body = json.dumps(obj, ensure_ascii=False).encode("utf-8")
     handler.send_response(status)
     handler.send_header("Content-Type", "application/json; charset=utf-8")
     handler.send_header("Content-Length", str(len(body)))
-    handler.send_header("Access-Control-Allow-Origin", "*")
-    handler.send_header("Access-Control-Allow-Methods", "GET, OPTIONS")
-    handler.send_header("Access-Control-Allow-Headers", "Content-Type")
+    _maybe_write_cors_headers(handler)
     handler.end_headers()
     handler.wfile.write(body)
 
@@ -172,9 +192,7 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_OPTIONS(self) -> None:  # noqa: N802
         self.send_response(HTTPStatus.NO_CONTENT)
-        self.send_header("Access-Control-Allow-Origin", "*")
-        self.send_header("Access-Control-Allow-Methods", "GET, OPTIONS")
-        self.send_header("Access-Control-Allow-Headers", "Content-Type")
+        _maybe_write_cors_headers(self)
         self.end_headers()
 
     def do_GET(self) -> None:  # noqa: N802
@@ -298,6 +316,11 @@ def main() -> None:
     p = argparse.ArgumentParser()
     p.add_argument("--db", default=os.path.expanduser("~/.retrochain/indexer.sqlite"), help="Path to SQLite DB")
     p.add_argument("--listen", default="127.0.0.1:8081", help="host:port")
+    p.add_argument(
+        "--cors-origins",
+        default=(os.environ.get("INDEXER_API_CORS_ORIGINS") or "").strip(),
+        help="Comma-separated Origin allowlist for browser CORS (or '*'); default: disabled",
+    )
     args = p.parse_args()
 
     db_path = os.path.expanduser(args.db)
@@ -307,8 +330,11 @@ def main() -> None:
     host, port_str = args.listen.rsplit(":", 1)
     port = int(port_str)
 
+    allowed_origins = [o.strip() for o in str(args.cors_origins).split(",") if o.strip()]
+
     httpd = ThreadingHTTPServer((host, port), Handler)
     httpd.db = IndexerDB(db_path)  # type: ignore[attr-defined]
+    httpd.cors_allowed_origins = allowed_origins  # type: ignore[attr-defined]
     print(f"Indexer API listening on http://{host}:{port}")
     httpd.serve_forever()
 

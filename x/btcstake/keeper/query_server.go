@@ -30,26 +30,23 @@ func (q queryServer) Stake(ctx context.Context, req *types.QueryStakeRequest) (*
 	if req == nil {
 		return nil, types.ErrInvalidAmount
 	}
-	_, err := sdk.AccAddressFromBech32(req.Address)
+	addr, err := sdk.AccAddressFromBech32(req.Address)
 	if err != nil {
 		return nil, err
 	}
-	stake, err := q.getStake(ctx, req.Address)
-	if err != nil {
-		return nil, err
-	}
-	return &types.QueryStakeResponse{StakedAmount: stake.String()}, nil
+	bal := q.bankKeeper.GetBalance(ctx, addr, q.receiptDenom())
+	return &types.QueryStakeResponse{StakedAmount: bal.Amount.String()}, nil
 }
 
 func (q queryServer) PendingRewards(ctx context.Context, req *types.QueryPendingRewardsRequest) (*types.QueryPendingRewardsResponse, error) {
 	if req == nil {
 		return nil, types.ErrInvalidAmount
 	}
-	_, err := sdk.AccAddressFromBech32(req.Address)
+	addr, err := sdk.AccAddressFromBech32(req.Address)
 	if err != nil {
 		return nil, err
 	}
-	pending, err := q.settle(ctx, req.Address)
+	pending, err := q.settle(ctx, addr.String())
 	if err != nil {
 		return nil, err
 	}
@@ -57,6 +54,9 @@ func (q queryServer) PendingRewards(ctx context.Context, req *types.QueryPending
 }
 
 func (q queryServer) Pool(ctx context.Context, _ *types.QueryPoolRequest) (*types.QueryPoolResponse, error) {
+	// Ensure any parked rewards are distributed if stake exists.
+	_ = q.maybeDistributeUndistributed(ctx)
+
 	allowedDenom, totalStaked, rewardBal, und, idx, err := q.GetPoolInfo(ctx)
 	if err != nil {
 		return nil, err

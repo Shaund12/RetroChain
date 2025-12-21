@@ -6,18 +6,22 @@ import (
 	math "cosmossdk.io/math"
 )
 
-// Params defines burn configuration.
-type Params struct {
-	FeeBurnRate       math.LegacyDec `json:"fee_burn_rate" yaml:"fee_burn_rate"`
-	ProvisionBurnRate math.LegacyDec `json:"provision_burn_rate" yaml:"provision_burn_rate"`
-}
-
 // DefaultParams returns conservative defaults.
 func DefaultParams() Params {
 	return Params{
 		FeeBurnRate:       math.LegacyNewDecWithPrec(5, 2), // 0.05
 		ProvisionBurnRate: math.LegacyNewDecWithPrec(0, 2), // 0.00
 	}
+}
+
+// ZeroParams returns a zeroed params.
+func ZeroParams() Params {
+	return Params{FeeBurnRate: math.LegacyZeroDec(), ProvisionBurnRate: math.LegacyZeroDec()}
+}
+
+// Copy returns a shallow copy.
+func (p Params) Copy() Params {
+	return Params{FeeBurnRate: p.FeeBurnRate, ProvisionBurnRate: p.ProvisionBurnRate}
 }
 
 // Validate checks param bounds.
@@ -30,6 +34,9 @@ func (p Params) Validate() error {
 	}
 	return nil
 }
+
+// UnpackInterfaces exists for codec compatibility.
+func (p *Params) UnpackInterfaces(_ interface{}) error { return nil }
 
 func validateRate(v math.LegacyDec, name string) error {
 	if v.IsNil() {

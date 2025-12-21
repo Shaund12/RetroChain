@@ -1,0 +1,17 @@
+# Local, self-contained gogo + grpc-gateway template.
+# This avoids relying on externally-installed protoc plugins.
+version: v2
+plugins:
+  - local: ["/home/shaun/go/bin/protoc-gen-gogo"]
+    out: .
+    opt:
+      - plugins=grpc
+      - module=retrochain
+      - Mgoogle/protobuf/any.proto=github.com/cosmos/gogoproto/types/any
+      - Mcosmos/orm/v1/orm.proto=cosmossdk.io/orm
+      - Mcosmos/app/v1alpha1/module.proto=cosmossdk.io/api/cosmos/app/v1alpha1
+  - local: ["/home/shaun/go/bin/protoc-gen-grpc-gateway"]
+    out: .
+    opt:
+      - module=retrochain
+      - logtostderr=true

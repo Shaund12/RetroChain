@@ -78,6 +78,7 @@ This document outlines the production readiness status, completed improvements, 
    - Add rate limiting for transactions
    - Implement request validation middleware
    - Add replay protection
+   - Lock down public endpoints (RPC/REST) and CORS allowlists
 
 6. **Monitoring & Logging**
    - Add structured logging for key operations
@@ -99,6 +100,12 @@ This document outlines the production readiness status, completed improvements, 
 ---
 
 ## 🔧 Configuration Requirements
+
+### CORS + Public Endpoint Exposure (audit)
+
+- **CometBFT RPC CORS (browser explorers)**: set `[rpc].cors_allowed_origins` to an allowlist (e.g. `https://retrochain.ddns.net`, `http://retrochain.ddns.net`) and avoid `"*"`.
+- **Cosmos SDK REST CORS**: `enabled-unsafe-cors = true` enables permissive CORS; prefer leaving it `false` and using a reverse proxy (Caddy/Nginx) to add a strict allowlist CORS policy for the explorer.
+- **gRPC-web**: if enabled for browser usage, treat it like public REST—front it with a reverse proxy + allowlist; do not expose it broadly on a validator.
 
 ### Required Environment Variables
 

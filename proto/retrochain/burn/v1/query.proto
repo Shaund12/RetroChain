@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package retrochain.burn.v1;
+
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+import "retrochain/burn/v1/params.proto";
+
+option go_package = "retrochain/x/burn/types";
+
+service Query {
+  rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
+    option (google.api.http) = {
+      get: "/retrochain/burn/v1/params"
+      additional_bindings { get: "/burn/v1/params" }
+    };
+  }
+}
+
+message QueryParamsRequest {}
+
+message QueryParamsResponse {
+  Params params = 1 [(gogoproto.nullable) = false];
+}

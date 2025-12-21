@@ -43,9 +43,15 @@ func (AppModuleBasic) ValidateGenesis(_ codec.JSONCodec, _ client.TxEncodingConf
 	return p.Validate()
 }
 
-func (AppModuleBasic) RegisterInterfaces(_ codectypes.InterfaceRegistry) {}
+func (AppModuleBasic) RegisterInterfaces(registrar codectypes.InterfaceRegistry) {
+	types.RegisterInterfaces(registrar)
+}
 
-func (AppModuleBasic) RegisterGRPCGatewayRoutes(_ client.Context, _ *runtime.ServeMux) {}
+func (AppModuleBasic) RegisterGRPCGatewayRoutes(clientCtx client.Context, mux *runtime.ServeMux) {
+	if err := types.RegisterQueryHandlerClient(clientCtx.CmdContext, mux, types.NewQueryClient(clientCtx)); err != nil {
+		panic(err)
+	}
+}
 
 func (AppModuleBasic) GetTxCmd() *cobra.Command { return nil }
 
@@ -69,11 +75,16 @@ func NewAppModule(k keeper.Keeper) AppModule {
 	return AppModule{keeper: k}
 }
 
-func (am AppModule) RegisterServices(_ grpc.ServiceRegistrar) error { return nil }
+func (am AppModule) RegisterServices(registrar grpc.ServiceRegistrar) error {
+	types.RegisterMsgServer(registrar, keeper.NewMsgServerImpl(am.keeper))
+	types.RegisterQueryServer(registrar, keeper.NewQueryServerImpl(am.keeper))
+	return nil
+}
 
 func (am AppModule) RegisterGRPCGatewayRoutes(clientCtx client.Context, mux *runtime.ServeMux) {
-	_ = clientCtx
-	_ = mux
+	if err := types.RegisterQueryHandlerClient(clientCtx.CmdContext, mux, types.NewQueryClient(clientCtx)); err != nil {
+		panic(err)
+	}
 }
 
 func (am AppModule) GetTxCmd() *cobra.Command { return nil }

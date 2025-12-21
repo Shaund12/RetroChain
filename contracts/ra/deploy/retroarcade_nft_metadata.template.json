@@ -1,0 +1,9 @@
+{
+  "name": "RetroArcade Genesis #0001",
+  "description": "RetroArcade test NFT minted via CW721 on RetroChain.",
+  "image": "<DATA_IMAGE_SVG>",
+  "attributes": [
+    {"trait_type": "collection", "value": "RetroArcade"},
+    {"trait_type": "type", "value": "test"}
+  ]
+}

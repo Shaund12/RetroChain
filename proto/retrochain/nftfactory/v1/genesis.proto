@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package retrochain.nftfactory.v1;
+
+import "cosmos_proto/cosmos.proto";
+import "gogoproto/gogo.proto";
+
+option go_package = "retrochain/x/nftfactory/types";
+
+message GenesisState {
+  repeated ClassAuthority class_authorities = 1 [(gogoproto.nullable) = false];
+  repeated CreatorClass creator_classes = 2 [(gogoproto.nullable) = false];
+}
+
+message ClassAuthority {
+  string class_id = 1;
+  string admin = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+}
+
+message CreatorClass {
+  string creator = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string class_id = 2;
+}

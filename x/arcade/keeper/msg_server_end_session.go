@@ -66,7 +66,12 @@ func (k *msgServer) endSessionInternal(ctx context.Context, sessionID uint64, pl
 
 	// Calculate and distribute rewards based on score (arcade tokens)
 	if session.CurrentScore > 0 {
-		rewardAmount := (session.CurrentScore / 1000) * uint64(params.TokensPerThousandPoints)
+		base := session.CurrentScore / 1000
+		mult := uint64(params.TokensPerThousandPoints)
+		if mult > 0 && base > (^uint64(0))/mult {
+			return nil, errorsmod.Wrap(types.ErrInvalidRequest, "reward calculation overflow")
+		}
+		rewardAmount := base * mult
 		if rewardAmount > 0 {
 			if err := k.updateLeaderboard(ctx, player, 0, 0, 0, 0, rewardAmount); err != nil {
 				// Don't fail the session end if rewards fail - just log the event

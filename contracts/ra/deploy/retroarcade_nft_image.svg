@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="g" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#0b1020"/>
+      <stop offset="1" stop-color="#1b2a5a"/>
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <rect width="512" height="512" fill="url(#g)"/>
+
+  <!-- Pixel-ish border -->
+  <rect x="28" y="28" width="456" height="456" fill="none" stroke="#7cf" stroke-width="6" opacity="0.7"/>
+  <rect x="40" y="40" width="432" height="432" fill="none" stroke="#f7a" stroke-width="2" opacity="0.5"/>
+
+  <!-- Arcade token mark -->
+  <g filter="url(#glow)">
+    <circle cx="256" cy="240" r="120" fill="none" stroke="#7cf" stroke-width="10" opacity="0.9"/>
+    <circle cx="256" cy="240" r="92" fill="none" stroke="#f7a" stroke-width="6" opacity="0.9"/>
+
+    <path d="M196 302 L196 178 L252 220 L316 178 L316 302" fill="none" stroke="#fff" stroke-width="10" stroke-linejoin="round"/>
+    <circle cx="256" cy="240" r="10" fill="#fff"/>
+  </g>
+
+  <text x="256" y="410" text-anchor="middle" font-family="monospace" font-size="28" fill="#ffffff" opacity="0.92">
+    RetroArcade NFT
+  </text>
+  <text x="256" y="444" text-anchor="middle" font-family="monospace" font-size="16" fill="#a6e3ff" opacity="0.85">
+    testnet-preview (svg)
+  </text>
+</svg>

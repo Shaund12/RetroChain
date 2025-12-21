@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strings"
 
 	"cosmossdk.io/collections"
 	collcodec "cosmossdk.io/collections/codec"
@@ -20,6 +21,7 @@ import (
 type Keeper struct {
 	storeService store.KVStoreService
 	cdc          codec.Codec
+	addressCodec address.Codec
 	bankKeeper   types.BankKeeper
 
 	// authority is the address that can update params.
@@ -90,6 +92,7 @@ func NewKeeper(
 	k := Keeper{
 		storeService: storeService,
 		cdc:          cdc,
+		addressCodec: addressCodec,
 		bankKeeper:   bankKeeper,
 		authority:    authority,
 
@@ -116,6 +119,8 @@ func (k Keeper) Authority() []byte { return k.authority }
 func (k Keeper) moduleAddress() sdk.AccAddress {
 	return authtypes.NewModuleAddress(types.ModuleName)
 }
+
+func (k Keeper) receiptDenom() string { return "stwbtc" }
 
 func (k Keeper) rewardDenom() string { return "uretro" }
 
@@ -326,23 +331,35 @@ func (k Keeper) StakeFor(ctx context.Context, staker sdk.AccAddress, amount math
 		return math.Int{}, types.ErrParamsNotSet
 	}
 
+	// Settle rewards before mutating stake.
 	if _, err := k.settle(ctx, staker.String()); err != nil {
 		return math.Int{}, err
 	}
 
-	coins := sdk.NewCoins(sdk.NewCoin(p.AllowedDenom, amount))
-	if err := k.bankKeeper.SendCoinsFromAccountToModule(ctx, staker, types.ModuleName, coins); err != nil {
+	// Deposit underlying into module account.
+	deposit := sdk.NewCoins(sdk.NewCoin(p.AllowedDenom, amount))
+	if err := k.bankKeeper.SendCoinsFromAccountToModule(ctx, staker, types.ModuleName, deposit); err != nil {
 		return math.Int{}, err
 	}
 
-	oldStake, err := k.getStake(ctx, staker.String())
+	// Mint receipt token to the user (1:1, same base units).
+	receipt := sdk.NewCoins(sdk.NewCoin(k.receiptDenom(), amount))
+	if err := k.bankKeeper.MintCoins(ctx, types.ModuleName, receipt); err != nil {
+		return math.Int{}, err
+	}
+	if err := k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, staker, receipt); err != nil {
+		return math.Int{}, err
+	}
+
+	// Track stake and total.
+	currentStake, err := k.getStake(ctx, staker.String())
 	if err != nil {
 		return math.Int{}, err
 	}
-	newStake := oldStake.Add(amount)
-	if err := k.Stake.Set(ctx, staker.String(), newStake); err != nil {
+	if err := k.Stake.Set(ctx, staker.String(), currentStake.Add(amount)); err != nil {
 		return math.Int{}, err
 	}
+
 	total, err := k.getIntOrZero(ctx, k.TotalStaked)
 	if err != nil {
 		return math.Int{}, err
@@ -351,7 +368,8 @@ func (k Keeper) StakeFor(ctx context.Context, staker sdk.AccAddress, amount math
 		return math.Int{}, err
 	}
 
-	return newStake, nil
+	bal := k.bankKeeper.GetBalance(ctx, staker, k.receiptDenom())
+	return bal.Amount, nil
 }
 
 func (k Keeper) UnstakeFor(ctx context.Context, staker sdk.AccAddress, amount math.Int) (math.Int, error) {
@@ -363,27 +381,41 @@ func (k Keeper) UnstakeFor(ctx context.Context, staker sdk.AccAddress, amount ma
 		return math.Int{}, types.ErrParamsNotSet
 	}
 
+	// Settle rewards before mutating stake.
 	if _, err := k.settle(ctx, staker.String()); err != nil {
 		return math.Int{}, err
 	}
 
-	oldStake, err := k.getStake(ctx, staker.String())
+	// Require the caller to hold enough receipt tokens.
+	currentStake, err := k.getStake(ctx, staker.String())
 	if err != nil {
 		return math.Int{}, err
 	}
-	if oldStake.LT(amount) {
+	if currentStake.LT(amount) {
 		return math.Int{}, types.ErrInsufficientStake
 	}
-	newStake := oldStake.Sub(amount)
 
-	coins := sdk.NewCoins(sdk.NewCoin(p.AllowedDenom, amount))
-	if err := k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, staker, coins); err != nil {
+	// Require the caller to hold enough receipt tokens.
+	receiptBal := k.bankKeeper.GetBalance(ctx, staker, k.receiptDenom())
+	if receiptBal.Amount.LT(amount) {
+		return math.Int{}, types.ErrInsufficientStake
+	}
+
+	// Pull receipt tokens into module account, then burn them.
+	receipt := sdk.NewCoins(sdk.NewCoin(k.receiptDenom(), amount))
+	if err := k.bankKeeper.SendCoinsFromAccountToModule(ctx, staker, types.ModuleName, receipt); err != nil {
+		return math.Int{}, err
+	}
+	if err := k.bankKeeper.BurnCoins(ctx, types.ModuleName, receipt); err != nil {
 		return math.Int{}, err
 	}
 
-	if err := k.Stake.Set(ctx, staker.String(), newStake); err != nil {
+	// Release underlying back to the user.
+	underlying := sdk.NewCoins(sdk.NewCoin(p.AllowedDenom, amount))
+	if err := k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, staker, underlying); err != nil {
 		return math.Int{}, err
 	}
+
 	total, err := k.getIntOrZero(ctx, k.TotalStaked)
 	if err != nil {
 		return math.Int{}, err
@@ -392,15 +424,31 @@ func (k Keeper) UnstakeFor(ctx context.Context, staker sdk.AccAddress, amount ma
 		return math.Int{}, err
 	}
 
-	return newStake, nil
+	// Persist reduced stake amount.
+	newStake := currentStake.Sub(amount)
+	if err := k.Stake.Set(ctx, staker.String(), newStake); err != nil {
+		return math.Int{}, err
+	}
+
+	remaining := k.bankKeeper.GetBalance(ctx, staker, k.receiptDenom())
+	return remaining.Amount, nil
 }
 
 func (k Keeper) FundRewards(ctx context.Context, funder sdk.AccAddress, amount math.Int) error {
-	coins := sdk.NewCoins(sdk.NewCoin(k.rewardDenom(), amount))
-	if err := k.bankKeeper.SendCoinsFromAccountToModule(ctx, funder, types.ModuleName, coins); err != nil {
+	if !amount.IsPositive() {
+		return types.ErrInvalidAmount
+	}
+
+	rewardCoins := sdk.NewCoins(sdk.NewCoin(k.rewardDenom(), amount))
+	if err := k.bankKeeper.SendCoinsFromAccountToModule(ctx, funder, types.ModuleName, rewardCoins); err != nil {
 		return err
 	}
-	return k.distributeRewards(ctx, amount)
+
+	// Distribute or park as undistributed if no stake.
+	if err := k.distributeRewards(ctx, amount); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (k Keeper) ClaimRewards(ctx context.Context, claimer sdk.AccAddress) (math.Int, error) {
@@ -412,10 +460,13 @@ func (k Keeper) ClaimRewards(ctx context.Context, claimer sdk.AccAddress) (math.
 		return math.ZeroInt(), nil
 	}
 
+	// Pay out pending rewards in reward denom.
 	coins := sdk.NewCoins(sdk.NewCoin(k.rewardDenom(), pending))
 	if err := k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, claimer, coins); err != nil {
 		return math.Int{}, err
 	}
+
+	// Clear pending.
 	if err := k.PendingRewards.Set(ctx, claimer.String(), math.ZeroInt()); err != nil {
 		return math.Int{}, err
 	}
@@ -428,21 +479,14 @@ func (k Keeper) GetPoolInfo(ctx context.Context) (allowedDenom string, totalStak
 		return "", math.Int{}, math.Int{}, math.Int{}, math.LegacyDec{}, err
 	}
 	allowedDenom = p.AllowedDenom
-	totalStaked, err = k.getIntOrZero(ctx, k.TotalStaked)
-	if err != nil {
-		return "", math.Int{}, math.Int{}, math.Int{}, math.LegacyDec{}, err
+	if strings.TrimSpace(allowedDenom) == "" {
+		return allowedDenom, math.ZeroInt(), math.ZeroInt(), math.ZeroInt(), math.LegacyZeroDec(), nil
 	}
-	undistributed, err = k.getIntOrZero(ctx, k.UndistributedRewards)
-	if err != nil {
-		return "", math.Int{}, math.Int{}, math.Int{}, math.LegacyDec{}, err
-	}
-	rewardIndex, err = k.getDecOrZero(ctx, k.RewardIndex)
-	if err != nil {
-		return "", math.Int{}, math.Int{}, math.Int{}, math.LegacyDec{}, err
-	}
-
-	balCoin := k.bankKeeper.GetBalance(ctx, k.moduleAddress(), k.rewardDenom())
-	rewardBal = balCoin.Amount
+	balCoin := k.bankKeeper.GetBalance(ctx, k.moduleAddress(), allowedDenom)
+	totalStaked = balCoin.Amount
+	rewardBal = k.bankKeeper.GetBalance(ctx, k.moduleAddress(), k.rewardDenom()).Amount
+	undistributed, _ = k.getIntOrZero(ctx, k.UndistributedRewards)
+	rewardIndex, _ = k.getDecOrZero(ctx, k.RewardIndex)
 	return allowedDenom, totalStaked, rewardBal, undistributed, rewardIndex, nil
 }
 

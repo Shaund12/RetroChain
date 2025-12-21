@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package retrochain.tokenfactory.module.v1;
+
+import "cosmos/app/v1alpha1/module.proto";
+
+option go_package = "retrochain/x/tokenfactory/types";
+
+// Module is the config object for the tokenfactory module.
+message Module {
+  option (cosmos.app.v1alpha1.module) = {go_import: "retrochain/x/tokenfactory/module"};
+
+  // authority defines the custom module authority.
+  // If not set, defaults to the governance module.
+  string authority = 1;
+}

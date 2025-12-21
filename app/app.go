@@ -2,13 +2,17 @@ package app
 
 import (
 	"context"
+	"fmt"
 	"io"
+	"os"
+	"path/filepath"
 
 	clienthelpers "cosmossdk.io/client/v2/helpers"
 	"cosmossdk.io/core/appmodule"
 	"cosmossdk.io/depinject"
 	"cosmossdk.io/log"
 	math "cosmossdk.io/math"
+	"cosmossdk.io/store/rootmulti"
 	storetypes "cosmossdk.io/store/types"
 	circuitkeeper "cosmossdk.io/x/circuit/keeper"
 	upgradekeeper "cosmossdk.io/x/upgrade/keeper"
@@ -20,6 +24,7 @@ import (
 	dbm "github.com/cosmos/cosmos-db"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
+	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/runtime"
@@ -55,10 +60,10 @@ import (
 	_ "retrochain/x/arcade/module" // import for side-effects (module registration)
 	btcstakekeeper "retrochain/x/btcstake/keeper"
 	btcstaketypes "retrochain/x/btcstake/types"
-	retrochainkeeper "retrochain/x/retrochain/keeper"
-	retrochaintypes "retrochain/x/retrochain/types"
 	burnkeeper "retrochain/x/burn/keeper"
 	burntypes "retrochain/x/burn/types"
+	retrochainkeeper "retrochain/x/retrochain/keeper"
+	retrochaintypes "retrochain/x/retrochain/types"
 )
 
 const (
@@ -81,6 +86,12 @@ const (
 	combinedUpgradeName = "rc1-combined-v1"
 	// retrochainUpgradeName is the on-chain upgrade that adds the retrochain module store key.
 	retrochainUpgradeName = "rc1-retrochain-v1"
+	// tokenfactoryUpgradeName is the on-chain upgrade that adds the tokenfactory module store key.
+	tokenfactoryUpgradeName = "rc1-tokenfactory-v1"
+	// nftfactoryUpgradeName is the on-chain upgrade that adds the nftfactory module store key.
+	nftfactoryUpgradeName = "rc1-nftfactory-v1"
+	// clawbackUpgradeName moves mistaken funds back to foundation via a software upgrade.
+	clawbackUpgradeName = "rc1-clawback-v1"
 )
 
 // DefaultNodeHome default home directories for the application daemon
@@ -204,14 +215,13 @@ func New(
 		&app.ParamsKeeper,
 		&app.RetrochainKeeper,
 		&app.ArcadeKeeper,
+		&app.BurnKeeper,
 		&app.BtcstakeKeeper,
 	); err != nil {
 		panic(err)
 	}
 
 	// add to default baseapp options
-	// enable optimistic execution
-	baseAppOptions = append(baseAppOptions, baseapp.SetOptimisticExecution())
 
 	// build app
 	app.App = appBuilder.Build(db, traceStore, baseAppOptions...)
@@ -222,7 +232,30 @@ func New(
 	}
 
 	// configure upgrade handlers after module registration
-	app.setupUpgradeHandlers()
+	app.setupUpgradeHandlers(appOpts, db)
+
+	// CosmWasm (wasmd) panics if Params is missing from state. Some chains can end up
+	// with the wasm store key added but params never initialized (e.g. store upgrade
+	// without a wasm genesis/init). To keep the chain live, defensively initialize
+	// default wasm params at PreBlock if missing.
+	app.SetPreBlocker(func(ctx sdk.Context, req *abci.RequestFinalizeBlock) (*sdk.ResponsePreBlock, error) {
+		paramsOK := true
+		func() {
+			defer func() {
+				if r := recover(); r != nil {
+					paramsOK = false
+				}
+			}()
+			_ = app.WasmKeeper.GetParams(ctx)
+		}()
+		if !paramsOK {
+			ctx.Logger().Info("wasm params missing; initializing defaults to keep chain live")
+			if err := app.WasmKeeper.SetParams(ctx, wasmtypes.DefaultParams()); err != nil {
+				return nil, err
+			}
+		}
+		return app.App.PreBlocker(ctx, req)
+	})
 
 	/****  Module Options ****/
 
@@ -252,13 +285,85 @@ func New(
 	return app
 }
 
-// setupUpgradeHandlers wires the wasm store addition behind an x/upgrade plan.
-func (app *App) setupUpgradeHandlers() {
-	wasmStoreUpgrades := storetypes.StoreUpgrades{Added: []string{wasmtypes.StoreKey}}
-	burnStoreUpgrades := storetypes.StoreUpgrades{Added: []string{burntypes.StoreKey}}
-	btcstakeStoreUpgrades := storetypes.StoreUpgrades{Added: []string{btcstaketypes.StoreKey}}
-	combinedStoreUpgrades := storetypes.StoreUpgrades{Added: []string{wasmtypes.StoreKey, burntypes.StoreKey, btcstaketypes.StoreKey}}
-	retrochainStoreUpgrades := storetypes.StoreUpgrades{Added: []string{retrochaintypes.StoreKey}}
+func storeExistsAtLatestVersion(db dbm.DB, storeKey string) bool {
+	if db == nil || storeKey == "" {
+		return false
+	}
+	latest := rootmulti.GetLatestVersion(db)
+	if latest <= 0 {
+		return false
+	}
+	bz, err := db.Get([]byte(fmt.Sprintf("s/%d", latest)))
+	if err != nil || bz == nil {
+		return false
+	}
+	ci := &storetypes.CommitInfo{}
+	if err := ci.Unmarshal(bz); err != nil {
+		return false
+	}
+	for _, si := range ci.StoreInfos {
+		if si.Name == storeKey {
+			return true
+		}
+	}
+	return false
+}
+
+func storeExistsOnDisk(homeDir, storeKey string) bool {
+	if homeDir == "" || storeKey == "" {
+		return false
+	}
+	dataDir := filepath.Join(homeDir, "data")
+	// goleveldb commonly uses <storeKey>.db (directory). Some setups may use a file.
+	candidates := []string{
+		filepath.Join(dataDir, storeKey+".db"),
+		filepath.Join(dataDir, storeKey),
+	}
+	for _, p := range candidates {
+		if _, err := os.Stat(p); err == nil {
+			return true
+		}
+	}
+	return false
+}
+
+func filterMissingStores(homeDir string, db dbm.DB, storeKeys []string) []string {
+	missing := make([]string, 0, len(storeKeys))
+	for _, k := range storeKeys {
+		// Prefer checking the actual app state DB. If commit-info is missing for any
+		// reason, fall back to a filesystem existence check.
+		exists := storeExistsAtLatestVersion(db, k)
+		if !exists {
+			exists = storeExistsOnDisk(homeDir, k)
+		}
+		if !exists {
+			missing = append(missing, k)
+		}
+	}
+	return missing
+}
+
+// setupUpgradeHandlers wires store additions behind x/upgrade plans.
+//
+// Important: Some operators may already have store DBs present on disk (e.g. due to
+// earlier testing or an older chain layout). In that case, treating those stores as
+// "Added" at the upgrade height will panic (initial version mismatch). To be robust,
+// only mark a store as Added if it does not already exist on disk.
+func (app *App) setupUpgradeHandlers(appOpts servertypes.AppOptions, db dbm.DB) {
+	homeDir := ""
+	if appOpts != nil {
+		if v := appOpts.Get(flags.FlagHome); v != nil {
+			if s, ok := v.(string); ok {
+				homeDir = s
+			}
+		}
+	}
+
+	wasmStoreUpgrades := storetypes.StoreUpgrades{Added: filterMissingStores(homeDir, db, []string{wasmtypes.StoreKey})}
+	burnStoreUpgrades := storetypes.StoreUpgrades{Added: filterMissingStores(homeDir, db, []string{burntypes.StoreKey})}
+	btcstakeStoreUpgrades := storetypes.StoreUpgrades{Added: filterMissingStores(homeDir, db, []string{btcstaketypes.StoreKey})}
+	combinedStoreUpgrades := storetypes.StoreUpgrades{Added: filterMissingStores(homeDir, db, []string{wasmtypes.StoreKey, burntypes.StoreKey, btcstaketypes.StoreKey})}
+	retrochainStoreUpgrades := storetypes.StoreUpgrades{Added: filterMissingStores(homeDir, db, []string{retrochaintypes.StoreKey})}
 
 	setBurnTokenomicsParams := func(ctx sdk.Context) error {
 		// Target inflation control: burn 80% of the fee_collector balance each block.
@@ -267,6 +372,40 @@ func (app *App) setupUpgradeHandlers() {
 			FeeBurnRate:       math.LegacyNewDecWithPrec(8, 1), // 0.8
 			ProvisionBurnRate: math.LegacyNewDecWithPrec(0, 1), // 0.0
 		})
+	}
+
+	ensureFeeCollectorBurner := func(ctx sdk.Context) error {
+		macc := app.AuthKeeper.GetModuleAccount(ctx, authtypes.FeeCollectorName)
+		if macc == nil {
+			// create it if missing
+			app.AuthKeeper.SetModuleAccount(ctx, authtypes.NewEmptyModuleAccount(authtypes.FeeCollectorName, authtypes.Burner))
+			return nil
+		}
+
+		if macc.HasPermission(authtypes.Burner) {
+			return nil
+		}
+
+		var baseAcc *authtypes.BaseAccount
+		perms := append([]string{}, macc.GetPermissions()...)
+		perms = append(perms, authtypes.Burner)
+
+		switch acc := macc.(type) {
+		case *authtypes.ModuleAccount:
+			baseAcc = acc.BaseAccount
+		default:
+			// fall back to overwriting via new empty module account
+			app.AuthKeeper.SetModuleAccount(ctx, authtypes.NewEmptyModuleAccount(authtypes.FeeCollectorName, perms...))
+			return nil
+		}
+
+		if baseAcc == nil {
+			app.AuthKeeper.SetModuleAccount(ctx, authtypes.NewEmptyModuleAccount(authtypes.FeeCollectorName, perms...))
+			return nil
+		}
+
+		app.AuthKeeper.SetModuleAccount(ctx, authtypes.NewModuleAccount(baseAcc, authtypes.FeeCollectorName, perms...))
+		return nil
 	}
 
 	app.UpgradeKeeper.SetUpgradeHandler(wasmUpgradeName, func(ctx context.Context, plan upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
@@ -278,7 +417,11 @@ func (app *App) setupUpgradeHandlers() {
 	})
 
 	app.UpgradeKeeper.SetUpgradeHandler(burnTokenomicsUpgradeName, func(ctx context.Context, plan upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
-		if err := setBurnTokenomicsParams(sdk.UnwrapSDKContext(ctx)); err != nil {
+		sdkCtx := sdk.UnwrapSDKContext(ctx)
+		if err := ensureFeeCollectorBurner(sdkCtx); err != nil {
+			return vm, err
+		}
+		if err := setBurnTokenomicsParams(sdkCtx); err != nil {
 			return vm, err
 		}
 		return app.ModuleManager.RunMigrations(ctx, app.Configurator(), vm)
@@ -289,7 +432,11 @@ func (app *App) setupUpgradeHandlers() {
 	})
 
 	app.UpgradeKeeper.SetUpgradeHandler(combinedUpgradeName, func(ctx context.Context, plan upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
-		if err := setBurnTokenomicsParams(sdk.UnwrapSDKContext(ctx)); err != nil {
+		sdkCtx := sdk.UnwrapSDKContext(ctx)
+		if err := ensureFeeCollectorBurner(sdkCtx); err != nil {
+			return vm, err
+		}
+		if err := setBurnTokenomicsParams(sdkCtx); err != nil {
 			return vm, err
 		}
 		return app.ModuleManager.RunMigrations(ctx, app.Configurator(), vm)
@@ -299,6 +446,14 @@ func (app *App) setupUpgradeHandlers() {
 		return app.ModuleManager.RunMigrations(ctx, app.Configurator(), vm)
 	})
 
+	// tokenfactory upgrade wiring must only exist in the post-upgrade binary.
+	// If the handler is present before the trigger height, the SDK will refuse to run.
+	app.registerTokenfactoryUpgradeHandler()
+	// nftfactory upgrade wiring must only exist in the post-upgrade binary.
+	app.registerNftfactoryUpgradeHandler()
+	// clawback upgrade wiring is safe to include pre-upgrade (no store additions).
+	app.registerClawbackUpgradeHandler()
+
 	upgradeInfo, err := app.UpgradeKeeper.ReadUpgradeInfoFromDisk()
 	if err != nil {
 		panic(err)
@@ -307,25 +462,40 @@ func (app *App) setupUpgradeHandlers() {
 	switch upgradeInfo.Name {
 	case wasmUpgradeName:
 		if !app.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height) {
-			app.SetStoreLoader(upgradetypes.UpgradeStoreLoader(upgradeInfo.Height, &wasmStoreUpgrades))
+			if len(wasmStoreUpgrades.Added) > 0 {
+				app.SetStoreLoader(upgradetypes.UpgradeStoreLoader(upgradeInfo.Height, &wasmStoreUpgrades))
+			}
 		}
 	case burnUpgradeName:
 		if !app.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height) {
-			app.SetStoreLoader(upgradetypes.UpgradeStoreLoader(upgradeInfo.Height, &burnStoreUpgrades))
+			if len(burnStoreUpgrades.Added) > 0 {
+				app.SetStoreLoader(upgradetypes.UpgradeStoreLoader(upgradeInfo.Height, &burnStoreUpgrades))
+			}
 		}
 	case btcstakeUpgradeName:
 		if !app.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height) {
-			app.SetStoreLoader(upgradetypes.UpgradeStoreLoader(upgradeInfo.Height, &btcstakeStoreUpgrades))
+			if len(btcstakeStoreUpgrades.Added) > 0 {
+				app.SetStoreLoader(upgradetypes.UpgradeStoreLoader(upgradeInfo.Height, &btcstakeStoreUpgrades))
+			}
 		}
 	case combinedUpgradeName:
 		if !app.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height) {
-			app.SetStoreLoader(upgradetypes.UpgradeStoreLoader(upgradeInfo.Height, &combinedStoreUpgrades))
+			if len(combinedStoreUpgrades.Added) > 0 {
+				app.SetStoreLoader(upgradetypes.UpgradeStoreLoader(upgradeInfo.Height, &combinedStoreUpgrades))
+			}
 		}
 	case retrochainUpgradeName:
 		if !app.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height) {
-			app.SetStoreLoader(upgradetypes.UpgradeStoreLoader(upgradeInfo.Height, &retrochainStoreUpgrades))
+			if len(retrochainStoreUpgrades.Added) > 0 {
+				app.SetStoreLoader(upgradetypes.UpgradeStoreLoader(upgradeInfo.Height, &retrochainStoreUpgrades))
+			}
 		}
 	}
+
+	// tokenfactory store-loader wiring is build-tagged (post-upgrade only).
+	app.maybeSetTokenfactoryStoreLoader(homeDir, db, upgradeInfo)
+	// nftfactory store-loader wiring is build-tagged (post-upgrade only).
+	app.maybeSetNftfactoryStoreLoader(homeDir, db, upgradeInfo)
 }
 
 // GetSubspace returns a param subspace for a given module name.
@@ -371,11 +541,10 @@ func (app *App) SimulationManager() *module.SimulationManager {
 // RegisterAPIRoutes registers all application module routes with the provided
 // API server.
 func (app *App) RegisterAPIRoutes(apiSvr *api.Server, apiConfig config.APIConfig) {
-	// Register explorer-friendly routes first so they take precedence over the
-	// gRPC-Gateway catch-all registered by the base app.
-	app.registerCustomAPIRoutes(apiSvr)
-
 	app.App.RegisterAPIRoutes(apiSvr, apiConfig)
+	// Register explorer-friendly routes after base API wiring so the
+	// gRPC-Gateway router/client are initialized and usable.
+	app.registerCustomAPIRoutes(apiSvr)
 	// register swagger API in app.go so that other applications can override easily
 	if err := server.RegisterSwaggerAPI(apiSvr.ClientCtx, apiSvr.Router, apiConfig.Swagger); err != nil {
 		panic(err)

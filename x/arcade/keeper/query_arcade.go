@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"cosmossdk.io/collections"
+	errorsmod "cosmossdk.io/errors"
 
 	"retrochain/x/arcade/types"
 )
@@ -216,6 +217,23 @@ func (k Keeper) updateLeaderboard(ctx context.Context, player string, scoreDelta
 			return err
 		}
 		entry = types.LeaderboardEntry{Player: player}
+	}
+
+	max := ^uint64(0)
+	if scoreDelta > 0 && entry.TotalScore > max-scoreDelta {
+		return errorsmod.Wrap(types.ErrInvalidRequest, "total_score overflow")
+	}
+	if gamesDelta > 0 && entry.GamesPlayed > max-gamesDelta {
+		return errorsmod.Wrap(types.ErrInvalidRequest, "games_played overflow")
+	}
+	if achievementsDelta > 0 && entry.AchievementsUnlocked > max-achievementsDelta {
+		return errorsmod.Wrap(types.ErrInvalidRequest, "achievements_unlocked overflow")
+	}
+	if tournamentsWonDelta > 0 && entry.TournamentsWon > max-tournamentsWonDelta {
+		return errorsmod.Wrap(types.ErrInvalidRequest, "tournaments_won overflow")
+	}
+	if tokensDelta > 0 && entry.ArcadeTokens > max-tokensDelta {
+		return errorsmod.Wrap(types.ErrInvalidRequest, "arcade_tokens overflow")
 	}
 
 	entry.TotalScore += scoreDelta

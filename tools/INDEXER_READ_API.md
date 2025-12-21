@@ -35,7 +35,16 @@ python3 tools/indexer_api.py \
 - `GET /v1/txs/<TX_HASH>`
 - `GET /v1/events?height=&tx_hash=&type=&source=&limit=&offset=&order=asc`
 
-CORS is enabled (`Access-Control-Allow-Origin: *`) so a browser-based explorer can call it directly.
+CORS is **disabled by default**.
+
+If your browser-based explorer runs at `retrochain.ddns.net`, allowlist it:
+
+```bash
+INDEXER_API_CORS_ORIGINS="https://retrochain.ddns.net,http://retrochain.ddns.net" \
+  python3 tools/indexer_api.py --db ~/.retrochain/indexer.sqlite --listen 127.0.0.1:8081
+```
+
+You can also pass `--cors-origins` directly. Use `*` only for local/dev.
 
 ## 3) Resetting the DB
 

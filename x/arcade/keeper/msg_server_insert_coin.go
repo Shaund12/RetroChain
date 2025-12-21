@@ -41,9 +41,10 @@ func (k *msgServer) InsertCoin(ctx context.Context, msg *types.MsgInsertCoin) (*
 		costPerCredit = TokensPerCredit
 	}
 
-	// Calculate token cost
-	tokenCost := msg.Credits * costPerCredit
-	coins := sdk.NewCoins(sdk.NewCoin("uretro", math.NewIntFromUint64(tokenCost)))
+	// Calculate token cost using arbitrary-precision ints to avoid uint64 overflow.
+	// Using uint64 multiplication here is exploitable (wraparound => underpayment).
+	tokenCost := math.NewIntFromUint64(msg.Credits).Mul(math.NewIntFromUint64(costPerCredit))
+	coins := sdk.NewCoins(sdk.NewCoin("uretro", tokenCost))
 
 	// Check if player has sufficient spendable coins
 	spendable := k.bankKeeper.SpendableCoins(ctx, creatorAddr)
@@ -62,8 +63,11 @@ func (k *msgServer) InsertCoin(ctx context.Context, msg *types.MsgInsertCoin) (*
 		return nil, errorsmod.Wrap(err, "failed to get player credits")
 	}
 
-	// Add new credits
+	// Add new credits (guard overflow)
 	newCredits := currentCredits + msg.Credits
+	if newCredits < currentCredits {
+		return nil, errorsmod.Wrap(types.ErrInvalidRequest, "credits overflow")
+	}
 	if err := k.SetPlayerCredits(ctx, msg.Creator, newCredits); err != nil {
 		return nil, errorsmod.Wrap(err, "failed to set player credits")
 	}
@@ -84,6 +88,6 @@ func (k *msgServer) InsertCoin(ctx context.Context, msg *types.MsgInsertCoin) (*
 
 	return &types.MsgInsertCoinResponse{
 		TotalCredits: newCredits,
-		TokensSpent:  strconv.FormatUint(tokenCost, 10),
+		TokensSpent:  tokenCost.String(),
 	}, nil
 }

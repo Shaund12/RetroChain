@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+package retrochain.nftfactory.v1;
+
+import "google/api/annotations.proto";
+
+option go_package = "retrochain/x/nftfactory/types";
+
+service Query {
+  rpc ClassAuthorityMetadata(QueryClassAuthorityMetadataRequest) returns (QueryClassAuthorityMetadataResponse) {
+    // Use query param for class_id because it contains '/' (namespaced IDs).
+    option (google.api.http) = {
+      get: "/retrochain/nftfactory/v1/class_authority_metadata"
+      additional_bindings { get: "/nftfactory/v1/class_authority_metadata" }
+    };
+  }
+
+  rpc ClassesFromCreator(QueryClassesFromCreatorRequest) returns (QueryClassesFromCreatorResponse) {
+    option (google.api.http) = {
+      get: "/retrochain/nftfactory/v1/classes_from_creator/{creator}"
+      additional_bindings { get: "/nftfactory/v1/classes_from_creator/{creator}" }
+    };
+  }
+}
+
+message QueryClassAuthorityMetadataRequest {
+  string class_id = 1;
+}
+
+message QueryClassAuthorityMetadataResponse {
+  ClassAuthorityMetadata authority_metadata = 1;
+}
+
+message ClassAuthorityMetadata {
+  string admin = 1;
+}
+
+message QueryClassesFromCreatorRequest {
+  string creator = 1;
+}
+
+message QueryClassesFromCreatorResponse {
+  repeated string class_ids = 1;
+}

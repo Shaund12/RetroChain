@@ -1,0 +1,22 @@
+[package]
+name = "ra_claimdrop"
+version = "0.1.0"
+edition.workspace = true
+license.workspace = true
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[features]
+default = []
+library = []
+
+[dependencies]
+cosmwasm-std.workspace = true
+cw2.workspace = true
+cw-storage-plus.workspace = true
+serde.workspace = true
+thiserror.workspace = true
+
+[dev-dependencies]
+cosmwasm-schema.workspace = true

@@ -15,6 +15,9 @@ func init() {
 
 	// Set and seal config
 	config := sdk.GetConfig()
+	// Explicitly set BIP44 purpose/coin path to keep wallets aligned with the chain's coin type.
+	config.SetPurpose(sdk.Purpose)
+	config.SetFullFundraiserPath(sdk.FullFundraiserPath)
 	config.SetCoinType(ChainCoinType)
 	config.SetBech32PrefixForAccount(AccountAddressPrefix, accountPubKeyPrefix)
 	config.SetBech32PrefixForValidator(validatorAddressPrefix, validatorPubKeyPrefix)

@@ -134,6 +134,59 @@ Custom events emitted:
 
 ## ??? Setting Up Explorers
 
+## ?? Node Config For Fast Explorers
+
+Explorers typically need:
+- fast block/tx listing,
+- fast transaction lookup by hash,
+- fast event/attribute search (`tx_search`).
+
+### CometBFT: enable tx indexing (`config.toml`)
+
+On your node, edit `$HOME/.retrochaind/config/config.toml`:
+
+```toml
+[tx_index]
+# Required for `/tx_search` and event/attribute queries.
+indexer = "kv"
+```
+
+Notes:
+- This repo also defaults these values for new nodes via `retrochaind`’s `initCometBFTConfig()`.
+- Changing indexing settings usually requires rebuilding the index (worst case: reset node state) for historical queries.
+
+### CometBFT RPC: allow browser CORS (`config.toml`)
+
+If your explorer runs in a browser at `retrochain.ddns.net` and calls the node RPC directly, allow that origin:
+
+```toml
+[rpc]
+cors_allowed_origins = [
+  "https://retrochain.ddns.net",
+  "http://retrochain.ddns.net",
+]
+```
+
+### Cosmos SDK: API/gRPC basics (`app.toml`)
+
+For most explorers you’ll want REST + gRPC enabled on the same node:
+
+```toml
+[api]
+enable = true
+swagger = true
+
+[grpc]
+enable = true
+```
+
+### Prefer the built-in SQLite indexer for UI speed (recommended)
+
+This repo includes a local SQLite indexer + optional read API that pulls from CometBFT RPC and serves blocks/txs quickly (great for a responsive explorer UI). See:
+- `tools/sql_indexer.py`
+- `tools/SQL_TRANSACTIONS_GUIDE.md`
+- `retrochain-explorer/.env.example` (`VITE_INDEXER_API_URL`)
+
 ### Option 1: Mintscan
 
 **Commercial explorer with premium features**

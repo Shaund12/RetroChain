@@ -1,0 +1,72 @@
+syntax = "proto3";
+
+package retrochain.tokenfactory.v1;
+
+import "amino/amino.proto";
+import "cosmos/msg/v1/msg.proto";
+import "cosmos_proto/cosmos.proto";
+
+option go_package = "retrochain/x/tokenfactory/types";
+
+// Msg defines the Msg service.
+service Msg {
+  option (cosmos.msg.v1.service) = true;
+
+  rpc CreateDenom(MsgCreateDenom) returns (MsgCreateDenomResponse);
+  rpc Mint(MsgMint) returns (MsgMintResponse);
+  rpc Burn(MsgBurn) returns (MsgBurnResponse);
+  rpc ChangeAdmin(MsgChangeAdmin) returns (MsgChangeAdminResponse);
+}
+
+message MsgCreateDenom {
+  option (cosmos.msg.v1.signer) = "sender";
+  option (amino.name) = "retrochain/x/tokenfactory/MsgCreateDenom";
+
+  string sender = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string subdenom = 2;
+}
+
+message MsgCreateDenomResponse {
+  string new_denom = 1;
+}
+
+message MsgMint {
+  option (cosmos.msg.v1.signer) = "sender";
+  option (amino.name) = "retrochain/x/tokenfactory/MsgMint";
+
+  string sender = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+
+  // amount is a coin string like "123factory/<creator>/<subdenom>".
+  string amount = 2;
+
+  // mint_to_address defaults to sender when empty.
+  string mint_to_address = 3 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+}
+
+message MsgMintResponse {}
+
+message MsgBurn {
+  option (cosmos.msg.v1.signer) = "sender";
+  option (amino.name) = "retrochain/x/tokenfactory/MsgBurn";
+
+  string sender = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+
+  // amount is a coin string like "123factory/<creator>/<subdenom>".
+  string amount = 2;
+
+  // burn_from_address defaults to sender when empty.
+  string burn_from_address = 3 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+}
+
+message MsgBurnResponse {}
+
+message MsgChangeAdmin {
+  option (cosmos.msg.v1.signer) = "sender";
+  option (amino.name) = "retrochain/x/tokenfactory/MsgChangeAdmin";
+
+  string sender = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string denom = 2;
+  string new_admin = 3 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+}
+
+message MsgChangeAdminResponse {}

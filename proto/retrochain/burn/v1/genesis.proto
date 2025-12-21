@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package retrochain.burn.v1;
+
+import "gogoproto/gogo.proto";
+import "retrochain/burn/v1/params.proto";
+
+option go_package = "retrochain/x/burn/types";
+
+// GenesisState defines the burn module's genesis state.
+message GenesisState {
+  Params params = 1 [(gogoproto.nullable) = false];
+}

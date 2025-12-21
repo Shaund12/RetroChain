@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package retrochain.burn.v1;
+
+import "amino/amino.proto";
+import "gogoproto/gogo.proto";
+
+option go_package = "retrochain/x/burn/types";
+
+// Params defines burn configuration.
+message Params {
+  option (amino.name) = "retrochain/x/burn/Params";
+  option (gogoproto.equal) = true;
+
+  // fee_burn_rate is the fraction of the fee collector balance burned each block.
+  string fee_burn_rate = 1 [(gogoproto.customtype) = "cosmossdk.io/math.LegacyDec", (gogoproto.nullable) = false];
+
+  // provision_burn_rate is an additional burn fraction applied before fee_burn_rate.
+  string provision_burn_rate = 2 [(gogoproto.customtype) = "cosmossdk.io/math.LegacyDec", (gogoproto.nullable) = false];
+}

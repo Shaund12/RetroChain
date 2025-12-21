@@ -1,0 +1,87 @@
+# Hermes relayer config for RetroChain <-> Osmosis (osmosis-1)
+#
+# Usage (recommended):
+#   1) Copy to ~/.hermes/config.toml
+#   2) Fill in RetroChain RPC/GRPC/WS if not local
+#   3) Ensure Osmosis RPC/GRPC/WS endpoints are reliable (WS must support Tendermint websockets)
+#   4) Import keys named below
+
+[global]
+log_level = "info"
+
+[mode]
+	[mode.clients]
+	enabled = true
+	refresh = true
+	misbehaviour = true
+
+	[mode.connections]
+	enabled = true
+
+	[mode.channels]
+	enabled = true
+
+	[mode.packets]
+	enabled = true
+	clear_interval = 100
+
+[rest]
+enabled = false
+host = "127.0.0.1"
+port = 3000
+
+[[chains]]
+# RetroChain
+id = "retrochain-mainnet"
+rpc_addr = "http://localhost:26657"
+grpc_addr = "http://localhost:9090"
+account_prefix = "cosmos"
+key_name = "relayer-retrochain"
+store_prefix = "ibc"
+max_gas = 600000
+gas_multiplier = 1.3
+max_msg_num = 15
+max_tx_size = 180000
+fee_granter = ""
+clock_drift = "15s"
+trusting_period = "336h"
+address_type = { derivation = "cosmos" }
+
+[chains.gas_price]
+price = 0.025
+denom = "uretro"
+
+[chains.event_source]
+mode = "push"
+url = "ws://localhost:26657/websocket"
+batch_delay = "500ms"
+
+[[chains]]
+# Osmosis mainnet
+id = "osmosis-1"
+
+# Prefer a paid/reliable provider. The defaults below are examples and may change.
+rpc_addr = "https://rpc.cosmos.directory/osmosis"
+grpc_addr = "https://grpc.cosmos.directory/osmosis"
+
+account_prefix = "osmo"
+key_name = "relayer-osmosis"
+store_prefix = "ibc"
+
+max_gas = 900000
+gas_multiplier = 1.3
+max_msg_num = 15
+max_tx_size = 180000
+fee_granter = ""
+clock_drift = "20s"
+trusting_period = "336h"
+address_type = { derivation = "cosmos" }
+
+[chains.gas_price]
+price = 0.025
+denom = "uosmo"
+
+[chains.event_source]
+mode = "push"
+url = "wss://rpc.cosmos.directory/osmosis/websocket"
+batch_delay = "500ms"

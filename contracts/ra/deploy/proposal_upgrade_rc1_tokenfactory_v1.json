@@ -1,0 +1,18 @@
+{
+  "messages": [
+    {
+      "@type": "/cosmos.upgrade.v1beta1.MsgSoftwareUpgrade",
+      "authority": "cosmos10d07y265gmmuvt4z0w9aw880jnsr700j6zn9kn",
+      "plan": {
+        "name": "rc1-tokenfactory-v1",
+        "height": "100000",
+        "info": "Add x/tokenfactory store key (factory denom creation + mint/burn)"
+      }
+    }
+  ],
+  "metadata": "",
+  "deposit": "50000000uretro",
+  "title": "RC1: Enable TokenFactory",
+  "summary": "Adds the x/tokenfactory store key via the rc1-tokenfactory-v1 upgrade so the chain can create factory denoms (factory/<creator>/<subdenom>) and mint/burn them.",
+  "expedited": true
+}

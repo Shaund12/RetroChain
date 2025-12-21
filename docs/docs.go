@@ -33,21 +33,27 @@ func RegisterOpenAPIService(appName string, rtr *mux.Router) {
 	rtr.PathPrefix("/api/static/").Handler(http.StripPrefix("/api", staticHandler))
 
 	rtr.HandleFunc("/", handler(appName, "/"))
+	// Always prefer the trailing-slash form so relative URLs resolve as expected.
+	rtr.HandleFunc("/api", func(w http.ResponseWriter, req *http.Request) {
+		http.Redirect(w, req, "/api/", http.StatusPermanentRedirect)
+	})
 	rtr.HandleFunc("/api/", handler(appName, "/api/"))
-	rtr.HandleFunc("/api", handler(appName, "/api/"))
 
 	rtr.PathPrefix(arcadeRoot).Handler(http.StripPrefix(arcadeRoot, http.FileServer(http.FS(Arcade))))
 }
 
 // handler returns an http handler that serves the OpenAPI console for a given base path.
 func handler(title, basePath string) http.HandlerFunc {
-	base := normalizeBasePath(basePath)
-	openAPIURL := base + openAPIRelPath
-	cosmosURL := base + cosmosRelPath
-
 	t, _ := httptemplate.ParseFS(template, indexFile)
 
 	return func(w http.ResponseWriter, req *http.Request) {
+		// Use relative spec URLs so docs work behind reverse proxies that
+		// mount under /api/ and may strip the prefix before forwarding.
+		// - /      -> ./static/...
+		// - /api/  -> ./static/...
+		openAPIURL := "./" + openAPIRelPath
+		cosmosURL := "./" + cosmosRelPath
+
 		_ = t.Execute(w, struct {
 			Title     string
 			OpenAPI   string

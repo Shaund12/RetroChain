@@ -2,7 +2,9 @@
 resolver = "2"
 members = [
   "ra_cw20",
+  "ra_cw721",
   "ra_converter",
+  "ra_claimdrop",
 ]
 
 [workspace.package]
@@ -15,6 +17,10 @@ cosmwasm-schema = "1.5"
 cw2 = "1"
 cw20 = "1"
 cw20-base = { version = "1", features = ["library"] }
+cw721 = "0.16"
+cw721-base = { version = "0.16", features = ["library"] }
 cw-storage-plus = "1"
 serde = { version = "1", features = ["derive"] }
+sha2 = "0.10"
+sha3 = "0.10"
 thiserror = "1"

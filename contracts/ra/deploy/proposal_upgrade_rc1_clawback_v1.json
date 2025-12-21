@@ -1,0 +1,18 @@
+{
+  "messages": [
+    {
+      "@type": "/cosmos.upgrade.v1beta1.MsgSoftwareUpgrade",
+      "authority": "cosmos10d07y265gmmuvt4z0w9aw880jnsr700j6zn9kn",
+      "plan": {
+        "name": "rc1-clawback-v1",
+        "height": "121500",
+        "info": "Move all balances from cosmos17fyfhk7pjg0twcpvgu7ngm0ugzk7tl85efmcn5 back to foundation_validator (cosmos1fscvf7rphx477z6vd4sxsusm2u8a70kewvc8wy)."
+      }
+    }
+  ],
+  "metadata": "",
+  "deposit": "50000000uretro",
+  "title": "RC1: Clawback mistaken transfer",
+  "summary": "Executes the rc1-clawback-v1 software upgrade to transfer all balances from the mistaken recipient address back to the foundation_validator address.",
+  "expedited": true
+}

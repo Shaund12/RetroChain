@@ -4,14 +4,7 @@ breaking:
         - FIELD_SAME_DEFAULT
     use:
         - FILE
-deps:
-    - buf.build/cosmos/cosmos-proto
-    - buf.build/cosmos/cosmos-sdk
-    - buf.build/cosmos/gogo-proto
-    - buf.build/cosmos/ics23
-    - buf.build/googleapis/googleapis
-    - buf.build/protocolbuffers/wellknowntypes
-    - buf.build/cosmos/ibc
+deps: []
 lint:
     disallow_comment_ignores: true
     except:

@@ -1,8 +1,10 @@
 package keeper
 
 import (
+	"bytes"
 	"context"
 
+	errorsmod "cosmossdk.io/errors"
 	math "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
@@ -29,7 +31,16 @@ func (m msgServer) UpdateParams(ctx context.Context, req *types.MsgUpdateParams)
 	if req.Authority == "" {
 		return nil, types.ErrInvalidSigner
 	}
-	// authority-gated (by signer annotation)
+
+	authority, err := m.addressCodec.StringToBytes(req.Authority)
+	if err != nil {
+		return nil, errorsmod.Wrap(types.ErrInvalidSigner, "invalid authority address")
+	}
+	if !bytes.Equal(authority, m.Authority()) {
+		expectedAuthorityStr, _ := m.addressCodec.BytesToString(m.Authority())
+		return nil, errorsmod.Wrapf(types.ErrInvalidSigner, "invalid authority; expected %s, got %s", expectedAuthorityStr, req.Authority)
+	}
+
 	return &types.MsgUpdateParamsResponse{}, m.SetParams(ctx, req.Params)
 }
 

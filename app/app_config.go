@@ -32,6 +32,7 @@ import (
 	txconfigv1 "cosmossdk.io/api/cosmos/tx/config/v1"
 	upgrademodulev1 "cosmossdk.io/api/cosmos/upgrade/module/v1"
 	vestingmodulev1 "cosmossdk.io/api/cosmos/vesting/module/v1"
+	"cosmossdk.io/depinject"
 	"cosmossdk.io/depinject/appconfig"
 	_ "cosmossdk.io/x/circuit" // import for side-effects
 	circuittypes "cosmossdk.io/x/circuit/types"
@@ -92,8 +93,10 @@ var (
 		{Account: ibctransfertypes.ModuleName, Permissions: []string{authtypes.Minter, authtypes.Burner}},
 		{Account: icatypes.ModuleName},
 		{Account: wasmtypes.ModuleName, Permissions: []string{authtypes.Burner}},
-		{Account: btcstaketypes.ModuleName},
-		{Account: arcademoduletypes.ModuleName, Permissions: []string{authtypes.Minter, authtypes.Burner, authtypes.Staking}}}
+		{Account: btcstaketypes.ModuleName, Permissions: []string{authtypes.Minter, authtypes.Burner}},
+		{Account: "tokenfactory", Permissions: []string{authtypes.Minter, authtypes.Burner}},
+		{Account: arcademoduletypes.ModuleName, Permissions: []string{authtypes.Minter, authtypes.Burner, authtypes.Staking}},
+	}
 
 	// blocked account addresses
 	blockAccAddrs = []string{
@@ -109,23 +112,23 @@ var (
 	}
 
 	// application configuration (used by depinject)
-	appConfig = appconfig.Compose(&appv1alpha1.Config{
-		Modules: []*appv1alpha1.ModuleConfig{
+	appConfig = func() depinject.Config {
+		modules := []*appv1alpha1.ModuleConfig{
 			{
 				Name: runtime.ModuleName,
 				Config: appconfig.WrapAny(&runtimev1alpha1.Module{
 					AppName: Name,
 					// NOTE: upgrade module is required to be prioritized
-					PreBlockers: []string{
+					PreBlockers: append([]string{
 						upgradetypes.ModuleName,
 						authtypes.ModuleName,
 						// this line is used by starport scaffolding # stargate/app/preBlockers
-					},
+					}, append(tokenfactoryOrderEntries(), nftfactoryOrderEntries()...)...),
 					// During begin block slashing happens after distr.BeginBlocker so that
 					// there is nothing left over in the validator fee pool, so as to keep the
 					// CanWithdrawInvariant invariant.
 					// NOTE: staking module is required if HistoricalEntries param > 0
-					BeginBlockers: []string{
+					BeginBlockers: append([]string{
 						minttypes.ModuleName,
 						burnmoduletypes.ModuleName,
 						distrtypes.ModuleName,
@@ -141,8 +144,8 @@ var (
 						wasmtypes.ModuleName,
 						arcademoduletypes.ModuleName,
 						// this line is used by starport scaffolding # stargate/app/beginBlockers
-					},
-					EndBlockers: []string{
+					}, append(tokenfactoryOrderEntries(), nftfactoryOrderEntries()...)...),
+					EndBlockers: append([]string{
 						govtypes.ModuleName,
 						stakingtypes.ModuleName,
 						feegrant.ModuleName,
@@ -153,7 +156,7 @@ var (
 						wasmtypes.ModuleName,
 						arcademoduletypes.ModuleName,
 						// this line is used by starport scaffolding # stargate/app/endBlockers
-					},
+					}, append(tokenfactoryOrderEntries(), nftfactoryOrderEntries()...)...),
 					// The following is mostly only needed when ModuleName != StoreKey name.
 					OverrideStoreKeys: []*runtimev1alpha1.StoreKeyConfig{
 						{
@@ -164,7 +167,7 @@ var (
 					// NOTE: The genutils module must occur after staking so that pools are
 					// properly initialized with tokens from genesis accounts.
 					// NOTE: The genutils module must also occur after auth so that it can access the params from auth.
-					InitGenesis: []string{
+					InitGenesis: append([]string{
 						consensustypes.ModuleName,
 						authtypes.ModuleName,
 						banktypes.ModuleName,
@@ -194,7 +197,7 @@ var (
 						btcstaketypes.ModuleName,
 						arcademoduletypes.ModuleName,
 						// this line is used by starport scaffolding # stargate/app/initGenesis
-					},
+					}, append(tokenfactoryOrderEntries(), nftfactoryOrderEntries()...)...),
 				}),
 			},
 			{
@@ -305,10 +308,14 @@ var (
 				Name:   epochstypes.ModuleName,
 				Config: appconfig.WrapAny(&epochsmodulev1.Module{}),
 			},
-			{
-				Name: arcademoduletypes.ModuleName,
-			},
 			// this line is used by starport scaffolding # stargate/app/moduleConfig
-		},
-	})
+		}
+		if tokenfactoryCfg := tokenfactoryModuleConfig(); tokenfactoryCfg != nil {
+			modules = append(modules, tokenfactoryCfg)
+		}
+		if nftfactoryCfg := nftfactoryModuleConfig(); nftfactoryCfg != nil {
+			modules = append(modules, nftfactoryCfg)
+		}
+		return appconfig.Compose(&appv1alpha1.Config{Modules: modules})
+	}()
 )

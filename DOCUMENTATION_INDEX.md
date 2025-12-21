@@ -129,9 +129,23 @@ Complete index of all RetroChain documentation files.
 - Create clients/connection/channel for ICS-20 transfers
 - Start relaying and test transfers
 
+**[HERMES_OSMO_RETRO_ROUTE.md](HERMES_OSMO_RETRO_ROUTE.md)** - Hermes IBC Route (OSMO  RETRO)
+- Configure Hermes for Osmosis  RetroChain
+- Create clients/connection/channel for ICS-20 transfers
+- Start relaying and test transfers
+
 ---
 
 ## 📋 Technical Documentation
+
+**[UPGRADE_PLAYBOOK.md](UPGRADE_PLAYBOOK.md)** - Chain Upgrade Playbook
+- How to add a new upgrade in this repo
+- RC1 upgrade details (height 52000, `rc1-combined-v1`)
+- Store-loader + module-account gotchas and fixes
+
+**[RC1_UPGRADE_52000_RELEASE_NOTES.md](RC1_UPGRADE_52000_RELEASE_NOTES.md)** - Explorer “Upgrade Complete” Release Notes
+- Copy/paste “Woohoo upgrade complete” text for explorers
+- User-facing highlights: Burn, BTC stake, CosmWasm, Arcade/API compatibility
 
 **[TOKENOMICS.md](TOKENOMICS.md)** - RetroChain Tokenomics (RETRO)
 - Denoms, genesis supply, inflation params

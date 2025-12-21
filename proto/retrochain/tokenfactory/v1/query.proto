@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+package retrochain.tokenfactory.v1;
+
+import "google/api/annotations.proto";
+
+option go_package = "retrochain/x/tokenfactory/types";
+
+service Query {
+  rpc DenomAuthorityMetadata(QueryDenomAuthorityMetadataRequest) returns (QueryDenomAuthorityMetadataResponse) {
+    // Use query param for denom because it may contain '/' (factory denoms).
+    option (google.api.http) = {
+      get: "/retrochain/tokenfactory/v1/denom_authority_metadata"
+      additional_bindings { get: "/tokenfactory/v1/denom_authority_metadata" }
+    };
+  }
+
+  rpc DenomsFromCreator(QueryDenomsFromCreatorRequest) returns (QueryDenomsFromCreatorResponse) {
+    option (google.api.http) = {
+      get: "/retrochain/tokenfactory/v1/denoms_from_creator/{creator}"
+      additional_bindings { get: "/tokenfactory/v1/denoms_from_creator/{creator}" }
+    };
+  }
+}
+
+message QueryDenomAuthorityMetadataRequest {
+  string denom = 1;
+}
+
+message QueryDenomAuthorityMetadataResponse {
+  DenomAuthorityMetadata authority_metadata = 1;
+}
+
+message DenomAuthorityMetadata {
+  string admin = 1;
+}
+
+message QueryDenomsFromCreatorRequest {
+  string creator = 1;
+}
+
+message QueryDenomsFromCreatorResponse {
+  repeated string denoms = 1;
+}

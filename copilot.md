@@ -13,6 +13,8 @@ This repo is a Cosmos SDK v0.53+ chain with custom modules under `x/`.
 - Do **edit protobufs** under `proto/` and regenerate (`make proto-gen`) rather than editing generated Go/TS files.
 - Do **keep module wiring deterministic** by updating the ordered lists in `app/app_config.go` when a new module is added.
 - Do **add an upgrade handler** when introducing a new store key to an existing network.
+
+For a full checklist + RC1 upgrade notes, see `UPGRADE_PLAYBOOK.md`.
 - Don’t change public API routes or prefixes unless explicitly requested.
 - Don’t add new UX/features beyond the user’s request.
 

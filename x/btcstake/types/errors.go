@@ -10,4 +10,5 @@ var (
 	ErrParamsNotSet      = errors.Register(ModuleName, 1201, "params not set")
 	ErrInvalidDenom      = errors.Register(ModuleName, 1202, "invalid denom")
 	ErrInsufficientStake = errors.Register(ModuleName, 1203, "insufficient staked amount")
+	ErrRewardsDisabled   = errors.Register(ModuleName, 1204, "rewards disabled")
 )

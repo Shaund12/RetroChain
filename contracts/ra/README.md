@@ -1,9 +1,11 @@
 # RA Contracts
 
-This folder contains two CosmWasm contracts:
+This folder contains CosmWasm contracts:
 
 - `ra_cw20`: a thin wrapper around `cw20-base` for the RetroArcade (RA) CW20 token.
+- `ra_cw721`: a thin wrapper around `cw721-base` for test NFTs.
 - `ra_converter`: converts funded `uretro` deposits into RA 1:1 and forwards the native deposit to the chain fee-collector address.
+- `ra_claimdrop`: Merkle allowlist native-coin claimdrop (e.g. 2500 RETRO per address).
 
 ## Tokenomics wiring
 
@@ -33,7 +35,9 @@ cargo build --release --target wasm32-unknown-unknown
 Artifacts will be under:
 
 - `target/wasm32-unknown-unknown/release/ra_cw20.wasm`
+- `target/wasm32-unknown-unknown/release/ra_cw721.wasm`
 - `target/wasm32-unknown-unknown/release/ra_converter.wasm`
+- `target/wasm32-unknown-unknown/release/ra_claimdrop.wasm`
 
 ## Deploy (high-level)
 

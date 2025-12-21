@@ -8,6 +8,7 @@ import (
 
 	"cosmossdk.io/collections"
 	collcodec "cosmossdk.io/collections/codec"
+	"cosmossdk.io/core/address"
 	"cosmossdk.io/core/store"
 	math "cosmossdk.io/math"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -24,6 +25,10 @@ type Keeper struct {
 	storeService store.KVStoreService
 	bankKeeper   bankkeeper.Keeper
 	cdc          codec.Codec
+	addressCodec address.Codec
+	// Address capable of executing a MsgUpdateParams message.
+	// Typically, this should be the x/gov module account.
+	authority []byte
 
 	Params collections.Item[types.Params]
 }
@@ -44,15 +49,28 @@ func (paramsValueCodec) Stringify(value types.Params) string {
 }
 func (paramsValueCodec) ValueType() string { return "burn/Params" }
 
-func NewKeeper(storeService store.KVStoreService, cdc codec.Codec, bankKeeper bankkeeper.Keeper) Keeper {
+func NewKeeper(storeService store.KVStoreService, cdc codec.Codec, addressCodec address.Codec, authority []byte, bankKeeper bankkeeper.Keeper) Keeper {
+	authorityStr, err := addressCodec.BytesToString(authority)
+	if err != nil {
+		panic(fmt.Sprintf("invalid authority address %x: %s", authority, err))
+	}
+	_ = authorityStr // validate conversion succeeded
+
 	sb := collections.NewSchemaBuilder(storeService)
 	k := Keeper{storeService: storeService, bankKeeper: bankKeeper, cdc: cdc,
-		Params: collections.NewItem(sb, types.ParamsKey, "burn_params", paramsValueCodec{}),
+		addressCodec: addressCodec,
+		authority:    authority,
+		Params:       collections.NewItem(sb, types.ParamsKey, "burn_params", paramsValueCodec{}),
 	}
 	if _, err := sb.Build(); err != nil {
 		panic(err)
 	}
 	return k
+}
+
+// GetAuthority returns the module's authority.
+func (k Keeper) GetAuthority() []byte {
+	return k.authority
 }
 
 // GetParams returns current params or default if unset.
@@ -112,7 +130,9 @@ func (k Keeper) BeginBlock(ctx sdk.Context) {
 		return
 	}
 	// bankKeeper requires module name for BurnCoins
-	_ = k.bankKeeper.BurnCoins(ctx, authtypes.FeeCollectorName, burnCoins)
+	if err := k.bankKeeper.BurnCoins(ctx, authtypes.FeeCollectorName, burnCoins); err != nil {
+		ctx.Logger().Error("burn: failed to burn fee collector coins", "err", err, "coins", burnCoins.String())
+	}
 }
 
 // mulDec applies a decimal rate to all coins (floor per denom).

@@ -1,0 +1,55 @@
+syntax = "proto3";
+
+package retrochain.nftfactory.v1;
+
+import "amino/amino.proto";
+import "cosmos/msg/v1/msg.proto";
+import "cosmos_proto/cosmos.proto";
+
+option go_package = "retrochain/x/nftfactory/types";
+
+// Msg defines the Msg service.
+service Msg {
+  option (cosmos.msg.v1.service) = true;
+
+  rpc CreateClass(MsgCreateClass) returns (MsgCreateClassResponse);
+  rpc Mint(MsgMint) returns (MsgMintResponse);
+}
+
+message MsgCreateClass {
+  option (cosmos.msg.v1.signer) = "sender";
+  option (amino.name) = "retrochain/x/nftfactory/MsgCreateClass";
+
+  string sender = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+
+  // sub_id is namespaced under the sender. ClassID will be:
+  //   nft/<sender>/<sub_id>
+  string sub_id = 2;
+
+  // Optional metadata fields forwarded to x/nft Class.
+  string name = 3;
+  string symbol = 4;
+  string description = 5;
+  string uri = 6;
+  string uri_hash = 7;
+}
+
+message MsgCreateClassResponse {
+  string class_id = 1;
+}
+
+message MsgMint {
+  option (cosmos.msg.v1.signer) = "sender";
+  option (amino.name) = "retrochain/x/nftfactory/MsgMint";
+
+  string sender = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string class_id = 2;
+  string id = 3;
+  string uri = 4;
+  string uri_hash = 5;
+
+  // receiver defaults to sender when empty.
+  string receiver = 6 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+}
+
+message MsgMintResponse {}

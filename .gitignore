@@ -56,3 +56,4 @@ tools/ibc/hermes/config.toml
 .env.*
 !*.env.example
 !.env.example
+/.cache

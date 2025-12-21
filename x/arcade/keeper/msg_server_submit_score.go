@@ -87,10 +87,20 @@ func (k *msgServer) SubmitScore(ctx context.Context, msg *types.MsgSubmitScore) 
 			return nil, err
 		}
 		// Score completion reward (arcade tokens)
-		earnedTokens = (msg.Score / 1000) * uint64(params.TokensPerThousandPoints)
+		base := msg.Score / 1000
+		mult := uint64(params.TokensPerThousandPoints)
+		if mult > 0 && base > (^uint64(0))/mult {
+			return nil, errorsmod.Wrap(types.ErrInvalidRequest, "reward calculation overflow")
+		}
+		earnedTokens = base * mult
 	} else if delta > 0 {
 		// Incremental score reward (arcade tokens)
-		earnedTokens = (delta / 1000) * uint64(params.TokensPerThousandPoints)
+		base := delta / 1000
+		mult := uint64(params.TokensPerThousandPoints)
+		if mult > 0 && base > (^uint64(0))/mult {
+			return nil, errorsmod.Wrap(types.ErrInvalidRequest, "reward calculation overflow")
+		}
+		earnedTokens = base * mult
 		if earnedTokens > 0 {
 			if err := k.updateLeaderboard(ctx, msg.Creator, 0, 0, 0, 0, earnedTokens); err != nil {
 				return nil, errorsmod.Wrap(err, "failed to credit leaderboard tokens")
